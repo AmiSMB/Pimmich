@@ -2510,3 +2510,15 @@ msgstr ""
 msgid "↻ Reprise du diaporama..."
 msgstr ""
 
+#: utils/slideshow_manager.py:260
+msgid "Redémarrage du diaporama..."
+msgstr ""
+
+#: templates/configure.html.jinja:663
+msgid "Police :"
+msgstr ""
+
+#: templates/configure.html.jinja:1454
+msgid "Police"
+msgstr ""
+

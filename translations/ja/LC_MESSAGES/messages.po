@@ -1029,6 +1029,18 @@ msgstr "⌛ 動画を読み込み中..."
 msgid "↻ Reprise du diaporama..."
 msgstr "↻ スライドショーを再開しています..."
 
+#: utils/slideshow_manager.py:260
+msgid "Redémarrage du diaporama..."
+msgstr "スライドショーを再起動しています..."
+
+#: templates/configure.html.jinja:663
+msgid "Police :"
+msgstr "フォント："
+
+#: templates/configure.html.jinja:1454
+msgid "Police"
+msgstr "フォント"
+
 #: app.py:2828
 msgid "Aucun mode trouvé pour la sortie principale."
 msgstr ""
@@ -3150,9 +3162,6 @@ msgstr ""
 #~ msgid "Droite"
 #~ msgstr "右"
 
-#~ msgid "Police :"
-#~ msgstr "警察 ："
-
 #~ msgid "Afficher un fond derrière l'heure/date/météo"
 #~ msgstr "時刻/日付/天気の背景を表示します"
 
@@ -3757,9 +3766,6 @@ msgstr ""
 
 #~ msgid "Taille de la police"
 #~ msgstr "フォントサイズ"
-
-#~ msgid "Police"
-#~ msgstr "警察"
 
 #~ msgid "Couleur du texte (hex)"
 #~ msgstr "文字色(16進数)"

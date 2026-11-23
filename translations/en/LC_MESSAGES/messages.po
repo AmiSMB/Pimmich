@@ -3176,9 +3176,6 @@ msgstr ""
 #~ msgid "Droite"
 #~ msgstr "Right"
 
-#~ msgid "Police :"
-#~ msgstr "Font :"
-
 #~ msgid "Afficher un fond derrière l'heure/date/météo"
 #~ msgstr "Display background behind time/date/weather"
 
@@ -3754,9 +3751,6 @@ msgstr ""
 
 #~ msgid "Taille de la police"
 #~ msgstr "Font size"
-
-#~ msgid "Police"
-#~ msgstr "Police"
 
 #~ msgid "Couleur du texte (hex)"
 #~ msgstr "Text color (hex)"
@@ -4644,3 +4638,15 @@ msgstr "⌛ Loading video..."
 #: local_slideshow.py:2255
 msgid "↻ Reprise du diaporama..."
 msgstr "↻ Resuming slideshow..."
+
+#: utils/slideshow_manager.py:260
+msgid "Redémarrage du diaporama..."
+msgstr "Restarting the slideshow..."
+
+#: templates/configure.html.jinja:663
+msgid "Police :"
+msgstr "Font:"
+
+#: templates/configure.html.jinja:1454
+msgid "Police"
+msgstr "Font"

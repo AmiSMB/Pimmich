@@ -86,16 +86,20 @@ def get_display_output_name():
     try:
         # Test wlr-randr (Wayfire/Pi OS)
         logger.debug(tr("🖥 Test wlr-randr..."))
-        result = subprocess.run(
-            ["wlr-randr"],
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=5
-        )
+        try:
+            result = subprocess.run(
+                ["wlr-randr"],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=5
+            )
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            # wlr-randr is optional; continue to the Sway fallback if unavailable or unresponsive.
+            result = None
         #logger.debug(f"🖥 wlr-randr RC={result.returncode} STDOUT={result.stdout}")
         
-        if result.returncode == 0:
+        if result and result.returncode == 0:
             for line in result.stdout.splitlines():
                 if line and not line[0].isspace():
                     output = line.split()[0]

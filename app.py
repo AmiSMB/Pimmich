@@ -1076,7 +1076,7 @@ def configure():
         save_config(config)
         restart_slideshow_process() # Redémarre uniquement le processus du diaporama
         flash(_("Configuration enregistrée. Le diaporama a été relancé pour appliquer les changements."), "success")
-        return redirect(url_for('configure'))
+        return redirect(url_for('configure', lang=config.get('ui_language', 'fr')))
 
     slideshow_running = any(
         'local_slideshow.py' in (p.info['cmdline'] or []) for p in psutil.process_iter(attrs=['cmdline'])

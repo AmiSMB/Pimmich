@@ -257,7 +257,7 @@ def restart_slideshow_process():
     # Afficher un message de redémarrage sur l'écran
     try:
         python_executable = sys.executable
-        message = "Redémarrage du diaporama..."
+        message = tr("Redémarrage du diaporama...")
 
         # Utiliser Popen pour ne pas bloquer, et s'assurer que l'environnement est correct
         env = os.environ.copy()

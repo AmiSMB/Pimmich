@@ -1047,6 +1047,18 @@ msgstr "⌛ Cargando el vídeo..."
 msgid "↻ Reprise du diaporama..."
 msgstr "↻ Reanudando la presentación..."
 
+#: utils/slideshow_manager.py:260
+msgid "Redémarrage du diaporama..."
+msgstr "Reiniciando la presentación..."
+
+#: templates/configure.html.jinja:663
+msgid "Police :"
+msgstr "Fuente:"
+
+#: templates/configure.html.jinja:1454
+msgid "Police"
+msgstr "Fuente"
+
 #: app.py:2828
 msgid "Aucun mode trouvé pour la sortie principale."
 msgstr ""
@@ -3311,9 +3323,6 @@ msgstr ""
 #~ msgid "Droite"
 #~ msgstr "Derecho"
 
-#~ msgid "Police :"
-#~ msgstr "Fuente :"
-
 #~ msgid "Afficher un fond derrière l'heure/date/météo"
 #~ msgstr "Mostrar un fondo detrás de la hora/fecha/clima"
 
@@ -3968,9 +3977,6 @@ msgstr ""
 
 #~ msgid "Taille de la police"
 #~ msgstr "Tamaño de fuente"
-
-#~ msgid "Police"
-#~ msgstr "Policía"
 
 #~ msgid "Couleur du texte (hex)"
 #~ msgstr "Color del texto (hexadecimal)"
