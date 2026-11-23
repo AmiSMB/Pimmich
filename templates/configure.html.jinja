@@ -2784,7 +2784,7 @@
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
                     ${statusText}
                 </span>
-                ${invite.used_by_user_name ? `<span class="text-sm text-gray-600 ml-2">${{{ _('par')|tojson }}} <strong>${invite.used_by_user_name}</strong></span>` : ''}
+                ${invite.used_by_user_name ? `<span class="text-sm text-gray-600 ml-2">${{ _('par')|tojson }}} <strong>${invite.used_by_user_name}</strong></span>` : ''}
             `;
 
                         // --- Lien d'invitation ---
@@ -3348,7 +3348,7 @@
             document.querySelectorAll('.delete-button').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const photo = button.dataset.photo;
-                    const confirmDelete = confirm(`${{{ _('Supprimer la photo')|tojson }}} ${photo}?`);
+                    const confirmDelete = confirm(`${{ _('Supprimer la photo')|tojson }}} ${photo}?`);
                     if (!confirmDelete) return;
 
                     try {
@@ -3383,7 +3383,7 @@
                             location.reload();
                         } else {
                             const result = await response.json();
-                            alert(`${{{ _('Erreur lors de la suppression :')|tojson }}} ${result.message || {{ _('Erreur inconnue')|tojson }}}`);
+                            alert(`${{ _('Erreur lors de la suppression :')|tojson }}} ${result.message || {{ _('Erreur inconnue')|tojson }}}`);
                         }
                     } catch (error) {
                         console.error('Erreur:', error);
