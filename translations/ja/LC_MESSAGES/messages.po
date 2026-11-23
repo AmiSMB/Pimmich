@@ -995,7 +995,39 @@ msgstr ""
 
 #: app.py:2809
 msgid "Aucune sortie d'affichage principale trouvée."
-msgstr ""
+msgstr "メインディスプレイ出力が見つかりません。"
+
+#: templates/configure.html.jinja:415
+msgid "Activer l'effet Pan/Zoom sur les photos"
+msgstr "写真のパン/ズーム効果を有効にする"
+
+#: templates/configure.html.jinja:419
+msgid "Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :"
+msgstr "ズーム量（例：1.15 は 15%% のズーム）："
+
+#: templates/configure.html.jinja:449
+msgid "Fréquence d'images (FPS) :"
+msgstr "フレームレート（FPS）："
+
+#: templates/configure.html.jinja:451
+msgid "Automatique (30 FPS sur Pi 3, 60 FPS sinon)"
+msgstr "自動（Pi 3では30 FPS、それ以外では60 FPS）"
+
+#: templates/configure.html.jinja:527
+msgid "Activer le contrôle par prise connectée"
+msgstr "スマートプラグによる制御を有効にする"
+
+#: templates/configure.html.jinja:396
+msgid "Hauteur utile de l'écran (%% affiché) :"
+msgstr "画面の有効高さ（%%表示）："
+
+#: local_slideshow.py:1674
+msgid "⌛ Chargement de la vidéo..."
+msgstr "⌛ 動画を読み込み中..."
+
+#: local_slideshow.py:2255
+msgid "↻ Reprise du diaporama..."
+msgstr "↻ スライドショーを再開しています..."
 
 #: app.py:2828
 msgid "Aucun mode trouvé pour la sortie principale."
@@ -2519,16 +2551,6 @@ msgstr ""
 msgid "Error processing photo from %(value_0)s: %(value_1)s"
 msgstr ""
 
-#~ msgid "Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :"
-#~ msgstr "ズーム振幅 (例: 15%% ズームの場合は 1.15):"
-
-#~ msgid ""
-#~ "Activer le contrôle par prise\n"
-#~ "                            connectée"
-#~ msgstr ""
-#~ "ソケット制御を有効にする\n"
-#~ "                            接続されています"
-
 #~ msgid ""
 #~ "État de la\n"
 #~ "                            prise : Inconnu"
@@ -2958,9 +2980,6 @@ msgstr ""
 #~ "correctement au démarrage."
 #~ msgstr "特定の解決策を強制します。起動時に画面が正しく検出されない場合に便利です。"
 
-#~ msgid "Hauteur utile de l'écran (%% affiché) :"
-#~ msgstr "有効な画面の高さ (%% が表示されます):"
-
 #~ msgid "Largeur d'affichage cible (px) :"
 #~ msgstr "ターゲット表示幅 (px):"
 
@@ -2969,16 +2988,6 @@ msgstr ""
 
 #~ msgid "Détecter"
 #~ msgstr "検出する"
-
-#~ msgid "Activer l'effet Pan/Zoom sur les photos"
-#~ msgstr "写真のパン/ズーム効果を有効にする"
-
-#~ msgid ""
-#~ "Amplitude du zoom (ex: 1.15 pour\n"
-#~ "                            15%% de zoom) :"
-#~ msgstr ""
-#~ "ズーム範囲 (例: 1.15\n"
-#~ "                            15%% ズーム):"
 
 #~ msgid "Activer l'effet de transition entre les photos"
 #~ msgstr "写真間のトランジション効果を有効にする"
@@ -3074,9 +3083,6 @@ msgstr ""
 
 #~ msgid "Exemples d'URLs :"
 #~ msgstr "URL の例:"
-
-#~ msgid "Activer le contrôle par prise connectée"
-#~ msgstr "スマートソケットコントロールを有効にする"
 
 #~ msgid "URL pour ALLUMER la prise :"
 #~ msgstr "ソケットをオンにする URL:"

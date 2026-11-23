@@ -87,31 +87,26 @@ else
     say "✅ L'économie d'énergie Wi-Fi est déjà désactivée." "✅ Wi-Fi power saving is already disabled."
 fi
 
-say "=== [4/12] Configuration automatique du fuseau horaire ===" "=== [4/12] Configuring the time zone automatically ==="
-# Valeur par défaut
-# Default value.
-DETECTED_TIMEZONE="UTC"
-# Source par défaut
-# Default source.
-TIMEZONE_SOURCE="fallback"
+if [ "$APP_LANGUAGE" = "fr" ]; then
+    say "=== [4/12] Configuration automatique du fuseau horaire ===" "=== [4/12] Configuring the time zone automatically ==="
+    say "Tentative de détection du fuseau horaire via l'adresse IP publique..." "Trying to detect the time zone from the public IP address..."
+    # Utilise l'API ip-api.com et l'outil jq pour extraire le fuseau horaire
+    # Use the ip-api.com API and jq to extract the time zone.
+    TIMEZONE_FROM_API=$(curl -s http://ip-api.com/json | jq -r '.timezone')
 
-say "Tentative de détection du fuseau horaire via l'adresse IP publique..." "Trying to detect the time zone from the public IP address..."
-# Utilise l'API ip-api.com et l'outil jq pour extraire le fuseau horaire
-# Use the ip-api.com API and jq to extract the time zone.
-TIMEZONE_FROM_API=$(curl -s http://ip-api.com/json | jq -r '.timezone')
-
-# Vérifie si la détection a réussi
-# Check whether detection succeeded.
-if [ -n "$TIMEZONE_FROM_API" ] && [ "$TIMEZONE_FROM_API" != "null" ]; then
-    say "Fuseau horaire détecté : $TIMEZONE_FROM_API" "Detected time zone: $TIMEZONE_FROM_API"
-    sudo timedatectl set-timezone "$TIMEZONE_FROM_API"
-    DETECTED_TIMEZONE="$TIMEZONE_FROM_API"
-    TIMEZONE_SOURCE="auto"
-    say "✅ Fuseau horaire configuré automatiquement. Heure actuelle : $(date)" "✅ Time zone configured automatically. Current time: $(date)"
+    # Vérifie si la détection a réussi
+    # Check whether detection succeeded.
+    if [ -n "$TIMEZONE_FROM_API" ] && [ "$TIMEZONE_FROM_API" != "null" ]; then
+        say "Fuseau horaire détecté : $TIMEZONE_FROM_API" "Detected time zone: $TIMEZONE_FROM_API"
+        sudo timedatectl set-timezone "$TIMEZONE_FROM_API"
+        say "✅ Fuseau horaire configuré automatiquement. Heure actuelle : $(date)" "✅ Time zone configured automatically. Current time: $(date)"
+    else
+        say "⚠️ La détection automatique a échoué. Le fuseau horaire sera réglé sur UTC par défaut." "⚠️ Automatic detection failed. The time zone will default to UTC."
+        sudo timedatectl set-timezone UTC
+        say "Vous pourrez le changer manuellement plus tard avec : sudo timedatectl set-timezone Votre/Ville" "You can change it manually later with: sudo timedatectl set-timezone Your/City"
+    fi
 else
-    say "⚠️ La détection automatique a échoué. Le fuseau horaire sera réglé sur UTC par défaut." "⚠️ Automatic detection failed. The time zone will default to UTC."
-    sudo timedatectl set-timezone UTC
-    say "Vous pourrez le changer manuellement plus tard avec : sudo timedatectl set-timezone Votre/Ville" "You can change it manually later with: sudo timedatectl set-timezone Your/City"
+    say "=== [4/12] Fuseau horaire inchangé (langue anglaise sélectionnée) ===" "=== [4/12] Leaving the system time zone unchanged (English selected) ==="
 fi
 
 say "=== [5/12] Installation et configuration de NGINX pour redirection sans :5000 ===" "=== [5/12] Installing and configuring NGINX to serve Pimmich without :5000 ==="

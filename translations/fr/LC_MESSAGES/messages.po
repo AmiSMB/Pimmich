@@ -970,7 +970,39 @@ msgstr ""
 
 #: app.py:2809
 msgid "Aucune sortie d'affichage principale trouvée."
-msgstr ""
+msgstr "Aucune sortie d'affichage principale trouvée."
+
+#: templates/configure.html.jinja:415
+msgid "Activer l'effet Pan/Zoom sur les photos"
+msgstr "Activer l'effet Pan/Zoom sur les photos"
+
+#: templates/configure.html.jinja:419
+msgid "Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :"
+msgstr "Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :"
+
+#: templates/configure.html.jinja:449
+msgid "Fréquence d'images (FPS) :"
+msgstr "Fréquence d'images (FPS) :"
+
+#: templates/configure.html.jinja:451
+msgid "Automatique (30 FPS sur Pi 3, 60 FPS sinon)"
+msgstr "Automatique (30 FPS sur Pi 3, 60 FPS sinon)"
+
+#: templates/configure.html.jinja:527
+msgid "Activer le contrôle par prise connectée"
+msgstr "Activer le contrôle par prise connectée"
+
+#: templates/configure.html.jinja:396
+msgid "Hauteur utile de l'écran (%% affiché) :"
+msgstr "Hauteur utile de l'écran (%% affiché) :"
+
+#: local_slideshow.py:1674
+msgid "⌛ Chargement de la vidéo..."
+msgstr "⌛ Chargement de la vidéo..."
+
+#: local_slideshow.py:2255
+msgid "↻ Reprise du diaporama..."
+msgstr "↻ Reprise du diaporama..."
 
 #: app.py:2828
 msgid "Aucun mode trouvé pour la sortie principale."
@@ -2471,12 +2503,6 @@ msgstr ""
 msgid "Error processing photo from %(value_0)s: %(value_1)s"
 msgstr ""
 
-#~ msgid "Hauteur utile de l'écran (% affiché) :"
-#~ msgstr ""
-
-#~ msgid "Amplitude du zoom (ex: 1.15 pour 15% de zoom) :"
-#~ msgstr ""
-
 #~ msgid ""
 #~ "Êtes-vous sûr de vouloir effacer "
 #~ "le contenu du log \"%(logName)s\" ? "
@@ -2520,9 +2546,6 @@ msgstr ""
 #~ "Force une résolution spécifique. Utile "
 #~ "si l'écran n'est pas détecté "
 #~ "correctement au démarrage."
-#~ msgstr ""
-
-#~ msgid "Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :"
 #~ msgstr ""
 
 #~ msgid "Durée de transition (secondes) :"
@@ -2882,11 +2905,6 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid ""
-#~ "Amplitude du zoom (ex: 1.15 pour\n"
-#~ "                            15%% de zoom) :"
-#~ msgstr ""
-
-#~ msgid ""
 #~ "Durée de transition (secondes)\n"
 #~ "                            :"
 #~ msgstr ""
@@ -2917,11 +2935,6 @@ msgstr ""
 #~ " une simple requête HTTP aux URLs"
 #~ "\n"
 #~ "                        que vous spécifiez."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Activer le contrôle par prise\n"
-#~ "                            connectée"
 #~ msgstr ""
 
 #~ msgid ""
@@ -3156,9 +3169,6 @@ msgstr ""
 #~ msgid_plural "{len_type} values are required, but {len_value} were given."
 #~ msgstr[0] ""
 #~ msgstr[1] ""
-
-#~ msgid "Activer le contrôle par prise connectée"
-#~ msgstr ""
 
 #~ msgid "Photos des invités (validées)"
 #~ msgstr ""
@@ -3523,9 +3533,6 @@ msgstr ""
 #~ msgid "Appliquer"
 #~ msgstr ""
 
-#~ msgid "Hauteur utile de l'écran (%% affiché) :"
-#~ msgstr ""
-
 #~ msgid "Largeur d'affichage cible (px) :"
 #~ msgstr ""
 
@@ -3536,9 +3543,6 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Détecter"
-#~ msgstr ""
-
-#~ msgid "Activer l'effet Pan/Zoom sur les photos"
 #~ msgstr ""
 
 #~ msgid "Activer l'effet de transition entre les photos"

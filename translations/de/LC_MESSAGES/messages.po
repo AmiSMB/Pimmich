@@ -1013,7 +1013,39 @@ msgstr ""
 
 #: app.py:2809
 msgid "Aucune sortie d'affichage principale trouvée."
-msgstr ""
+msgstr "Keine primäre Bildschirmausgabe gefunden."
+
+#: templates/configure.html.jinja:415
+msgid "Activer l'effet Pan/Zoom sur les photos"
+msgstr "Schwenk-/Zoomeffekt für Fotos aktivieren"
+
+#: templates/configure.html.jinja:419
+msgid "Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :"
+msgstr "Zoomstärke (z. B. 1,15 für 15%% Zoom):"
+
+#: templates/configure.html.jinja:449
+msgid "Fréquence d'images (FPS) :"
+msgstr "Bildrate (FPS):"
+
+#: templates/configure.html.jinja:451
+msgid "Automatique (30 FPS sur Pi 3, 60 FPS sinon)"
+msgstr "Automatisch (30 FPS auf dem Pi 3, sonst 60 FPS)"
+
+#: templates/configure.html.jinja:527
+msgid "Activer le contrôle par prise connectée"
+msgstr "Steuerung über eine WLAN-Steckdose aktivieren"
+
+#: templates/configure.html.jinja:396
+msgid "Hauteur utile de l'écran (%% affiché) :"
+msgstr "Nutzbare Bildschirmhöhe (%% angezeigt):"
+
+#: local_slideshow.py:1674
+msgid "⌛ Chargement de la vidéo..."
+msgstr "⌛ Video wird geladen..."
+
+#: local_slideshow.py:2255
+msgid "↻ Reprise du diaporama..."
+msgstr "↻ Diashow wird fortgesetzt..."
 
 #: app.py:2828
 msgid "Aucun mode trouvé pour la sortie principale."
@@ -2751,9 +2783,6 @@ msgstr ""
 #~ " wenn der Bildschirm beim Start nicht"
 #~ " richtig erkannt wird."
 
-#~ msgid "Hauteur utile de l'écran (%% affiché) :"
-#~ msgstr "Nützliche Bildschirmhöhe (%% angezeigt):"
-
 #~ msgid "Largeur d'affichage cible (px) :"
 #~ msgstr "Angestrebte Anzeigebreite (px):"
 
@@ -2762,14 +2791,6 @@ msgstr ""
 
 #~ msgid "Détecter"
 #~ msgstr "Erkennen"
-
-#~ msgid "Activer l'effet Pan/Zoom sur les photos"
-#~ msgstr "Aktivieren Sie den Schwenk-/Zoomeffekt für Fotos"
-
-#~ msgid ""
-#~ "Amplitude du zoom (ex: 1.15 pour\n"
-#~ "                            15%% de zoom) :"
-#~ msgstr "Zoomamplitude (z. B. 1,15 für 15%% Zoom):"
 
 #~ msgid "Activer l'effet de transition entre les photos"
 #~ msgstr "Aktivieren Sie den Übergangseffekt zwischen Fotos"
@@ -2875,11 +2896,6 @@ msgstr ""
 
 #~ msgid "Exemples d'URLs :"
 #~ msgstr "Beispiele für URLs:"
-
-#~ msgid "Activer le contrôle par prise connectée"
-#~ msgstr ""
-#~ "Aktivieren Sie die Socket-Steuerung\n"
-#~ "                            verbunden"
 
 #~ msgid "URL pour ALLUMER la prise :"
 #~ msgstr ""

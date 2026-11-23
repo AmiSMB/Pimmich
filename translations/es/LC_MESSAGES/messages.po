@@ -1013,7 +1013,39 @@ msgstr ""
 
 #: app.py:2809
 msgid "Aucune sortie d'affichage principale trouvée."
-msgstr ""
+msgstr "No se encontró ninguna salida de pantalla principal."
+
+#: templates/configure.html.jinja:415
+msgid "Activer l'effet Pan/Zoom sur les photos"
+msgstr "Habilitar el efecto Pan/Zoom en las fotos"
+
+#: templates/configure.html.jinja:419
+msgid "Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :"
+msgstr "Amplitud del zoom (por ejemplo: 1,15 para un zoom de 15%%):"
+
+#: templates/configure.html.jinja:449
+msgid "Fréquence d'images (FPS) :"
+msgstr "Frecuencia de fotogramas (FPS):"
+
+#: templates/configure.html.jinja:451
+msgid "Automatique (30 FPS sur Pi 3, 60 FPS sinon)"
+msgstr "Automático (30 FPS en Pi 3, 60 FPS en los demás casos)"
+
+#: templates/configure.html.jinja:527
+msgid "Activer le contrôle par prise connectée"
+msgstr "Activar el control mediante un enchufe inteligente"
+
+#: templates/configure.html.jinja:396
+msgid "Hauteur utile de l'écran (%% affiché) :"
+msgstr "Altura útil de la pantalla (%% mostrado):"
+
+#: local_slideshow.py:1674
+msgid "⌛ Chargement de la vidéo..."
+msgstr "⌛ Cargando el vídeo..."
+
+#: local_slideshow.py:2255
+msgid "↻ Reprise du diaporama..."
+msgstr "↻ Reanudando la presentación..."
 
 #: app.py:2828
 msgid "Aucun mode trouvé pour la sortie principale."
@@ -2899,11 +2931,6 @@ msgstr ""
 #~ msgstr[0] ""
 #~ msgstr[1] ""
 
-#~ msgid "Activer le contrôle par prise connectée"
-#~ msgstr ""
-#~ "Habilitar control de enchufe\n"
-#~ "                            conectado"
-
 #~ msgid "Photos des invités (validées)"
 #~ msgstr "Fotos de invitados (validadas)"
 
@@ -3110,9 +3137,6 @@ msgstr ""
 #~ "si la pantalla no se detecta "
 #~ "correctamente al inicio."
 
-#~ msgid "Hauteur utile de l'écran (%% affiché) :"
-#~ msgstr "Altura de pantalla útil (%% mostrado):"
-
 #~ msgid "Largeur d'affichage cible (px) :"
 #~ msgstr "Ancho de visualización de destino (px):"
 
@@ -3121,14 +3145,6 @@ msgstr ""
 
 #~ msgid "Détecter"
 #~ msgstr "Detectar"
-
-#~ msgid "Activer l'effet Pan/Zoom sur les photos"
-#~ msgstr "Habilitar el efecto Pan/Zoom en las fotos"
-
-#~ msgid ""
-#~ "Amplitude du zoom (ex: 1.15 pour\n"
-#~ "                            15%% de zoom) :"
-#~ msgstr "Amplitud del zoom (por ejemplo: 1,15 para un zoom de 15%%):"
 
 #~ msgid "Activer l'effet de transition entre les photos"
 #~ msgstr "Habilitar el efecto de transición entre fotos"

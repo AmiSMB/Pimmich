@@ -1000,7 +1000,7 @@ msgstr ""
 
 #: app.py:2809
 msgid "Aucune sortie d'affichage principale trouvée."
-msgstr ""
+msgstr "No primary display output found."
 
 #: app.py:2828
 msgid "Aucun mode trouvé pour la sortie principale."
@@ -2976,9 +2976,6 @@ msgstr ""
 #~ msgid "Logs"
 #~ msgstr "Logs"
 
-#~ msgid "Paramètres d'affichage"
-#~ msgstr "Display's parameters"
-
 #~ msgid "Orientation du cadre"
 #~ msgstr "Frame orientation"
 
@@ -3020,9 +3017,6 @@ msgstr ""
 #~ "Forces a specific resolution. Useful if the screen is not detected correctly"
 #~ " at startup."
 
-#~ msgid "Hauteur utile de l'écran (%% affiché) :"
-#~ msgstr "Useful screen height (%% affiché) :"
-
 #~ msgid "Largeur d'affichage cible (px) :"
 #~ msgstr "Target display width (px) :"
 
@@ -3031,16 +3025,6 @@ msgstr ""
 
 #~ msgid "Détecter"
 #~ msgstr "Detect"
-
-#~ msgid "Activer l'effet Pan/Zoom sur les photos"
-#~ msgstr "Enable Pan/Zoom effect on photos"
-
-#~ msgid ""
-#~ "Amplitude du zoom (ex: 1.15 pour\n"
-#~ "                            15%% de zoom) :"
-#~ msgstr ""
-#~ "Zoom amount (e.g. 1.15 for\n"
-#~ "                            15%% zoom):"
 
 #~ msgid "Activer l'effet de transition entre les photos"
 #~ msgstr "Enable the transition effect between photos"
@@ -3127,9 +3111,6 @@ msgstr ""
 
 #~ msgid "Exemples d'URLs :"
 #~ msgstr "Examples of URLs:"
-
-#~ msgid "Activer le contrôle par prise connectée"
-#~ msgstr "Enable smart plug control"
 
 #~ msgid "URL pour ALLUMER la prise :"
 #~ msgstr "URL to turn the plug ON:"
@@ -4623,3 +4604,43 @@ msgstr ""
 
 #~ msgid "Langue d'affichage des marées :"
 #~ msgstr "Tide display language:"
+
+#: templates/configure.html.jinja:331
+msgid "Paramètres d'affichage"
+msgstr "Display Parameters"
+
+#: templates/configure.html.jinja:335
+msgid "Langue de l'application"
+msgstr "Application language"
+
+#: templates/configure.html.jinja:415
+msgid "Activer l'effet Pan/Zoom sur les photos"
+msgstr "Enable Pan/Zoom effect on photos"
+
+#: templates/configure.html.jinja:419
+msgid "Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :"
+msgstr "Zoom amount (e.g. 1.15 for 15%% zoom):"
+
+#: templates/configure.html.jinja:449
+msgid "Fréquence d'images (FPS) :"
+msgstr "Frame rate (FPS):"
+
+#: templates/configure.html.jinja:451
+msgid "Automatique (30 FPS sur Pi 3, 60 FPS sinon)"
+msgstr "Automatic (30 FPS on Pi 3, 60 FPS otherwise)"
+
+#: templates/configure.html.jinja:527
+msgid "Activer le contrôle par prise connectée"
+msgstr "Enable smart plug control"
+
+#: templates/configure.html.jinja:396
+msgid "Hauteur utile de l'écran (%% affiché) :"
+msgstr "Usable screen height (%% displayed):"
+
+#: local_slideshow.py:1674
+msgid "⌛ Chargement de la vidéo..."
+msgstr "⌛ Loading video..."
+
+#: local_slideshow.py:2255
+msgid "↻ Reprise du diaporama..."
+msgstr "↻ Resuming slideshow..."

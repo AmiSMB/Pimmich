@@ -2470,3 +2470,43 @@ msgstr ""
 msgid "Error processing photo from %(value_0)s: %(value_1)s"
 msgstr ""
 
+#: templates/configure.html.jinja:331
+msgid "Paramètres d'affichage"
+msgstr ""
+
+#: templates/configure.html.jinja:335
+msgid "Langue de l'application"
+msgstr ""
+
+#: templates/configure.html.jinja:415
+msgid "Activer l'effet Pan/Zoom sur les photos"
+msgstr ""
+
+#: templates/configure.html.jinja:419
+msgid "Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :"
+msgstr ""
+
+#: templates/configure.html.jinja:449
+msgid "Fréquence d'images (FPS) :"
+msgstr ""
+
+#: templates/configure.html.jinja:451
+msgid "Automatique (30 FPS sur Pi 3, 60 FPS sinon)"
+msgstr ""
+
+#: templates/configure.html.jinja:527
+msgid "Activer le contrôle par prise connectée"
+msgstr ""
+
+#: templates/configure.html.jinja:396
+msgid "Hauteur utile de l'écran (%% affiché) :"
+msgstr ""
+
+#: local_slideshow.py:1674
+msgid "⌛ Chargement de la vidéo..."
+msgstr ""
+
+#: local_slideshow.py:2255
+msgid "↻ Reprise du diaporama..."
+msgstr ""
+
