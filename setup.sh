@@ -8,6 +8,21 @@ case "$APP_LANGUAGE" in
     *) APP_LANGUAGE="fr" ;;
 esac
 
+if [ -n "${SUDO_USER:-}" ]; then
+    REAL_USER="$SUDO_USER"
+else
+    REAL_USER="$(id -un)"
+fi
+REAL_GROUP="$(id -gn "$REAL_USER")"
+
+run_as_real_user() {
+    if [ "$(id -u)" -eq 0 ] && [ "$REAL_USER" != "root" ]; then
+        sudo -u "$REAL_USER" "$@"
+    else
+        "$@"
+    fi
+}
+
 say() {
     local french_text="$1"
     local english_text="$2"
@@ -32,14 +47,16 @@ if ! sudo apt install -y sway xterm python3 python3-venv python3-pip libjpeg-dev
     sudo apt install -y sway xterm python3 python3-venv python3-pip libjpeg-dev libopenjp2-7-dev libtiff-dev libopenblas-dev ffmpeg git cifs-utils smbclient network-manager jq mpv gettext libportaudio-dev unzip libheif-dev
 fi
 
-say "=== [2.5/12] Configuration de la langue française (locale fr_FR) ===" "=== [2.5/12] Configuring the French locale (fr_FR) ==="
-if [ -f "/etc/locale.gen" ]; then
-    if ! grep -q "^fr_FR.UTF-8 UTF-8" /etc/locale.gen; then
-        say "Activation de la locale fr_FR.UTF-8..." "Enabling the fr_FR.UTF-8 locale..."
-        sudo sed -i 's/# fr_FR.UTF-8 UTF-8/fr_FR.UTF-8 UTF-8/' /etc/locale.gen
-        sudo locale-gen
-    else
-        say "✅ La locale fr_FR.UTF-8 est déjà activée." "✅ The fr_FR.UTF-8 locale is already enabled."
+if [ "$APP_LANGUAGE" = "fr" ]; then
+    say "=== [2.5/12] Configuration de la langue française (locale fr_FR) ===" "=== [2.5/12] Configuring the French locale (fr_FR) ==="
+    if [ -f "/etc/locale.gen" ]; then
+        if ! grep -q "^fr_FR.UTF-8 UTF-8" /etc/locale.gen; then
+            say "Activation de la locale fr_FR.UTF-8..." "Enabling the fr_FR.UTF-8 locale..."
+            sudo sed -i 's/# fr_FR.UTF-8 UTF-8/fr_FR.UTF-8 UTF-8/' /etc/locale.gen
+            sudo locale-gen
+        else
+            say "✅ La locale fr_FR.UTF-8 est déjà activée." "✅ The fr_FR.UTF-8 locale is already enabled."
+        fi
     fi
 fi
 
@@ -153,26 +170,34 @@ say "✅ NGINX redémarré et prêt." "✅ NGINX restarted and ready."
 
 say "=== [6/12] Création de l’environnement Python ===" "=== [6/12] Creating the Python environment ==="
 cd "$(dirname "$0")"
-python3 -m venv venv
+if [ -d venv ]; then
+    if [ "$(id -u)" -eq 0 ]; then
+        chown -R "$REAL_USER:$REAL_GROUP" venv
+    else
+        sudo chown -R "$REAL_USER:$REAL_GROUP" venv
+    fi
+fi
+run_as_real_user python3 -m venv venv
 source venv/bin/activate
+VENV_PYTHON="$PWD/venv/bin/python3"
 
 say "Mise à jour de pip..." "Updating pip..."
-pip install --default-timeout=1000 --retries=10 --upgrade pip
+run_as_real_user "$VENV_PYTHON" -m pip install --default-timeout=1000 --retries=10 --upgrade pip
 
 say "Installation des dépendances de requirements.txt..." "Installing dependencies from requirements.txt..."
-if ! pip install --default-timeout=1000 --retries=10 -r requirements.txt; then
+if ! run_as_real_user "$VENV_PYTHON" -m pip install --default-timeout=1000 --retries=10 -r requirements.txt; then
     say "❌ Échec de l'installation des dépendances Python de base !" "❌ Failed to install the base Python dependencies!"
     exit 1
 fi
 
 say "Installation de la bibliothèque pour les QR codes..." "Installing the QR code library..."
-if ! pip install --default-timeout=1000 --retries=10 "qrcode[pil]"; then
+if ! run_as_real_user "$VENV_PYTHON" -m pip install --default-timeout=1000 --retries=10 "qrcode[pil]"; then
     say "❌ Échec de l'installation de qrcode[pil] !" "❌ Failed to install qrcode[pil]!"
     exit 1
 fi
 
 say "Mise à jour de la bibliothèque pour le bot Telegram..." "Updating the Telegram bot library..."
-if ! pip install --default-timeout=1000 --retries=10 --upgrade python-telegram-bot; then
+if ! run_as_real_user "$VENV_PYTHON" -m pip install --default-timeout=1000 --retries=10 --upgrade python-telegram-bot; then
     say "❌ Échec de la mise à jour de python-telegram-bot !" "❌ Failed to update python-telegram-bot!"
     exit 1
 fi
@@ -218,20 +243,20 @@ if [[ "$ARCH" == "armv6l" || "$PI_MODEL" == "1" || "$PI_MODEL" == "2" ]]; then
     fi
 else
     say "Installation de pillow-heif pour la prise en charge des photos HEIC (iPhone)..." "Installing pillow-heif for HEIC photo support (iPhone)..."
-    if ! pip install pillow-heif; then
+    if ! run_as_real_user "$VENV_PYTHON" -m pip install pillow-heif; then
         say "⚠️ Avertissement : l'installation de pillow-heif a échoué. La prise en charge de HEIC/HEIF sera désactivée." "⚠️ Warning: pillow-heif installation failed. HEIC/HEIF support will be disabled."
     else
         say "✅ pillow-heif installé avec succès." "✅ pillow-heif installed successfully."
     fi
 
     say "Installation des bibliothèques pour le contrôle vocal..." "Installing voice-control libraries..."
-    if ! pip install vosk sounddevice numpy thefuzz python-Levenshtein pygame num2words; then
+    if ! run_as_real_user "$VENV_PYTHON" -m pip install vosk sounddevice numpy thefuzz python-Levenshtein pygame num2words; then
         say "❌ Échec de l'installation des bibliothèques de contrôle vocal !" "❌ Failed to install the voice-control libraries!"
         exit 1
     fi
 
     say "Réinstallation forcée de pvporcupine pour inclure les modèles de langue..." "Force-reinstalling pvporcupine to include language models..."
-    if ! pip install --force-reinstall --no-cache-dir pvporcupine; then
+    if ! run_as_real_user "$VENV_PYTHON" -m pip install --force-reinstall --no-cache-dir pvporcupine; then
         say "❌ Échec de l'installation de pvporcupine !" "❌ Failed to install pvporcupine!"
         exit 1
     fi
@@ -309,14 +334,11 @@ say "✅ Arborescence des dossiers créée." "✅ Directory structure created."
 
 # Corriger les permissions même si script lancé avec sudo
 # Set correct permissions even when the script is run with sudo.
-REAL_USER=$(logname)
-sudo chown -R "$REAL_USER:$REAL_USER" static logs cache config
+sudo chown -R "$REAL_USER:$REAL_GROUP" static logs cache config
 chmod -R u+rwX static logs cache config
 
 say "=== [8/12] Création du fichier d'identification sécurisé ===" "=== [8/12] Creating the secure credentials file ==="
 CREDENTIALS_FILE="/boot/firmware/credentials.json"
-VENV_PYTHON="venv/bin/python3"
-
 if [ ! -f "$CREDENTIALS_FILE" ]; then
     say "Génération d'un mot de passe aléatoire et création du fichier d'identification..." "Generating a random password and creating the credentials file..."
     # On utilise `sudo` avec le chemin complet vers le python du venv.
