@@ -331,6 +331,18 @@
                         <h3>{{ _("Paramètres d'affichage") }}</h3>
                     </legend>
 
+                    <div class="mt-2 mb-4">
+                        <label for="ui_language" class="block text-sm font-medium text-gray-700">{{ _("Langue de l'application") }}</label>
+                        <select id="ui_language" name="ui_language" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            {% for language_code, language_name in [
+                                ('fr', 'Français'), ('en', 'English'), ('es', 'Español'),
+                                ('de', 'Deutsch'), ('ja', '日本語')
+                            ] %}
+                            <option value="{{ language_code }}" {% if config.get('ui_language', 'fr') == language_code %}selected{% endif %}>{{ language_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
                     <label for="display_duration">{{ _("Durée d'affichage (en secondes) :") }}</label>
                     <input type="number" id="display_duration" name="display_duration"
                         value="{{ config.display_duration }}" required>
@@ -736,6 +748,29 @@
                     </div>
 
                     <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <label for="weather_language" style="min-width: 200px;">{{ _("Langue de la météo :") }}</label>
+                        <select name="weather_language" id="weather_language">
+                            {% for language_code, language_name in [
+                                ('sq', 'Shqip'), ('af', 'Afrikaans'), ('ar', 'العربية'), ('az', 'Azərbaycan'),
+                                ('eu', 'Euskara'), ('be', 'Беларуская'), ('bg', 'Български'), ('ca', 'Català'),
+                                ('zh_cn', '简体中文'), ('zh_tw', '繁體中文'), ('hr', 'Hrvatski'), ('cz', 'Čeština'),
+                                ('da', 'Dansk'), ('nl', 'Nederlands'), ('en', 'English'), ('fi', 'Suomi'),
+                                ('fr', 'Français'), ('gl', 'Galego'), ('de', 'Deutsch'), ('el', 'Ελληνικά'),
+                                ('he', 'עברית'), ('hi', 'हिन्दी'), ('hu', 'Magyar'), ('is', 'Íslenska'),
+                                ('id', 'Bahasa Indonesia'), ('it', 'Italiano'), ('ja', '日本語'), ('kr', '한국어'),
+                                ('ku', 'Kurdî'), ('la', 'Latviešu'), ('lt', 'Lietuvių'), ('mk', 'Македонски'),
+                                ('no', 'Norsk'), ('fa', 'فارسی'), ('pl', 'Polski'), ('pt', 'Português'),
+                                ('pt_br', 'Português do Brasil'), ('ro', 'Română'), ('ru', 'Русский'),
+                                ('sr', 'Српски'), ('sk', 'Slovenčina'), ('sl', 'Slovenščina'), ('es', 'Español'),
+                                ('sv', 'Svenska'), ('th', 'ไทย'), ('tr', 'Türkçe'), ('uk', 'Українська'),
+                                ('vi', 'Tiếng Việt'), ('zu', 'isiZulu')
+                            ] %}
+                            <option value="{{ language_code }}" {% if config.get('weather_language', 'fr') == language_code %}selected{% endif %}>{{ language_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
                         <label for="weather_update_interval_minutes" style="min-width: 200px;">{{ _("Intervalle de MàJ
                             (min) :") }}</label>
                         <input type="number" name="weather_update_interval_minutes"
@@ -757,6 +792,14 @@
                         <label>
                             <input type="checkbox" name="show_tides" {% if config.get('show_tides', False) %}checked{% endif %}> <span class="ml-2">{{ _("Afficher les informations de marée") }}</span>
                         </label>
+                    </div>
+
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <label for="tide_language" style="min-width: 200px;">{{ _("Langue d'affichage des marées :") }}</label>
+                        <select name="tide_language" id="tide_language">
+                            <option value="fr" {% if config.get('tide_language', 'fr') == 'fr' %}selected{% endif %}>Français</option>
+                            <option value="en" {% if config.get('tide_language', 'fr') == 'en' %}selected{% endif %}>English</option>
+                        </select>
                     </div>
 
                     <div style="display: flex; align-items: center; margin-bottom: 8px;">
@@ -1880,7 +1923,7 @@
                 <!-- Formulaire pour le redémarrage -->
                 <form id="rebootForm" action="/system_reboot" method="POST"
                     class="flex items-center gap-3 mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg"
-                    onsubmit="return confirm('Êtes-vous sûr de vouloir redémarrer le système ?');">
+                    onsubmit="return confirm('{{ _('Êtes-vous sûr de vouloir redémarrer le système ?') }}');">
                     <button type="submit"
                         class="system-button bg-yellow-500 hover:bg-yellow-700 text-gray-800 font-bold py-2 px-4 rounded flex-1">
                         <i class="fas fa-sync-alt mr-1"></i>{{ _("Redémarrer le système") }}
@@ -2727,13 +2770,13 @@
                         // --- Statut de l'invitation ---
                         let statusText, statusClass;
                         if (isExpired) {
-                            statusText = 'Expirée';
+                            statusText = {{ _('Expirée')|tojson }};
                             statusClass = 'bg-red-100 text-red-800';
                         } else if (invite.used_by_user_id) {
-                            statusText = 'Utilisée';
+                            statusText = {{ _('Utilisée')|tojson }};
                             statusClass = 'bg-green-100 text-green-800';
                         } else {
-                            statusText = 'En attente';
+                            statusText = {{ _('En attente')|tojson }};
                             statusClass = 'bg-yellow-100 text-yellow-800';
                         }
 
@@ -2741,7 +2784,7 @@
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
                     ${statusText}
                 </span>
-                ${invite.used_by_user_name ? `<span class="text-sm text-gray-600 ml-2">par <strong>${invite.used_by_user_name}</strong></span>` : ''}
+                ${invite.used_by_user_name ? `<span class="text-sm text-gray-600 ml-2">${{{ _('par')|tojson }}} <strong>${invite.used_by_user_name}</strong></span>` : ''}
             `;
 
                         // --- Lien d'invitation ---
@@ -3305,7 +3348,7 @@
             document.querySelectorAll('.delete-button').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const photo = button.dataset.photo;
-                    const confirmDelete = confirm(`Supprimer la photo ${photo} ?`);
+                    const confirmDelete = confirm(`${{{ _('Supprimer la photo')|tojson }}} ${photo}?`);
                     if (!confirmDelete) return;
 
                     try {
@@ -3316,11 +3359,11 @@
                             // L'onglet actif sera automatiquement restauré grâce au localStorage
                             location.reload();
                         } else {
-                            alert("Erreur lors de la suppression.");
+                            alert({{ _('Erreur lors de la suppression.')|tojson }});
                         }
                     } catch (error) {
                         console.error('Erreur:', error);
-                        alert("Erreur lors de la suppression.");
+                        alert({{ _('Erreur lors de la suppression.')|tojson }});
                     }
                 });
             });
@@ -3329,7 +3372,7 @@
             document.querySelectorAll('.delete-all-btn').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const source = button.dataset.source;
-                    const confirmDelete = confirm(`Êtes-vous sûr de vouloir supprimer TOUTES les photos de la source "${source}" ? Cette action est irréversible.`);
+                    const confirmDelete = confirm(`{{ _('Êtes-vous sûr de vouloir supprimer TOUTES les photos de la source') }} "${source}"? {{ _('Cette action est irréversible.') }}`);
                     if (!confirmDelete) return;
 
                     try {
@@ -3340,11 +3383,11 @@
                             location.reload();
                         } else {
                             const result = await response.json();
-                            alert(`Erreur lors de la suppression : ${result.message || 'Erreur inconnue'}`);
+                            alert(`${{{ _('Erreur lors de la suppression :')|tojson }}} ${result.message || {{ _('Erreur inconnue')|tojson }}}`);
                         }
                     } catch (error) {
                         console.error('Erreur:', error);
-                        alert("Erreur de communication lors de la suppression.");
+                        alert({{ _('Erreur de communication lors de la suppression.')|tojson }});
                     }
                 });
             });
@@ -3370,7 +3413,7 @@
                             body: JSON.stringify({ photo: photo, filter: filter })
                         });
                     } catch (e) {
-                        alert('Erreur lors de la sauvegarde de la préférence.');
+                        alert({{ _('Erreur lors de la sauvegarde de la préférence.')|tojson }});
                         return;
                     }
 
@@ -4137,8 +4180,10 @@
                         const apiKey = document.getElementById("stormglass_api_key").value;
                         const lat = document.getElementById("tide_latitude").value;
                         const lon = document.getElementById("tide_longitude").value;
+                        const tideLanguage = document.getElementById("tide_language").value;
+                        const isEnglishTides = tideLanguage === "en";
 
-                        statusSpan.textContent = "Test en cours...";
+                        statusSpan.textContent = isEnglishTides ? "Testing..." : "Test en cours...";
                         statusSpan.className = "ml-4 font-medium text-blue-600";
                         btn.disabled = true;
 
@@ -4146,7 +4191,7 @@
                             const response = await fetch('/test-stormglass-api', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ api_key: apiKey, lat: lat, lon: lon }),
+                                body: JSON.stringify({ api_key: apiKey, lat: lat, lon: lon, language: tideLanguage }),
                             });
 
                             const result = await response.json();
@@ -4155,7 +4200,7 @@
                             statusSpan.className = result.success ? "ml-4 font-medium text-green-600" : "ml-4 font-medium text-red-600";
 
                         } catch (error) {
-                            statusSpan.textContent = "Erreur de communication avec le serveur.";
+                            statusSpan.textContent = isEnglishTides ? "Server communication error." : "Erreur de communication avec le serveur.";
                             statusSpan.className = "ml-4 font-medium text-red-600";
                         } finally {
                             btn.disabled = false;
@@ -4170,7 +4215,8 @@
                         const btn = forceTideBtn;
                         const statusSpan = document.getElementById("forceTideUpdateResult");
 
-                        statusSpan.textContent = "{{ _('Mise à jour en cours...') }}";
+                        const isEnglishTides = document.getElementById("tide_language").value === "en";
+                        statusSpan.textContent = isEnglishTides ? "Updating..." : "{{ _('Mise à jour en cours...') }}";
                         statusSpan.className = "ml-4 font-medium text-blue-600";
                         btn.disabled = true;
 
@@ -4649,7 +4695,7 @@
                                 document.getElementById('display_width').value = data.width;
                                 document.getElementById('display_height').value = data.height;
                                 detectResBtn.innerHTML = "{{ _('Détecté !') }}";
-                                detectResBtn.title = `Détecté : ${data.width}x${data.height}`;
+                                detectResBtn.title = `{{ _('Détecté :') }} ${data.width}x${data.height}`;
                             } else {
                                 detectResBtn.innerHTML = "{{ _('Échec') }}";
                                 detectResBtn.title = data.message || "{{ _('Erreur lors de la détection.') }}";
@@ -4851,7 +4897,7 @@
                             data: {
                                 labels: labels,
                                 datasets: [{
-                                    label: 'Température CPU (°C)',
+                                    label: {{ _('Température CPU (°C)')|tojson }},
                                     data: temps,
                                     borderColor: 'rgba(239, 68, 68, 1)', // red-500
                                     backgroundColor: 'rgba(252, 165, 165, 0.2)', // red-300 avec transparence
@@ -4966,12 +5012,12 @@
                         const data = await response.json();
                         if (data.success) {
                             if (data.is_connected) {
-                                stateSpan.textContent = "Connecté";
+                                stateSpan.textContent = {{ _('Connecté')|tojson }};
                                 stateSpan.className = "text-green-600 font-semibold";
                                 ssidSpan.textContent = data.ssid;
                                 ipSpan.textContent = data.ip_address;
                             } else {
-                                stateSpan.textContent = "Non connecté";
+                                stateSpan.textContent = {{ _('Non connecté')|tojson }};
                                 stateSpan.className = "text-red-600 font-semibold";
                                 ssidSpan.textContent = "N/A";
                                 ipSpan.textContent = "N/A";
@@ -4981,7 +5027,7 @@
                         }
                     } catch (error) {
                         console.error("Erreur de communication avec l'API Wi-Fi:", error);
-                        stateSpan.textContent = "Erreur de connexion";
+                        stateSpan.textContent = {{ _('Erreur de connexion')|tojson }};
                         stateSpan.className = "text-red-600 font-semibold";
                         ssidSpan.textContent = "N/A";
                         ipSpan.textContent = "N/A";
@@ -5002,24 +5048,24 @@
 
                         if (data.success) {
                             if (data.state === "UP") {
-                                stateSpan.textContent = "Activée";
+                                stateSpan.textContent = {{ _('Activée')|tojson }};
                                 stateSpan.className = "font-mono text-green-600";
                                 ipSpan.textContent = data.ip_address;
-                                toggleBtn.textContent = "Désactiver";
+                                toggleBtn.textContent = {{ _('Désactiver')|tojson }};
                                 toggleBtn.className = "system-button bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded";
                                 toggleBtn.dataset.nextState = "down";
                             } else if (data.state === "DOWN") {
-                                stateSpan.textContent = "Désactivée";
+                                stateSpan.textContent = {{ _('Désactivée')|tojson }};
                                 stateSpan.className = "font-mono text-gray-500";
                                 ipSpan.textContent = "N/A";
-                                toggleBtn.textContent = "Activer";
+                                toggleBtn.textContent = {{ _('Activer')|tojson }};
                                 toggleBtn.className = "system-button bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded";
                                 toggleBtn.dataset.nextState = "up";
                             } else { // NOT_FOUND
-                                stateSpan.textContent = "Non trouvée";
+                                stateSpan.textContent = {{ _('Non trouvée')|tojson }};
                                 stateSpan.className = "font-mono text-red-600";
                                 ipSpan.textContent = "N/A";
-                                toggleBtn.textContent = "Indisponible";
+                                toggleBtn.textContent = {{ _('Indisponible')|tojson }};
                                 toggleBtn.className = "system-button bg-gray-400 text-white font-bold py-2 px-4 rounded cursor-not-allowed";
                                 toggleBtn.disabled = true;
                                 return;
@@ -5028,8 +5074,8 @@
                         } else { throw new Error(data.message || "Réponse API invalide"); }
                     } catch (error) {
                         console.error(`Erreur de communication pour l'interface ${interfaceName}:`, error);
-                        stateSpan.textContent = "Erreur"; ipSpan.textContent = "N/A";
-                        toggleBtn.textContent = "Erreur"; toggleBtn.disabled = true;
+                        stateSpan.textContent = {{ _('Erreur')|tojson }}; ipSpan.textContent = "N/A";
+                        toggleBtn.textContent = {{ _('Erreur')|tojson }}; toggleBtn.disabled = true;
                     }
                 }
 
@@ -5456,9 +5502,9 @@
                         const data = await response.json();
 
                         if (data.success) {
-                            let output = "--- lsusb (Périphériques USB) ---\n";
+                            let output = `--- lsusb ({{ _('Périphériques USB') }}) ---\n`;
                             output += data.diagnostics.lsusb || 'N/A';
-                            output += "\n\n--- arecord -l (Périphériques de capture audio) ---\n";
+                            output += `\n\n--- arecord -l ({{ _('Périphériques de capture audio') }}) ---\n`;
                             output += data.diagnostics.arecord || 'N/A';
                             diagnosticsPre.textContent = output;
                         } else {

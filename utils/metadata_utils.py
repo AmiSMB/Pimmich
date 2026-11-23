@@ -1,3 +1,4 @@
+from .localization import tr
 import json
 from pathlib import Path
 import re
@@ -33,7 +34,7 @@ def load_photo_metadata_cache():
         return _photo_metadata_cache
 
     except Exception as e:
-        logger.error(f"[Metadata] Erreur chargement cache : {e}")
+        logger.error(tr('[Metadata] Erreur chargement cache : %(value_0)s', value_0=e))
         return {}
 
 def get_photo_metadata(photo_path):
@@ -57,5 +58,5 @@ def get_photo_metadata(photo_path):
                 return metadata
         return {}
     except Exception as e:
-        logger.error(f"[Metadata] Erreur extraction métadonnées pour {photo_path}: {e}")
+        logger.error(tr('[Metadata] Erreur extraction métadonnées pour %(value_0)s: %(value_1)s', value_0=photo_path, value_1=e))
         return {}

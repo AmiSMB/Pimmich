@@ -1,3 +1,4 @@
+from .localization import tr
 import os
 import glob
 import psutil
@@ -65,7 +66,7 @@ if not logger.handlers:
     logger.addHandler(file_handler)
 
 # Messages de démarrage
-logger.debug("----------------Initialisation Slideshow Manager----------------")
+logger.debug(tr("----------------Initialisation Slideshow Manager----------------"))
 
 # ============================================================
 # Constantes
@@ -85,30 +86,30 @@ def is_slideshow_running():
             pid = int(f.read().strip())
 
         if not psutil.pid_exists(pid):
-            logger.error(f"PID {pid} n'existe plus")
+            logger.error(tr("PID %(value_0)s n'existe plus", value_0=pid))
             return False
 
         p = psutil.Process(pid)
         is_running = p.is_running() and any("local_slideshow.py" in s for s in p.cmdline())
-        logger.debug(f"Slideshow tourne ? {is_running} (PID: {pid})")
+        logger.debug(tr('Slideshow tourne ? %(value_0)s (PID: %(value_1)s)', value_0=is_running, value_1=pid))
         return is_running
     except (psutil.NoSuchProcess, FileNotFoundError, ValueError) as e:
-        logger.error(f"Erreur vérification slideshow: {e}")
+        logger.error(tr('Erreur vérification slideshow: %(value_0)s', value_0=e))
         return False
 
 def start_slideshow():
     """Démarre le processus du diaporama de manière robuste."""
-    logger.debug("📟 ✅ Start Slideshow")
+    logger.debug(tr("📟 ✅ Start Slideshow"))
 
     # ✅ ÉTAPE 1 : Nettoyer les processus zombies AVANT de vérifier le PID
-    logger.debug("📟 Nettoyage préventif des zombies local_slideshow.py")
+    logger.debug(tr("📟 Nettoyage préventif des zombies local_slideshow.py"))
     for proc in psutil.process_iter(attrs=["pid", "cmdline", "status"]):
         try:
             cmdline = proc.info.get("cmdline")
             status = proc.info.get("status")
             if cmdline and any("local_slideshow.py" in part for part in cmdline):
                 if status == psutil.STATUS_ZOMBIE:
-                    logger.warning(f"📟 Zombie trouvé : PID {proc.pid}, nettoyage...")
+                    logger.warning(tr('📟 Zombie trouvé : PID %(value_0)s, nettoyage...', value_0=proc.pid))
                     proc.kill()
                     proc.wait(timeout=1)
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired):
@@ -122,18 +123,18 @@ def start_slideshow():
 
             if not psutil.pid_exists(pid):
                 os.remove(PID_FILE)
-                logger.info(f"📟 Ancien PID file {pid} nettoyé")
+                logger.info(tr('📟 Ancien PID file %(value_0)s nettoyé', value_0=pid))
             else:
                 # Vérifier si ce PID exécute bien local_slideshow.py
                 try:
                     proc = psutil.Process(pid)
                     if proc.is_running() and any("local_slideshow.py" in s for s in proc.cmdline()):
-                        logger.info(f"📟 Slideshow déjà en cours (PID {pid}), pas de démarrage")
+                        logger.info(tr('📟 Slideshow déjà en cours (PID %(value_0)s), pas de démarrage', value_0=pid))
                         return
                 except psutil.NoSuchProcess:
                     pass
         except Exception as e:
-            logger.debug(f"📟 Erreur nettoyage PID: {e}")
+            logger.debug(tr('📟 Erreur nettoyage PID: %(value_0)s', value_0=e))
             try:
                 os.remove(PID_FILE)
             except:
@@ -141,7 +142,7 @@ def start_slideshow():
 
     # Vérifie si un slideshow est déjà en cours (double sécurité)
     if is_slideshow_running():
-        logger.info("📟 Slideshow déjà en cours, pas de démarrage")
+        logger.info(tr("📟 Slideshow déjà en cours, pas de démarrage"))
         return
 
     # ✅ ÉTAPE 3 : Préparer l'environnement
@@ -158,30 +159,30 @@ def start_slideshow():
         with open(PID_FILE, "w") as f:
             f.write(str(proc.pid))
 
-        logger.debug(f"📟 ✅ Diaporama démarré avec PID {proc.pid}")
+        logger.debug(tr('📟 ✅ Diaporama démarré avec PID %(value_0)s', value_0=proc.pid))
     except Exception as e:
-        logger.error(f"📟 ❌ Échec démarrage diaporama: {e}")
+        logger.error(tr('📟 ❌ Échec démarrage diaporama: %(value_0)s', value_0=e))
 
 def _stop_process_by_pid(pid):
     """Arrête un processus de diaporama par son PID."""
     if psutil.pid_exists(pid):
-        logger.info(f"📟 Arrêt du processus de diaporama {pid}...")
+        logger.info(tr('📟 Arrêt du processus de diaporama %(value_0)s...', value_0=pid))
         p = psutil.Process(pid)
         p.terminate()
         try:
             p.wait(timeout=3)
-            logger.info(f"📟 Processus {pid} arrêté proprement")
+            logger.info(tr('📟 Processus %(value_0)s arrêté proprement', value_0=pid))
         except psutil.TimeoutExpired:
-            logger.warning(f"📟 Le processus {pid} n'a pas répondu, forçage de l'arrêt")
+            logger.warning(tr("📟 Le processus %(value_0)s n'a pas répondu, forçage de l'arrêt", value_0=pid))
             p.kill()
-            logger.info(f"📟 Processus {pid} tué de force")
+            logger.info(tr('📟 Processus %(value_0)s tué de force', value_0=pid))
 
 def stop_slideshow():
     """Arrête le processus du diaporama de manière robuste, en attendant sa terminaison."""
     config = load_config()
     is_smart_plug_enabled = config.get("smart_plug_enabled", False)
 
-    logger.info("📟 Arrêt du diaporama demandé")
+    logger.info(tr("📟 Arrêt du diaporama demandé"))
 
     if os.path.exists(PID_FILE):
         try:
@@ -189,24 +190,24 @@ def stop_slideshow():
                 pid = int(f.read().strip())
             _stop_process_by_pid(pid)
         except (IOError, ValueError, psutil.NoSuchProcess) as e:
-            logger.error(f"📟 Avertissement lors de l'arrêt du diaporama : {e}")
+            logger.error(tr("📟 Avertissement lors de l'arrêt du diaporama : %(value_0)s", value_0=e))
         finally:
             # S'assurer que le fichier PID est supprimé
             if os.path.exists(PID_FILE):
                 os.remove(PID_FILE)
-                logger.debug("📟 Fichier PID supprimé")
+                logger.debug(tr("📟 Fichier PID supprimé"))
 
     # Double sécurité : tuer tous les processus restants qui pourraient être des zombies
     for proc in psutil.process_iter(attrs=["pid", "cmdline"]):
         try:
             if proc.info["cmdline"] and any("local_slideshow.py" in part for part in proc.info["cmdline"]):
-                logger.warning(f"📟 Nettoyage d'un processus de diaporama zombie trouvé (PID: {proc.pid})")
+                logger.warning(tr("📟 Nettoyage d'un processus de diaporama zombie trouvé (PID: %(value_0)s)", value_0=proc.pid))
                 proc.kill()
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
 
     # Éteindre l'écran proprement (via prise ou DPMS)
-    logger.info("📟 Extinction de l'écran")
+    logger.info(tr("📟 Extinction de l'écran"))
     set_display_power(on=False)
 
 def restart_slideshow_for_update():
@@ -214,7 +215,7 @@ def restart_slideshow_for_update():
     Redémarre le diaporama après une mise à jour de contenu, sans éteindre l'écran.
     C'est la fonction à utiliser par les workers de mise à jour automatique.
     """
-    logger.info("📟 Redémarrage du diaporama pour mise à jour de contenu")
+    logger.info(tr("📟 Redémarrage du diaporama pour mise à jour de contenu"))
 
     # 1. Arrêter le processus existant (sans appeler set_display_power)
     if os.path.exists(PID_FILE):
@@ -225,18 +226,18 @@ def restart_slideshow_for_update():
             if os.path.exists(PID_FILE):
                 os.remove(PID_FILE)
         except Exception as e:
-            logger.error(f"📟 Avertissement lors de l'arrêt pour mise à jour : {e}")
+            logger.error(tr("📟 Avertissement lors de l'arrêt pour mise à jour : %(value_0)s", value_0=e))
 
     # 2. Démarrer un nouveau processus
     start_slideshow()
-    logger.info("📟 Diaporama redémarré pour mise à jour")
+    logger.info(tr("📟 Diaporama redémarré pour mise à jour"))
 
 def restart_slideshow_process():
     """
     Redémarre uniquement le processus du diaporama, sans affecter l'alimentation de l'écran.
     Idéal pour appliquer les changements de configuration sans cycle de redémarrage complet.
     """
-    logger.info("📟 Redémarrage du processus de diaporama demandé")
+    logger.info(tr("📟 Redémarrage du processus de diaporama demandé"))
 
     # 1. Arrêter le processus existant (sans appeler set_display_power)
     if os.path.exists(PID_FILE):
@@ -245,13 +246,13 @@ def restart_slideshow_process():
                 pid = int(f.read().strip())
             _stop_process_by_pid(pid)
         except Exception as e:
-            logger.error(f"📟 Erreur lors de l'arrêt: {e}")
+            logger.error(tr("📟 Erreur lors de l'arrêt: %(value_0)s", value_0=e))
 
         if os.path.exists(PID_FILE):
             try:
                 os.remove(PID_FILE)
             except OSError as e:
-                logger.warning(f"📟 Impossible de supprimer le fichier PID : {e}")
+                logger.warning(tr('📟 Impossible de supprimer le fichier PID : %(value_0)s', value_0=e))
 
     # Afficher un message de redémarrage sur l'écran
     try:
@@ -268,10 +269,10 @@ def restart_slideshow_process():
 
         subprocess.Popen([python_executable, "utils/display_message.py", message], env=env)
         time.sleep(1)  # Laisser le temps au message de s'afficher
-        logger.info("📟 Message de redémarrage affiché")
+        logger.info(tr("📟 Message de redémarrage affiché"))
     except Exception as e:
-        logger.warning(f"📟 Impossible d'afficher le message de redémarrage : {e}")
+        logger.warning(tr("📟 Impossible d'afficher le message de redémarrage : %(value_0)s", value_0=e))
 
     # 2. Démarrer un nouveau processus
     start_slideshow()
-    logger.info("📟 ✅ Processus de diaporama redémarré")
+    logger.info(tr("📟 ✅ Processus de diaporama redémarré"))

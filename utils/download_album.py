@@ -1,3 +1,4 @@
+from .localization import tr
 import os
 import random
 import requests
@@ -73,7 +74,7 @@ if not logger.handlers:
     logger.addHandler(file_handler)
 
 # Messages de démarrage
-logger.debug("----------------Initialisation Download Album----------------")
+logger.debug(tr("----------------Initialisation Download Album----------------"))
 
 # ============================================================
 # Helper yield + log
@@ -136,7 +137,7 @@ def download_album_archive_local(server_url, api_key, asset_ids, zip_path):
         # car la génération du zip côté serveur peut être longue pour beaucoup de photos
         with requests.post(url, json=payload, headers=headers, stream=True, timeout=(60, 300)) as response:
             if response.status_code != 200:
-                logger.error(f"Erreur API Immich ({response.status_code}): {response.text}")
+                logger.error(tr('Erreur API Immich (%(value_0)s): %(value_1)s', value_0=response.status_code, value_1=response.text))
                 return False, f"Erreur API: {response.status_code}"
             
             with open(zip_path, 'wb') as f:
@@ -146,10 +147,10 @@ def download_album_archive_local(server_url, api_key, asset_ids, zip_path):
         return True, "OK"
         
     except requests.exceptions.Timeout:
-        logger.error("Timeout lors du téléchargement de l'archive Immich.")
+        logger.error(tr("Timeout lors du téléchargement de l'archive Immich."))
         return False, "Timeout serveur (trop long)"
     except Exception as e:
-        logger.error(f"Exception lors du téléchargement: {e}")
+        logger.error(tr('Exception lors du téléchargement: %(value_0)s', value_0=e))
         return False, str(e)
 
 
@@ -438,7 +439,7 @@ def download_and_extract_album(config):
             for name in zip_ref.namelist():
                 zip_files_set.add(os.path.basename(name))
     except Exception as e:
-        logger.error(f"[Sync] Erreur lors de la lecture de l'archive ZIP : {e}")
+        logger.error(tr("[Sync] Erreur lors de la lecture de l'archive ZIP : %(value_0)s", value_0=e))
 
     try:
         unzip_archive(zip_path, photos_folder)
@@ -458,9 +459,9 @@ def download_and_extract_album(config):
                                 os.remove(os.path.join(photos_folder, local_file))
                                 deleted_count += 1
                             except OSError as e:
-                                logger.error(f"[Sync] Impossible de supprimer le fichier obsolète {local_file} : {e}")
+                                logger.error(tr('[Sync] Impossible de supprimer le fichier obsolète %(value_0)s : %(value_1)s', value_0=local_file, value_1=e))
             if deleted_count > 0:
-                logger.info(f"[Sync] {deleted_count} photo(s) obsolète(s) supprimée(s) du dossier source.")
+                logger.info(tr('[Sync] %(value_0)s photo(s) obsolète(s) supprimée(s) du dossier source.', value_0=deleted_count))
     except Exception as e:
         yield yield_and_log(
             msg_type="error",

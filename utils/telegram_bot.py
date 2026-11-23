@@ -1,3 +1,4 @@
+from .localization import tr
 import logging
 from pathlib import Path
 from telegram import Update
@@ -24,7 +25,7 @@ class PimmichBot:
             self.authorized_users = {int(uid.strip()) for uid in authorized_users_str.split(',') if uid.strip().isdigit()}
         except (ValueError, TypeError):
             self.authorized_users = set()
-            logger.warning("Could not parse telegram_authorized_users. No admin will be set.")
+            logger.warning(tr("Could not parse telegram_authorized_users. No admin will be set."))
             
         self.guest_users = {int(uid): name for uid, name in guest_users.items()}
         self.photo_callback = photo_callback
@@ -55,7 +56,7 @@ class PimmichBot:
     async def _handle_invitation_code(self, update: Update, code: str):
         """Helper function to validate an invitation code and reply to the user."""
         user = update.effective_user
-        logger.info(f"User {user.id} ({user.first_name}) is attempting to use invitation code: {code}")
+        logger.info(tr('User %(value_0)s (%(value_1)s) is attempting to use invitation code: %(value_2)s', value_0=user.id, value_1=user.first_name, value_2=code))
         # The validation callback is a sync function from app.py
         result = self.validation_callback(code, user.id, user.first_name)
         await update.message.reply_text(result['message'])
@@ -86,7 +87,7 @@ class PimmichBot:
             await update.message.reply_text(help_text, parse_mode=constants.ParseMode.MARKDOWN)
         # Case 3: The user is not authorized and did not provide a code
         else:
-            logger.warning(f"Unauthorized user {user.id} ({user.first_name}) tried to use the bot.")
+            logger.warning(tr('Unauthorized user %(value_0)s (%(value_1)s) tried to use the bot.', value_0=user.id, value_1=user.first_name))
             unauthorized_text = (
                 "🚫 Bonjour ! Pour envoyer des photos, vous avez besoin d'un code d'invitation.\n\n"
                 "Veuillez demander le code à l'administrateur du cadre et envoyez-le moi directement, "
@@ -99,7 +100,7 @@ class PimmichBot:
         user = update.effective_user
 
         if not self._is_user_authorized(user.id):
-            logger.warning(f"Unauthorized user {user.id} ({user.first_name}) tried to send a photo.")
+            logger.warning(tr('Unauthorized user %(value_0)s (%(value_1)s) tried to send a photo.', value_0=user.id, value_1=user.first_name))
             await update.message.reply_text("🚫 Désolé, vous n'êtes pas autorisé à envoyer de photos.")
             return
 
@@ -116,7 +117,7 @@ class PimmichBot:
             
             photo_file = await photo.get_file()
             await photo_file.download_to_drive(str(temp_photo_path))
-            logger.info(f"Photo from {display_name} ({user.id}) downloaded to {temp_photo_path}")
+            logger.info(tr('Photo from %(value_0)s (%(value_1)s) downloaded to %(value_2)s', value_0=display_name, value_1=user.id, value_2=temp_photo_path))
 
             # Call the synchronous callback in a separate thread to avoid blocking the event loop
             loop = asyncio.get_running_loop()
@@ -124,7 +125,7 @@ class PimmichBot:
 
             await update.message.reply_text("✅ Votre photo a été ajoutée au cadre !")
         except Exception as e:
-            logger.error(f"Error processing photo from {user.id}: {e}", exc_info=True)
+            logger.error(tr('Error processing photo from %(value_0)s: %(value_1)s', value_0=user.id, value_1=e), exc_info=True)
             await update.message.reply_text(f"❌ Oups, une erreur est survenue lors du traitement de votre photo. L'administrateur a été notifié.")
 
     async def text_message_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):

@@ -1,3 +1,4 @@
+from utils.localization import tr
 import os
 import random
 import time
@@ -23,6 +24,7 @@ from pathlib import Path
 from utils.text_drawer import draw_text_with_outline
 from utils.metadata_utils import get_photo_metadata, load_photo_metadata_cache # Import from new utility
 from utils.config_manager import load_config
+from utils.tide_format import format_tide_day, format_tide_type
 
 # Helper minimal pour l'extraction des traductions (Pybabel)
 def _(text, **kwargs):
@@ -109,16 +111,16 @@ logger = logging.getLogger(__name__)
 
 def button_callback(channel):
     """Callback exécuté lors de l'appui sur le bouton."""
-    logger.info(f"Bouton physique pressé (GPIO {channel}). Basculement de la veille...")
+    logger.info(tr('Bouton physique pressé (GPIO %(value_0)s). Basculement de la veille...', value_0=channel))
     try:
         # Appelle l'API de l'application web pour basculer l'état du diaporama
         requests.post("http://127.0.0.1:5000/api/slideshow/toggle_sleep", timeout=5)
     except requests.RequestException as e:
-        logger.error(f"Impossible de contacter l'API pour la mise en veille: {e}")
+        logger.error(tr("Impossible de contacter l'API pour la mise en veille: %(value_0)s", value_0=e))
 
 
 # Messages de démarrage
-logger.debug("----------------Initialisation local_Slideshow  ----------------")
+logger.debug(tr("----------------Initialisation local_Slideshow  ----------------"))
 
 
 
@@ -132,10 +134,10 @@ def load_country_codes():
                 # Inverse : nom_pays → iso (ex: "France" → "fr")
                 _country_codes_cache = {name.lower(): iso for iso, name in codes.items()}
         except FileNotFoundError:
-            logger.info(f"⚠️  country_codes.json manquant dans config/")
+            logger.info(tr('⚠️  country_codes.json manquant dans config/'))
             _country_codes_cache = {}
         except Exception as e:
-            logger.info(f"❌ Erreur chargement country_codes.json: {e}")
+            logger.info(tr('❌ Erreur chargement country_codes.json: %(value_0)s', value_0=e))
             _country_codes_cache = {}
     return _country_codes_cache
 
@@ -147,7 +149,7 @@ def update_status_file(new_fields):
         with open(STATUS_FILE, "w") as f:
             json.dump(_current_status, f)
     except IOError as e:
-        logger.info(f"Erreur écriture fichier statut : {e}")
+        logger.info(tr('Erreur écriture fichier statut : %(value_0)s', value_0=e))
 
 def signal_handler_next(signum, frame):
     global next_photo_requested
@@ -176,13 +178,13 @@ def handle_slideshow_events(screen_width):
             if event.button == 1:
                 pos = pygame.mouse.get_pos()
                 if pos[0] < screen_width / 3:
-                    logger.info("📸 Zone gauche de l'écran touchée -> Photo précédente")
+                    logger.info(tr("📸 Zone gauche de l'écran touchée -> Photo précédente"))
                     previous_photo_requested = True
                 elif pos[0] > screen_width * 2 / 3:
-                    logger.info("📸 Zone droite de l'écran touchée -> Photo suivante")
+                    logger.info(tr("📸 Zone droite de l'écran touchée -> Photo suivante"))
                     next_photo_requested = True
                 else:
-                    logger.info("📸 Zone centrale de l'écran touchée -> Pause/Reprise")
+                    logger.info(tr("📸 Zone centrale de l'écran touchée -> Pause/Reprise"))
                     paused = not paused
                     update_status_file({"paused": paused})
 
@@ -195,28 +197,28 @@ def play_background_music(filename):
             if not pygame.mixer.get_init(): pygame.mixer.init()
             pygame.mixer.music.load(str(music_path))
             pygame.mixer.music.play(-1) # -1 pour boucler à l'infini
-            logger.info(f"🎵 Musique de fond lancée : {filename}")
+            logger.info(tr('🎵 Musique de fond lancée : %(value_0)s', value_0=filename))
         except Exception as e:
-            logger.error(f"❌ Erreur lors de la lecture de la musique : {e}")
+            logger.error(tr('❌ Erreur lors de la lecture de la musique : %(value_0)s', value_0=e))
 
 VIDEO_EXTENSIONS = ('.mp4', '.mov', '.avi', '.mkv')
 
 def reinit_pygame():
     """Quitte et réinitialise complètement Pygame et les ressources associées."""
-    logger.debug(f"📸 Réinitialisation complète de Pygame...")
+    logger.debug(tr('📸 Réinitialisation complète de Pygame...'))
     pygame.quit()
     pygame.display.init()
     pygame.font.init()
 
     global _icon_cache
     _icon_cache = {}
-    logger.debug(f"📸 Cache des icônes météo vidé.")
+    logger.debug(tr('📸 Cache des icônes météo vidé.'))
 
     info = pygame.display.Info()
     width, height = info.current_w, info.current_h
     screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
     pygame.mouse.set_visible(False)
-    logger.debug(f"📸 Pygame entièrement réinitialisé à {width}x{height}.")
+    logger.debug(tr('📸 Pygame entièrement réinitialisé à %(value_0)sx%(value_1)s.', value_0=width, value_1=height))
     return screen, width, height
 
 def load_filter_states():
@@ -227,7 +229,7 @@ def load_filter_states():
         with open(FILTER_STATES_PATH, 'r') as f:
             return json.load(f)
     except (json.JSONDecodeError, IOError):
-        logger.info(f"Avertissement: Impossible de lire le fichier d'état des filtres '{FILTER_STATES_PATH}'.")
+        logger.info(tr("Avertissement: Impossible de lire le fichier d'état des filtres '%(value_0)s'.", value_0=FILTER_STATES_PATH))
         return {}
 
 def load_favorites():
@@ -241,10 +243,10 @@ def load_favorites():
             if isinstance(favorites_list, list):
                 return set(favorites_list)
             else:
-                logger.info(f"Avertissement: Le fichier des favoris '{FAVORITES_PATH}' ne contient pas une liste. Il sera ignoré.")
+                logger.info(tr("Avertissement: Le fichier des favoris '%(value_0)s' ne contient pas une liste. Il sera ignoré.", value_0=FAVORITES_PATH))
                 return set()
     except (json.JSONDecodeError, IOError):
-        logger.info(f"Avertissement: Impossible de lire le fichier des favoris '{FAVORITES_PATH}'.")
+        logger.info(tr("Avertissement: Impossible de lire le fichier des favoris '%(value_0)s'.", value_0=FAVORITES_PATH))
         return set()
 
 def get_local_ip():
@@ -296,7 +298,7 @@ def get_pi_model():
         # Pas un Raspberry Pi ou un système où ce fichier n'existe pas
         return None
     except Exception as e:
-        logger.info(f"[Pi Detect] Erreur lors de la détection du modèle de Pi : {e}")
+        logger.info(tr('[Pi Detect] Erreur lors de la détection du modèle de Pi : %(value_0)s', value_0=e))
         return None
     return None # Modèle non reconnu
 
@@ -328,7 +330,7 @@ def perform_transition(screen, old_image_surface, new_image_path, duration, scre
     try:
         new_pil_image = Image.open(new_image_path)
     except (FileNotFoundError, Image.UnidentifiedImageError) as e:
-        logger.info(f"[Transition] ERREUR: Impossible de charger l'image '{new_image_path}': {e}")
+        logger.info(tr("[Transition] ERREUR: Impossible de charger l'image '%(value_0)s': %(value_1)s", value_0=new_image_path, value_1=e))
         return None # Retourner None pour signaler l'échec
     if new_pil_image.mode != 'RGB': # type: ignore
         new_pil_image = new_pil_image.convert('RGB')
@@ -428,7 +430,7 @@ def is_within_active_hours(config):
         end_time = datetime.strptime(end, "%H:%M").time()
         now_time = now.time()
     except Exception as e:
-        logger.info(f"Erreur format horaire : {e}")
+        logger.info(tr('Erreur format horaire : %(value_0)s', value_0=e))
         return True
 
     if start_time <= end_time:
@@ -441,6 +443,14 @@ _weather_and_forecast_data = None
 _last_weather_and_forecast_fetch = None
 _weather_warning_printed = False
 
+OPENWEATHER_LANGUAGES = {
+    "sq", "af", "ar", "az", "eu", "be", "bg", "ca", "zh_cn", "zh_tw",
+    "hr", "cz", "da", "nl", "en", "fi", "fr", "gl", "de", "el", "he",
+    "hi", "hu", "is", "id", "it", "ja", "kr", "ku", "la", "lt", "mk",
+    "no", "fa", "pl", "pt", "pt_br", "ro", "ru", "sr", "sk", "sl", "es",
+    "sv", "th", "tr", "uk", "vi", "zu",
+}
+
 def get_weather_and_forecast(config):
     """Récupère la météo actuelle et les prévisions sur 3 jours."""
     global _weather_and_forecast_data, _last_weather_and_forecast_fetch, _weather_warning_printed
@@ -448,6 +458,9 @@ def get_weather_and_forecast(config):
     api_key = config.get("weather_api_key")
     city = config.get("weather_city")
     units = config.get("weather_units", "metric")
+    language = config.get("weather_language", "fr")
+    if not isinstance(language, str) or language not in OPENWEATHER_LANGUAGES:
+        language = "fr"
     try:
         interval_minutes = int(config.get("weather_update_interval_minutes", 30))
     except (ValueError, TypeError):
@@ -455,7 +468,7 @@ def get_weather_and_forecast(config):
 
     if not api_key or not city:
         if not _weather_warning_printed:
-            logger.info(f"[Weather] Clé API ou ville manquante. La météo est désactivée.")
+            logger.info(tr('[Weather] Clé API ou ville manquante. La météo est désactivée.'))
             _weather_warning_printed = True
         return None
 
@@ -463,13 +476,17 @@ def get_weather_and_forecast(config):
     if _last_weather_and_forecast_fetch and (now - _last_weather_and_forecast_fetch).total_seconds() < interval_minutes * 60:
         return _weather_and_forecast_data
 
-    logger.info(f"[Weather] Récupération des prévisions météo...")
+    logger.info(tr('[Weather] Récupération des prévisions météo...'))
     _last_weather_and_forecast_fetch = now # Mettre à jour pour éviter les appels répétés en cas d'échec
 
     try:
         # Utilise l'API de prévision 5 jours / 3 heures (disponible en offre gratuite)
-        url = f"https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={api_key}&units={units}&lang=fr"
-        response = requests.get(url, timeout=10)
+        url = "https://api.openweathermap.org/data/2.5/forecast"
+        response = requests.get(
+            url,
+            params={"q": city, "appid": api_key, "units": units, "lang": language},
+            timeout=10,
+        )
         response.raise_for_status()
         api_data = response.json()
 
@@ -489,16 +506,10 @@ def get_weather_and_forecast(config):
         today_str = datetime.now().strftime('%Y-%m-%d')
         sorted_days = sorted([day for day in daily_forecasts.keys() if day > today_str])[:3]
 
-        day_map_fr = {'Mon':'Lun', 'Tue':'Mar', 'Wed':'Mer', 'Thu':'Jeu', 'Fri':'Ven', 'Sat':'Sam', 'Sun':'Dim'}
-
         for i, day_str in enumerate(sorted_days):
             day_data = daily_forecasts[day_str]
-            
-            if i == 0:
-                day_name_fr = "Demain"
-            else:
-                day_name_en = datetime.strptime(day_str, '%Y-%m-%d').strftime('%a')
-                day_name_fr = day_map_fr.get(day_name_en, day_name_en.upper())
+            # Numeric dates avoid language-specific weekday labels in the forecast.
+            day_label = datetime.strptime(day_str, '%Y-%m-%d').strftime('%d/%m')
 
             min_temp = round(min(day_data['temps']))
             max_temp = round(max(day_data['temps']))
@@ -515,7 +526,7 @@ def get_weather_and_forecast(config):
                     midday_desc = desc
 
             processed_forecast.append({
-                'day': day_name_fr,
+                'day': day_label,
                 'min_temp': min_temp,
                 'max_temp': max_temp,
                 'icon': midday_icon,
@@ -523,14 +534,14 @@ def get_weather_and_forecast(config):
             })
         
         _weather_and_forecast_data = {'current': current_weather, 'forecast': processed_forecast}
-        logger.info(f"[Weather] Météo et prévisions mises à jour pour {city}.")
+        logger.info(tr('[Weather] Météo et prévisions mises à jour pour %(value_0)s.', value_0=city))
         return _weather_and_forecast_data
 
     except requests.exceptions.RequestException as e:
-        logger.info(f"[Weather] Erreur réseau lors de la récupération des prévisions : {e}")
+        logger.info(tr('[Weather] Erreur réseau lors de la récupération des prévisions : %(value_0)s', value_0=e))
         return None
     except Exception as e:
-        logger.info(f"[Weather] Erreur générale lors de la récupération des prévisions : {e}")
+        logger.info(tr('[Weather] Erreur générale lors de la récupération des prévisions : %(value_0)s', value_0=e))
         traceback.print_exc()
         return None
 
@@ -550,7 +561,7 @@ def get_tides(config):
 
     if not all([api_key, lat, lon]):
         if not _tides_warning_printed:
-            logger.info(f"[Tides] Clé API StormGlass, latitude ou longitude manquante. Les marées sont désactivées.")
+            logger.info(tr('[Tides] Clé API StormGlass, latitude ou longitude manquante. Les marées sont désactivées.'))
             _tides_warning_printed = True
         return None
 
@@ -571,7 +582,7 @@ def get_tides(config):
             if (now - last_file_fetch_dt).total_seconds() < cache_duration_seconds:
                 # Si c'est une entrée de cooldown, on ne fait rien et on attend.
                 if cache_content.get('cooldown'):
-                    logger.info(f"[Tides] Cooldown API actif depuis le cache fichier.")
+                    logger.info(tr('[Tides] Cooldown API actif depuis le cache fichier.'))
                     _last_tides_fetch = now # Mettre à jour le timer en mémoire pour respecter le cooldown
                     _tides_data = None
                     return None
@@ -580,18 +591,18 @@ def get_tides(config):
 
                 # --- NOUVEAU: Vérification du format du cache pour la compatibilité ascendante ---
                 if isinstance(tide_data_from_cache, list):
-                    logger.info(f"[Tides] Données de marée valides (format liste) trouvées dans le cache fichier.")
+                    logger.info(tr('[Tides] Données de marée valides (format liste) trouvées dans le cache fichier.'))
                     _tides_data = tide_data_from_cache
                     _last_tides_fetch = now
                     return tide_data_from_cache
                 else:
-                    logger.info(f"[Tides] Ancien format de cache détecté (dictionnaire). Le cache sera invalidé et recréé.")
+                    logger.info(tr('[Tides] Ancien format de cache détecté (dictionnaire). Le cache sera invalidé et recréé.'))
                     # On laisse l'exécution continuer pour appeler l'API
         except Exception as e:
-            logger.info(f"[Tides] Erreur lecture du cache fichier, récupération depuis l'API. Erreur: {e}")
+            logger.info(tr("[Tides] Erreur lecture du cache fichier, récupération depuis l'API. Erreur: %(value_0)s", value_0=e))
 
     # 3. Les deux caches sont invalides, appeler l'API
-    logger.info(f"[Tides] Récupération des données de marée depuis l'API StormGlass...")
+    logger.info(tr("[Tides] Récupération des données de marée depuis l'API StormGlass..."))
     _last_tides_fetch = now # Mettre à jour pour éviter les appels répétés en cas d'échec
 
     try:
@@ -610,7 +621,7 @@ def get_tides(config):
         future_extremes = [e for e in extremes_data if datetime.fromisoformat(e['time'].replace('Z', '+00:00')).replace(tzinfo=None) > now_utc]
 
         if not future_extremes:
-            logger.info(f"[Tides] Aucune marée future trouvée dans les données de l'API pour les prochaines 24h.")
+            logger.info(tr("[Tides] Aucune marée future trouvée dans les données de l'API pour les prochaines 24h."))
             return None
 
         # Sauvegarder la liste complète des marées futures dans le cache
@@ -619,27 +630,27 @@ def get_tides(config):
         with open(TIDES_CACHE_FILE, 'w') as f:
             json.dump(data_to_cache, f, indent=2)
         
-        logger.info(f"[Tides] Données de marée mises à jour et cache sauvegardé.")
+        logger.info(tr('[Tides] Données de marée mises à jour et cache sauvegardé.'))
         # --- CORRECTION: Mettre à jour le cache en mémoire avant de retourner ---
         _tides_data = future_extremes
         return _tides_data
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 402:
-            logger.info(f"[Tides] ERREUR: Quota API StormGlass dépassé. Prochaine tentative dans 12h.")
+            logger.info(tr('[Tides] ERREUR: Quota API StormGlass dépassé. Prochaine tentative dans 12h.'))
             # Écrire un timestamp de cooldown dans le cache pour éviter les re-tentatives si le script redémarre
             cooldown_data = {'data': {}, 'timestamp': datetime.now().isoformat(), 'cooldown': True}
             try:
                 with open(TIDES_CACHE_FILE, 'w') as f:
                     json.dump(cooldown_data, f, indent=2)
-                logger.info(f"[Tides] Timestamp de cooldown écrit dans le cache fichier.")
+                logger.info(tr('[Tides] Timestamp de cooldown écrit dans le cache fichier.'))
             except Exception as write_e:
-                logger.info(f"[Tides] Impossible d'écrire le cooldown dans le cache fichier: {write_e}")
+                logger.info(tr("[Tides] Impossible d'écrire le cooldown dans le cache fichier: %(value_0)s", value_0=write_e))
         else:
-            logger.info(f"[Tides] Erreur HTTP lors de la récupération des marées : {e}")
+            logger.info(tr('[Tides] Erreur HTTP lors de la récupération des marées : %(value_0)s', value_0=e))
         _tides_data = None
         return None
     except Exception as e:
-        logger.info(f"[Tides] Erreur générale lors de la récupération des marées : {e}")
+        logger.info(tr('[Tides] Erreur générale lors de la récupération des marées : %(value_0)s', value_0=e))
         traceback.print_exc()
         _tides_data = None # Mettre le cache en mémoire à None pour forcer une nouvelle tentative
         return None
@@ -650,7 +661,7 @@ def load_icon(icon_name, size, is_weather_icon=True):
     Retourne un carré rouge en cas d'échec pour un débogage visuel.
     """
     if size <= 0:
-        logger.info(f"[Display] AVERTISSEMENT: Taille d'icône invalide ({size}px) pour '{icon_name}'.")
+        logger.info(tr("[Display] AVERTISSEMENT: Taille d'icône invalide (%(value_0)spx) pour '%(value_1)s'.", value_0=size, value_1=icon_name))
         return None
 
     icon_key = f"{icon_name}_{size}"
@@ -671,12 +682,12 @@ def load_icon(icon_name, size, is_weather_icon=True):
             _icon_cache[icon_key] = icon_surface
             return icon_surface
         except Exception as e:
-            logger.info(f"[Display] Erreur chargement icône '{icon_path}': {e}")
+            logger.info(tr("[Display] Erreur chargement icône '%(value_0)s': %(value_1)s", value_0=icon_path, value_1=e))
             # Fall through to return placeholder
     else:
         warning_key = f"warn_{icon_name}"
         if warning_key not in _icon_cache:
-            logger.info(f"[Display] AVERTISSEMENT: Fichier icône non trouvé : {icon_path}")
+            logger.info(tr('[Display] AVERTISSEMENT: Fichier icône non trouvé : %(value_0)s', value_0=icon_path))
             _icon_cache[warning_key] = True
     
     # --- Retourner None en cas d'échec ---
@@ -815,10 +826,10 @@ def build_playlist(media_list, config, favorites):
                     try:
                         photo_date = datetime.fromisoformat(date_taken_str.replace('Z', '+00:00'))
                         if photo_date.month == datetime.now().month and photo_date.day == datetime.now().day:
-                            logger.debug(f"📸 Boost anniversaire pour {Path(media_path).name} (prise le {photo_date.strftime('%d/%m')})")
+                            logger.debug(tr('📸 Boost anniversaire pour %(value_0)s (prise le %(value_1)s)', value_0=Path(media_path).name, value_1=photo_date.strftime('%d/%m')))
                             for _ in range(anniversary_boost_factor): playlist.append(media_path)
                     except Exception as e:
-                        logger.debug(f"Erreur lors de la lecture de la date pour le boost anniversaire: {e}")
+                        logger.debug(tr('Erreur lors de la lecture de la date pour le boost anniversaire: %(value_0)s', value_0=e))
     return playlist
 
 try:
@@ -826,7 +837,7 @@ try:
     GPIO.setmode(GPIO.BCM) # Utiliser la numérotation BCM des pins
     GPIO_AVAILABLE = True
 except ImportError:
-    logger.debug(f"RPi.GPIO non disponible. Le contrôle du ventilateur est désactivé.")
+    logger.debug(tr('RPi.GPIO non disponible. Le contrôle du ventilateur est désactivé.'))
     GPIO_AVAILABLE = False
 
 def set_gpio_output(pin, state):
@@ -845,7 +856,7 @@ def set_gpio_output(pin, state):
             GPIO.setup(pin, GPIO.OUT)
             GPIO.output(pin, GPIO.HIGH if state else GPIO.LOW)
         except Exception as e:
-            logger.info(f"Erreur lors de la manipulation du GPIO {pin}: {e}")
+            logger.info(tr('Erreur lors de la manipulation du GPIO %(value_0)s: %(value_1)s', value_0=pin, value_1=e))
 
 def control_fan(temperature, threshold=55, pin=14):
     if temperature >= threshold:
@@ -898,7 +909,7 @@ def draw_overlay(screen, screen_width, screen_height, config, main_font, photo_m
                 weather_str = f"{temp}°C, {description}"
                 elements.append({'type': 'text', 'text': " " + weather_str})
             except Exception as e:
-                logger.info(f"[Display] Erreur préparation météo actuelle: {e}")
+                logger.info(tr('[Display] Erreur préparation météo actuelle: %(value_0)s', value_0=e))
 
         # --- Prévisions sur 3 jours ---
         if weather_and_forecast and weather_and_forecast.get('forecast'):
@@ -919,7 +930,7 @@ def draw_overlay(screen, screen_width, screen_height, config, main_font, photo_m
                     weather_str = f"{day_name}: {temp_str}"
                     elements.append({'type': 'text', 'text': " " + weather_str})
                 except (IndexError, KeyError) as e:
-                    logger.info(f"[Display] Erreur préparation météo pour un jour: {e}")
+                    logger.info(tr('[Display] Erreur préparation météo pour un jour: %(value_0)s', value_0=e))
 
         if display_telegram_notification_overlay:
             # --- Compteur de cartes postales du jour ---
@@ -1004,20 +1015,13 @@ def draw_overlay(screen, screen_width, screen_height, config, main_font, photo_m
 
             if tides_data:
                 tide_parts = []
-                today = datetime.now().date()
-                tomorrow = today + timedelta(days=1)
-                day_map = {'Mon':'Lun', 'Tue':'Mar', 'Wed':'Mer', 'Thu':'Jeu', 'Fri':'Ven', 'Sat':'Sam', 'Sun':'Dim'}
+                tide_language = config.get("tide_language", "fr")
 
                 # Afficher les 4 prochaines marées pour avoir une bonne visibilité sur les jours à venir
                 for tide in tides_data[:4]:
                     tide_dt = datetime.fromisoformat(tide['time']).astimezone()
-                    tide_date = tide_dt.date()
-
-                    if tide_date == today: day_str = "Auj."
-                    elif tide_date == tomorrow: day_str = "Dem."
-                    else: day_str = day_map.get(tide_dt.strftime('%a'), tide_dt.strftime('%a'))
-
-                    type_str = "PM" if tide['type'] == 'high' else "BM"
+                    day_str = format_tide_day(tide_dt, tide_language, compact=True)
+                    type_str = format_tide_type(tide['type'], tide_language, compact=True)
                     time_str = tide_dt.strftime('%H:%M')
                     
                     tide_parts.append(f"{day_str} {type_str}: {time_str}")
@@ -1033,7 +1037,7 @@ def draw_overlay(screen, screen_width, screen_height, config, main_font, photo_m
                     font_size = int(main_font.get_height() * 0.8) # 80% de la taille de la police principale
                     font_to_use = pygame.font.Font(font_path, font_size)
                 except Exception as e:
-                    logger.info(f"[Display] Erreur chargement police pour message marée: {e}")
+                    logger.info(tr('[Display] Erreur chargement police pour message marée: %(value_0)s', value_0=e))
                     font_to_use = main_font # Fallback
 
             if tide_text:
@@ -1088,7 +1092,7 @@ def draw_overlay(screen, screen_width, screen_height, config, main_font, photo_m
         try:
             metadata_font = pygame.font.Font(metadata_font_path, metadata_font_size)
         except Exception as e:
-            logger.info(f"[Display] Erreur chargement police métadonnées : {e}.")
+            logger.info(tr('[Display] Erreur chargement police métadonnées : %(value_0)s.', value_0=e))
             metadata_font = main_font
 
         # Couleurs personnalisées pour les métadonnées
@@ -1113,7 +1117,7 @@ def draw_overlay(screen, screen_width, screen_height, config, main_font, photo_m
                 photo_date_format = config.get("photo_date_format", "%d %B %Y")
                 metadata_elements.append(photo_date.strftime(photo_date_format))
             except Exception as e:
-                logger.info(f"[Display] Erreur formatage date : {e}")
+                logger.info(tr('[Display] Erreur formatage date : %(value_0)s', value_0=e))
 
         # Mention "Anniversaire" (Il y a X ans)
         if config.get("anniversary_boost_enabled", True) and date_taken_str:
@@ -1271,14 +1275,14 @@ def draw_overlay(screen, screen_width, screen_height, config, main_font, photo_m
                             screen.blit(flag_surf, flag_rect)
                             
                     except ImportError:
-                        logger.info(f"[Display] pip install requests pillow")
+                        logger.info(tr('[Display] pip install requests pillow'))
                     except Exception as e:
                         pass  # Silencieux
         # --- Fin DRAPEAU ---
 
 def display_title_slide(screen, screen_width, screen_height, title, duration, config, photos_for_slide=None):
     """Affiche un écran titre avec le nom de la playlist et un pêle-mêle de photos."""
-    logger.info(f"📸 Affichage de l'écran titre : '{title}'")
+    logger.info(tr("📸 Affichage de l'écran titre : '%(value_0)s'", value_0=title))
  
     # --- NOUVEAU: Charger les images des punaises en tant qu'images PIL ---
     thumbtack_pil_images = []
@@ -1293,9 +1297,9 @@ def display_title_slide(screen, screen_width, screen_height, title, duration, co
                 tack_img.thumbnail((40, 40), Image.Resampling.LANCZOS)
                 thumbtack_pil_images.append(tack_img)
         else:
-            logger.info(f"[Title Slide] Avertissement: Aucune image de punaise (thumbtack_*.png) trouvée dans static/icons/.")
+            logger.info(tr('[Title Slide] Avertissement: Aucune image de punaise (thumbtack_*.png) trouvée dans static/icons/.'))
     except Exception as e:
-        logger.info(f"[Title Slide] Avertissement: Impossible de charger les punaises: {e}")
+        logger.info(tr('[Title Slide] Avertissement: Impossible de charger les punaises: %(value_0)s', value_0=e))
 
     # Créer une surface temporaire pour dessiner tous les éléments avant de les afficher
     # Cela évite les problèmes de rafraîchissement et garantit que tout est dessiné dans le bon ordre.
@@ -1341,10 +1345,10 @@ def display_title_slide(screen, screen_width, screen_height, title, duration, co
             temp_surface.blit(scaled_cork_bg, (0, bg_y), crop_area) # Dessiner la partie rognée et centrée
         else:
             # Fallback sur une couleur unie si l'image n'est pas trouvée
-            logger.info(f"[Title Slide] Avertissement: Image de fond non trouvée à {cork_bg_path}. Utilisation d'une couleur unie.")
+            logger.info(tr("[Title Slide] Avertissement: Image de fond non trouvée à %(value_0)s. Utilisation d'une couleur unie.", value_0=cork_bg_path))
             temp_surface.fill((181, 136, 99)) # Une couleur proche du liège
     except Exception as e:
-        logger.info(f"[Title Slide] Erreur lors du chargement du fond : {e}. Utilisation d'une couleur unie.")
+        logger.info(tr("[Title Slide] Erreur lors du chargement du fond : %(value_0)s. Utilisation d'une couleur unie.", value_0=e))
         temp_surface.fill((181, 136, 99))
 
     # --- Pêle-mêle de photos ---
@@ -1389,10 +1393,10 @@ def display_title_slide(screen, screen_width, screen_height, title, duration, co
                     py_surface = pygame.image.fromstring(rotated_img.tobytes(), rotated_img.size, rotated_img.mode).convert_alpha()
                     photo_surfaces.append(py_surface)
                 except Exception as e:
-                    logger.info(f"[Title Slide] Erreur lors de la préparation de l'image {path}: {e}")
+                    logger.info(tr("[Title Slide] Erreur lors de la préparation de l'image %(value_0)s: %(value_1)s", value_0=path, value_1=e))
 
             # Ligne de débogage pour vérifier si des photos ont été traitées
-            logger.info(f"[Title Slide] DEBUG: Nombre de surfaces photos préparées : {len(photo_surfaces)}")
+            logger.info(tr('[Title Slide] DEBUG: Nombre de surfaces photos préparées : %(value_0)s', value_0=len(photo_surfaces)))
 
             # Positionner les photos de manière aléatoire mais répartie
             base_positions = [
@@ -1420,7 +1424,7 @@ def display_title_slide(screen, screen_width, screen_height, title, duration, co
         title_font_size = int(config.get("clock_font_size", 72) * 2.5)
         title_font = pygame.font.Font(font_path, title_font_size)
     except Exception as e:
-        logger.info(f"Erreur chargement police pour l'écran titre: {e}")
+        logger.info(tr("Erreur chargement police pour l'écran titre: %(value_0)s", value_0=e))
         title_font = pygame.font.SysFont("Arial", 150, bold=True)
 
     # Dessiner le titre au centre, par-dessus les photos
@@ -1477,7 +1481,7 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
 
         pan_zoom_enabled = config.get("pan_zoom_enabled", False)
         display_duration = config.get("display_duration", 10)
-        logger.info(f"⏳ Pause de {display_duration} secondes.") # Debug print
+        logger.info(tr('⏳ Pause de %(value_0)s secondes.', value_0=display_duration)) # Debug print
         
         # Always blit the base image first (this will be overwritten by animation if enabled)
         pygame_image_base = pygame.image.fromstring(pil_image.tobytes(), pil_image.size, pil_image.mode)
@@ -1623,7 +1627,7 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                 clock.tick(60) # Limit frame rate to 60 FPS for smoother animation
                 
     except Exception as e:
-        logger.info(f"Erreur affichage photo avec pan/zoom : {e}")
+        logger.info(tr('Erreur affichage photo avec pan/zoom : %(value_0)s', value_0=e))
         traceback.print_exc()
 
 def fade_to_black(screen, previous_surface, duration, clock):
@@ -1653,7 +1657,7 @@ def draw_loading_banner(screen, text, width, height, font):
         screen.blit(text_surface, text_rect)
         pygame.display.flip()
     except Exception as e:
-        logger.warning(f"Erreur lors du dessin du bandeau : {e}")
+        logger.warning(tr('Erreur lors du dessin du bandeau : %(value_0)s', value_0=e))
 
 def display_video(screen, video_path, screen_width, screen_height, config, main_font, previous_surface, clock):
     """Affiche une vidéo en plein écran en utilisant le lecteur externe mpv."""
@@ -1676,7 +1680,7 @@ def display_video(screen, video_path, screen_width, screen_height, config, main_
     # On ajoute une pause de 0.8 seconde après la fermeture pour laisser le temps au compositeur Wayland
     # de libérer la surface d'affichage.
     if pi_model in [1, 2, 3, 4, 5]:
-        logger.info(f"📸 [Pi {pi_model}] Closing Pygame to release graphics overlay context for mpv.")
+        logger.info(tr('📸 [Pi %(value_0)s] Closing Pygame to release graphics overlay context for mpv.', value_0=pi_model))
         pygame.quit()
         time.sleep(0.8)
     elif audio_enabled:
@@ -1687,7 +1691,7 @@ def display_video(screen, video_path, screen_width, screen_height, config, main_
         if previous_surface and pi_model not in [1, 2, 3, 4, 5]:
             fade_to_black(screen, previous_surface, transition_duration / 2, clock)
         
-        logger.info(f"📸 Lancement de la vidéo avec mpv : {video_path}")
+        logger.info(tr('📸 Lancement de la vidéo avec mpv : %(value_0)s', value_0=video_path))
         # On réaffiche la souris au cas où l'utilisateur voudrait interagir avec mpv (barre de progression, etc.)
         if pi_model not in [1, 2, 3, 4, 5]:
             pygame.mouse.set_visible(True)
@@ -1709,16 +1713,16 @@ def display_video(screen, video_path, screen_width, screen_height, config, main_
             # Pour tous les modèles de Raspberry Pi (1/2/3/4/5), on essaie en premier le mode DMABUF Haute Performance.
             # C'est le seul mode matériel direct (zéro-copie) qui évite les saccades de bande passante et l'écran noir de 15s.
             if pi_model in [1, 2, 3, 4, 5]:
-                logger.info(f"[Video Playback] Raspberry Pi {pi_model} détecté. Mode DMABUF Haute Performance.")
+                logger.info(tr('[Video Playback] Raspberry Pi %(value_0)s détecté. Mode DMABUF Haute Performance.', value_0=pi_model))
                 command.extend(['-v', '--hwdec=v4l2m2m', '--vo=dmabuf-wayland', '--wayland-app-id=mpv', '--log-file=/tmp/mpv_pimmich.log'])
             else:
                 # Fallback pour les autres systèmes ou si la détection échoue
-                logger.info(f"[Video Playback] Modèle de Pi non spécifique détecté. Utilisation de '--hwdec=auto'.")
+                logger.info(tr("[Video Playback] Modèle de Pi non spécifique détecté. Utilisation de '--hwdec=auto'."))
                 command.extend(['--hwdec=auto', '--vo=gpu'])
             # --- FIN MODIFICATION ---
         else:
             # Mode logiciel par défaut (plus stable sur certains systèmes mais plus lent)
-            logger.info(f"[Video Playback] Décodage matériel désactivé. Utilisation du mode logiciel.")
+            logger.info(tr('[Video Playback] Décodage matériel désactivé. Utilisation du mode logiciel.'))
             # MODIFICATION: Sur Pi 4/5, x11 est trop lent. On utilise gpu même en mode logiciel.
             if pi_model in [4, 5]:
                 command.extend(['--hwdec=no', '--vo=gpu'])
@@ -1731,9 +1735,9 @@ def display_video(screen, video_path, screen_width, screen_height, config, main_
             # Régler le volume système avec amixer pour une meilleure compatibilité
             try:
                 subprocess.run(['amixer', 'sset', 'Master', f'{audio_volume}%', 'unmute'], check=False, capture_output=True, text=True)
-                logger.info(f"[Audio] Volume système réglé à {audio_volume}% via amixer.")
+                logger.info(tr('[Audio] Volume système réglé à %(value_0)s%% via amixer.', value_0=audio_volume))
             except FileNotFoundError:
-                logger.info(f"[Audio] AVERTISSEMENT: 'amixer' non trouvé. Le volume ne peut pas être réglé.")
+                logger.info(tr("[Audio] AVERTISSEMENT: 'amixer' non trouvé. Le volume ne peut pas être réglé."))
                    # Passer le volume à mpv également
             command.extend([f'--volume={audio_volume}', '--no-mute'])
         else:
@@ -1783,7 +1787,7 @@ def display_video(screen, video_path, screen_width, screen_height, config, main_
         timeout_limit = 90.0
 
         for idx, cmd_to_run in enumerate(commands_to_try):
-            logger.info(f"📸 Executing mpv command (try {idx+1}/{len(commands_to_try)}): {' '.join(cmd_to_run)}")
+            logger.info(tr('📸 Executing mpv command (try %(value_0)s/%(value_1)s): %(value_2)s', value_0=idx+1, value_1=len(commands_to_try), value_2=' '.join(cmd_to_run)))
             # Très courte pause pour laisser le système se caler
             time.sleep(0.1)
             
@@ -1800,14 +1804,14 @@ def display_video(screen, video_path, screen_width, screen_height, config, main_
                 success = True
                 break
             except subprocess.TimeoutExpired:
-                logger.warning(f"⏱️ Le lecteur vidéo mpv a dépassé la limite de temps de sécurité ({timeout_limit}s). Processus tué.")
+                logger.warning(tr('⏱️ Le lecteur vidéo mpv a dépassé la limite de temps de sécurité (%(value_0)ss). Processus tué.', value_0=timeout_limit))
                 break
             except subprocess.CalledProcessError as e:
                 last_error = e
-                logger.info(f"⚠️ Échec du mode d'affichage de l'essai {idx+1}. Tentative suivante...")
+                logger.info(tr("⚠️ Échec du mode d'affichage de l'essai %(value_0)s. Tentative suivante...", value_0=idx+1))
                 
         if not success:
-            logger.info(f"Erreur lors de l'exécution de mpv pour la vidéo {video_path}. mpv a retourné un code d'erreur.")
+            logger.info(tr("Erreur lors de l'exécution de mpv pour la vidéo %(value_0)s. mpv a retourné un code d'erreur.", value_0=video_path))
             
             # Extraction du log de diagnostic réel
             log_content = ""
@@ -1820,19 +1824,19 @@ def display_video(screen, video_path, screen_width, screen_height, config, main_
                     pass
             
             combined_output = last_error.stdout if (last_error and last_error.stdout and last_error.stdout.strip()) else (log_content if log_content.strip() else "Aucun message d'erreur capturé.")
-            logger.info(f"Détails de l'erreur mpv :\n{combined_output}")
+            logger.info(tr("Détails de l'erreur mpv :\n%(value_0)s", value_0=combined_output))
     except Exception as e:
-        logger.info(f"Erreur inattendue lors de la lecture de la vidéo {video_path}: {e}")
+        logger.info(tr('Erreur inattendue lors de la lecture de la vidéo %(value_0)s: %(value_1)s', value_0=video_path, value_1=e))
     finally:
         # --- Ré-initialiser le mixer de Pygame après la lecture vidéo ---
         # C'est crucial pour que Pygame puisse potentiellement jouer des sons plus tard,
         # et pour maintenir un état cohérent.
         if audio_enabled and pi_model not in [1, 2, 3, 4, 5]:
-            logger.info(f"📸 Re-initializing pygame.mixer.")
+            logger.info(tr('📸 Re-initializing pygame.mixer.'))
             try:
                 pygame.mixer.init()
             except pygame.error as e:
-                logger.info(f"AVERTISSEMENT: Impossible de réinitialiser pygame.mixer: {e}")
+                logger.info(tr('AVERTISSEMENT: Impossible de réinitialiser pygame.mixer: %(value_0)s', value_0=e))
         
         # Relancer la musique de fond de la playlist si nécessaire
         if _current_background_music and pi_model not in [1, 2, 3, 4, 5]:
@@ -1844,61 +1848,61 @@ def start_slideshow():
     pi_model = get_pi_model()
     global _current_background_music
     try:
-        logger.debug(f"📸 Starting slideshow initialization.")
+        logger.debug(tr('📸 Starting slideshow initialization.'))
         config = load_config()
-        logger.debug(f"📸 Config loaded. show_clock: {config.get('show_clock')}, show_weather: {config.get('show_weather')}")
+        logger.debug(tr('📸 Config loaded. show_clock: %(value_0)s, show_weather: %(value_1)s', value_0=config.get('show_clock'), value_1=config.get('show_weather')))
         
       
         
         time.sleep(2)
-        logger.debug(f"📸 Attente de 2s pour stabilisation ")
+        logger.debug(tr('📸 Attente de 2s pour stabilisation '))
         
         # ✅ NOUVEAU : Initialiser uniquement les modules d'affichage et de police pour économiser du CPU (éviter d'init le mixer)
         pygame.display.init()
         pygame.font.init()
-        logger.debug(f"📸 Pygame display and font modules initialized.")
+        logger.debug(tr('📸 Pygame display and font modules initialized.'))
         
         # ✅ FORCER l'initialisation du module display
         pygame.display.init()
-        logger.debug(f"📸 pygame.display.init() appelé explicitement")
+        logger.debug(tr('📸 pygame.display.init() appelé explicitement'))
         
         # Vérifier les infos d'environnement
-        logger.debug(f"📸 Environment check:")
-        logger.debug(f"   DISPLAY={os.environ.get('DISPLAY', 'NOT SET')}")
-        logger.debug(f"   WAYLAND_DISPLAY={os.environ.get('WAYLAND_DISPLAY', 'NOT SET')}")
-        logger.debug(f"   XDG_RUNTIME_DIR={os.environ.get('XDG_RUNTIME_DIR', 'NOT SET')}")
-        logger.debug(f"   SDL_VIDEODRIVER={os.environ.get('SDL_VIDEODRIVER', 'NOT SET')}")
+        logger.debug(tr('📸 Environment check:'))
+        logger.debug(tr('   DISPLAY=%(value_0)s', value_0=os.environ.get('DISPLAY', 'NOT SET')))
+        logger.debug(tr('   WAYLAND_DISPLAY=%(value_0)s', value_0=os.environ.get('WAYLAND_DISPLAY', 'NOT SET')))
+        logger.debug(tr('   XDG_RUNTIME_DIR=%(value_0)s', value_0=os.environ.get('XDG_RUNTIME_DIR', 'NOT SET')))
+        logger.debug(tr('   SDL_VIDEODRIVER=%(value_0)s', value_0=os.environ.get('SDL_VIDEODRIVER', 'NOT SET')))
         
         # ✅ NOUVEAU : Vérifier que pygame.display.get_driver() fonctionne
         try:
             driver = pygame.display.get_driver()
-            logger.debug(f"📸 Driver vidéo détecté: {driver}")
+            logger.debug(tr('📸 Driver vidéo détecté: %(value_0)s', value_0=driver))
         except Exception as e:
-            logger.error(f"❌ Impossible de détecter le driver: {e}")
+            logger.error(tr('❌ Impossible de détecter le driver: %(value_0)s', value_0=e))
         
         info = pygame.display.Info()
         SCREEN_WIDTH, SCREEN_HEIGHT = info.current_w, info.current_h
-        logger.debug(f"📸 Screen resolution detected: {SCREEN_WIDTH}x{SCREEN_HEIGHT}")
+        logger.debug(tr('📸 Screen resolution detected: %(value_0)sx%(value_1)s', value_0=SCREEN_WIDTH, value_1=SCREEN_HEIGHT))
         
         # Si résolution invalide, forcer 1920x1080
         if SCREEN_WIDTH == 0 or SCREEN_HEIGHT == 0:
-            logger.warning(f"❌ Résolution invalide détectée (0x0), utilisation de 1920x1080 par défaut")
+            logger.warning(tr('❌ Résolution invalide détectée (0x0), utilisation de 1920x1080 par défaut'))
             SCREEN_WIDTH, SCREEN_HEIGHT = 1920, 1080
         
         # Création de l'écran
-        logger.debug(f"📸 Tentative de création de l'écran {SCREEN_WIDTH}x{SCREEN_HEIGHT}...")
+        logger.debug(tr("📸 Tentative de création de l'écran %(value_0)sx%(value_1)s...", value_0=SCREEN_WIDTH, value_1=SCREEN_HEIGHT))
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
-        logger.info(f"✅ Écran créé avec succès : {screen.get_size()}")
+        logger.info(tr('✅ Écran créé avec succès : %(value_0)s', value_0=screen.get_size()))
         
         pygame.mouse.set_visible(False)
-        logger.debug(f"📸 Mouse cursor hidden.")       
+        logger.debug(tr('📸 Mouse cursor hidden.'))
 
 
         # --- Enregistrement des gestionnaires de signaux ---
         signal.signal(signal.SIGUSR1, signal_handler_next)      # Pour "suivant"
         signal.signal(signal.SIGUSR2, signal_handler_previous)   # Pour "précédent"
         signal.signal(signal.SIGTSTP, signal_handler_pause_toggle) # Pour "pause/reprendre"
-        logger.debug(f"📸 Signal handlers registered.")
+        logger.debug(tr('📸 Signal handlers registered.'))
 
         # Initialiser le fichier de statut
         update_status_file({"paused": False})
@@ -1906,9 +1910,9 @@ def start_slideshow():
         try:
             import locale
             locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
-            logger.debug(f"📸 Locale set to fr_FR.UTF-8.")
+            logger.debug(tr('📸 Locale set to fr_FR.UTF-8.'))
         except locale.Error:
-            logger.warning(f"Avertissement: locale fr_FR.UTF-8 non disponible. Les dates seront en anglais.")
+            logger.warning(tr('Avertissement: locale fr_FR.UTF-8 non disponible. Les dates seront en anglais.'))
 
         # --- Gestion du bouton physique ---
         button_enabled = config.get("button_enabled", False)
@@ -1925,12 +1929,12 @@ def start_slideshow():
                 # Ajout de la détection d'événement sur front descendant (appui sur le bouton)
                 # bouncetime évite les détections multiples pour un seul appui.
                 GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=button_callback, bouncetime=500)
-                logger.info(f"✅ Bouton physique activé sur le pin GPIO {button_pin}.")
+                logger.info(tr('✅ Bouton physique activé sur le pin GPIO %(value_0)s.', value_0=button_pin))
             except Exception as e:
-                logger.error(f"❌ Erreur lors de l'initialisation du bouton GPIO {button_pin}: {e}")
+                logger.error(tr("❌ Erreur lors de l'initialisation du bouton GPIO %(value_0)s: %(value_1)s", value_0=button_pin, value_1=e))
         # --- FIN : Gestion du bouton physique ---
 
-        logger.debug(f"📸 Entering main slideshow loop.")
+        logger.debug(tr('📸 Entering main slideshow loop.'))
         
         # --- Initialisation de la surface précédente pour la transition ---
         previous_photo_surface = None
@@ -1959,12 +1963,12 @@ def start_slideshow():
                 if _current_background_music:
                     play_background_music(_current_background_music)
 
-                logger.info(f"📸 Playlist personnalisée '{playlist_name or 'Sans nom'}' chargée avec {len(custom_playlist)} photos.")
+                logger.info(tr("📸 Playlist personnalisée '%(value_0)s' chargée avec %(value_1)s photos.", value_0=playlist_name or 'Sans nom', value_1=len(custom_playlist)))
                 is_custom_run = True # On active le drapeau pour le premier passage
                 update_status_file({"is_custom": True})
                 os.remove(CUSTOM_PLAYLIST_FILE) # Supprimer pour ne pas la réutiliser au prochain démarrage
             except Exception as e:
-                logger.info(f"📸 Erreur chargement playlist personnalisée: {e}. Utilisation de la playlist par défaut.")
+                logger.info(tr('📸 Erreur chargement playlist personnalisée: %(value_0)s. Utilisation de la playlist par défaut.', value_0=e))
 
         # Afficher l'écran titre si une playlist personnalisée est lancée
         if playlist_name:
@@ -1984,7 +1988,7 @@ def start_slideshow():
 
             # --- Vérification et affichage immédiat de nouvelle carte postale ---
             if NEW_POSTCARD_FLAG.exists():
-                logger.info(f"📸 Nouvelle carte postale détectée.")
+                logger.info(tr('📸 Nouvelle carte postale détectée.'))
                 
                 # Déclencher le clignotement de l'icône pour 30 secondes
                 global _envelope_blink_end_time
@@ -2018,7 +2022,7 @@ def start_slideshow():
                             notification_sound.play()
                         
                         # 3. Afficher immédiatement la nouvelle carte postale
-                        logger.info(f"📸 Affichage immédiat de la nouvelle carte postale : {new_postcard_path}")
+                        logger.info(tr('📸 Affichage immédiat de la nouvelle carte postale : %(value_0)s', value_0=new_postcard_path))
                         
                         # Recharger la police pour l'overlay
                         font_path_config = config.get("clock_font_path", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
@@ -2036,10 +2040,10 @@ def start_slideshow():
                         # Mettre à jour la surface précédente pour la transition suivante
                         previous_photo_surface = screen.copy()
                     else:
-                        logger.info(f"📸 Erreur: le chemin '{new_postcard_path_str}' dans le fichier drapeau n'existe pas.")
+                        logger.info(tr("📸 Erreur: le chemin '%(value_0)s' dans le fichier drapeau n'existe pas.", value_0=new_postcard_path_str))
 
                 except Exception as e:
-                    logger.info(f"📸 Erreur lors du traitement de la nouvelle carte postale: {e}")
+                    logger.info(tr('📸 Erreur lors du traitement de la nouvelle carte postale: %(value_0)s', value_0=e))
                     traceback.print_exc()
                 finally:
                     # 4. Supprimer le drapeau pour ne pas rejouer
@@ -2079,12 +2083,12 @@ def start_slideshow():
             try:
                 main_font_loaded = pygame.font.Font(font_path_config, clock_font_size_config)
             except Exception as e:
-                logger.info(f"Erreur chargement police : {e}. Utilisation de la police système.")
+                logger.info(tr('Erreur chargement police : %(value_0)s. Utilisation de la police système.', value_0=e))
                 main_font_loaded = pygame.font.SysFont("Arial", clock_font_size_config)
             # --- Fin du chargement de la police ---
             
             if not playlist:
-                logger.info(f"Aucune photo trouvée dans les sources activées. Vérification dans 60 secondes.")
+                logger.info(tr('Aucune photo trouvée dans les sources activées. Vérification dans 60 secondes.'))
                 
                 screen.fill((0, 0, 0))
                 
@@ -2116,7 +2120,7 @@ def start_slideshow():
                         logo_surface = pygame.transform.smoothscale(logo_img, (new_width, new_height))
                         logo_height = logo_surface.get_height()
                 except Exception as e:
-                    logger.info(f"Erreur chargement du logo : {e}")
+                    logger.info(tr('Erreur chargement du logo : %(value_0)s', value_0=e))
 
                 # --- Génération du QR Code ---
                 qr_surface, qr_height, qr_spacing = None, 0, 30
@@ -2127,7 +2131,7 @@ def start_slideshow():
                     qr_surface = pygame.image.fromstring(qr_img_pil.tobytes(), qr_img_pil.size, qr_img_pil.mode)
                     qr_height = qr_surface.get_height()
                 except Exception as e:
-                    logger.info(f"Erreur génération QR code : {e}")
+                    logger.info(tr('Erreur génération QR code : %(value_0)s', value_0=e))
 
                 ip_address = get_local_ip()
                 messages = [
@@ -2187,7 +2191,7 @@ def start_slideshow():
                 next_photo_requested = False
                 previous_photo_requested = False
 
-                logger.info(f"🖼️ Affichage de la photo: {photo_path}")
+                logger.info(tr('🖼️ Affichage de la photo: %(value_0)s', value_0=photo_path))
                 
                 # --- Contrôle du ventilateur ---
                 if GPIO_AVAILABLE:
@@ -2195,11 +2199,11 @@ def start_slideshow():
                         temp = psutil.sensors_temperatures()['cpu_thermal'][0].current
                         control_fan(temp)
                     except Exception as e:
-                        logger.debug(f"Erreur lors de la lecture de la température ou du contrôle du ventilateur : {e}")
+                        logger.debug(tr('Erreur lors de la lecture de la température ou du contrôle du ventilateur : %(value_0)s', value_0=e))
 
                 # --- CORRECTIF: Vérifier si le fichier existe avant de tenter de l'afficher ---
                 if not os.path.exists(photo_path):
-                    logger.warning(f"🖼️ Fichier non trouvé (probablement supprimé) : {photo_path}. Passage au suivant.")
+                    logger.warning(tr('🖼️ Fichier non trouvé (probablement supprimé) : %(value_0)s. Passage au suivant.', value_0=photo_path))
                     playlist_index += 1
                     continue
 
@@ -2220,7 +2224,7 @@ def start_slideshow():
                         relative_path = path_to_write.relative_to(Path(BASE_DIR) / 'static')
                         f.write(str(relative_path))
                 except Exception as e:
-                    logger.info(f"Erreur écriture fichier photo actuelle : {e}")
+                    logger.info(tr('Erreur écriture fichier photo actuelle : %(value_0)s', value_0=e))
 
                 if is_video:
                     display_video(screen, photo_path, SCREEN_WIDTH, SCREEN_HEIGHT, config, main_font_loaded, previous_photo_surface, pygame.time.Clock())
@@ -2228,7 +2232,7 @@ def start_slideshow():
                     # Si Pygame a été fermé pour la vidéo (sur tous les Raspberry Pi), on ré-initialise l'affichage.
                     # On laisse 0.8 seconde de pause pour laisser Wayland détruire la surface mpv avant de relancer Pygame.
                     if pi_model in [1, 2, 3, 4, 5]:
-                        logger.info("📸 Attente de 0.8s de stabilisation avant réinitialisation d'affichage...")
+                        logger.info(tr("📸 Attente de 0.8s de stabilisation avant réinitialisation d'affichage..."))
                         time.sleep(0.8)
                         screen, SCREEN_WIDTH, SCREEN_HEIGHT = reinit_pygame()
                         # Recharger la police car pygame.quit() l'a invalidée
@@ -2271,7 +2275,7 @@ def start_slideshow():
                             draw_overlay(screen, SCREEN_WIDTH, SCREEN_HEIGHT, config, main_font_loaded, None)
                             pygame.display.flip()
                     except Exception as e:
-                        logger.info(f"🖼️ Error loading or transitioning to photo {photo_path}: {e}")
+                        logger.info(tr('🖼️ Error loading or transitioning to photo %(value_0)s: %(value_1)s', value_0=photo_path, value_1=e))
                         traceback.print_exc()
                         current_pil_image = None # Explicitly set to None on error
                         playlist_index += 1
@@ -2281,7 +2285,7 @@ def start_slideshow():
                         display_photo_with_pan_zoom(screen, current_pil_image, SCREEN_WIDTH, SCREEN_HEIGHT, config, main_font_loaded, photo_path)
                         previous_photo_surface = screen.copy()
                     else:
-                        logger.info(f"🖼️ Skipping photo {photo_path} due to loading error.")
+                        logger.info(tr('🖼️ Skipping photo %(value_0)s due to loading error.', value_0=photo_path))
 
                 # --- Logique de navigation ---
                 if next_photo_requested:
@@ -2297,7 +2301,7 @@ def start_slideshow():
 
             # --- Logique de fin de playlist personnalisée ---
             if is_custom_run:
-                logger.info(f"🖼️ Playlist personnalisée terminée. Retour au diaporama standard.")
+                logger.info(tr('🖼️ Playlist personnalisée terminée. Retour au diaporama standard.'))
                 if pygame.mixer.get_init() and pygame.mixer.music.get_busy():
                     pygame.mixer.music.fadeout(2000)
                 _current_background_music = None
@@ -2305,9 +2309,9 @@ def start_slideshow():
                 update_status_file({"is_custom": False})
                 playlist = [] # Vider la playlist pour forcer la reconstruction.
     except KeyboardInterrupt:
-        logger.info(f"Arrêt manuel du diaporama.")
+        logger.info(tr('Arrêt manuel du diaporama.'))
     except Exception as e:
-        logger.info(f"FATAL ERROR IN SLIDESHOW: {e}")
+        logger.info(tr('FATAL ERROR IN SLIDESHOW: %(value_0)s', value_0=e))
         traceback.print_exc() # Print full traceback for any unhandled error
     finally:
         # --- MODIFICATION SIGALOU 30/01/2026 ---
@@ -2324,7 +2328,7 @@ def start_slideshow():
         pygame.quit()
         if GPIO_AVAILABLE:
             GPIO.cleanup()
-        logger.info(f"🖼️ Pygame exited cleanly.")
+        logger.info(tr('🖼️ Pygame exited cleanly.'))
 
 if __name__ == "__main__":
     start_slideshow()

@@ -21,9 +21,7 @@ Pimmich est une application Python conçue pour transformer un Raspberry Pi en u
 - [🗣️ Contrôle Vocal](#️-contrôle-vocal)
 - [❓ Dépannage (FAQ)](#-dépannage-faq)
 - [🛣️ Feuille de Route](#️-feuille-de-route)
-  - [Juin 2025](#-juin-2025-)
-  - [Juillet 2025](#-juillet-2025---version-actuelle)
-  - [Août 2025](#️-août-2025----sortie-prévue-le-15-aoüt)
+  - [Idées pour les versions suivantes](#-idées-pour-les-versions-suivantes)
 - [💖 Crédits](#-crédits)
 
 ---
@@ -145,6 +143,48 @@ Explorez les différents onglets pour personnaliser votre cadre :
 - **Diaporama > Horloge & Infos :** Activez et configurez l'affichage de l'heure, de la météo ou des marées.
 - **Contenu > Sources :** Cochez les sources que vous souhaitez voir dans le diaporama.
 
+### Récupérer la clé API (token Immich)
+
+1. Connectez-vous à l'interface web d'Immich et ouvrez **Paramètres du compte**. Cliquez sur votre icône de profil ou votre nom d'utilisateur en haut à droite, puis choisissez **Paramètres du compte**.
+
+   ![Paramètres du compte Immich](https://drive.google.com/uc?id=1_c12UZ7g8IwsL99xP55eB4qqacGAY8Kc)
+
+2. Ouvrez la section **API Key** ou **Clés API**.
+
+   ![Menu des clés API Immich](https://drive.google.com/uc?id=1rofAi6HNhvJbBh2D_AUsedj3HwSrQHjP)
+
+3. Cliquez sur **Generate new API Key** ou **Générer une nouvelle clé API**, donnez un nom à la clé (par exemple `PimmichFrame`), puis créez-la.
+
+   ![Générer une clé API Immich](https://drive.google.com/uc?id=1HrBVgvR4UXdkhLj-4KDohufr5nt57t2G)
+
+   ![Nommer la clé API Immich](https://drive.google.com/uc?id=1dRBQMs0dsdM7vKlEuUzBnMmzzH3RNplc)
+
+4. Copiez le token lorsqu'il s'affiche.
+
+   ![Copier la clé API Immich](https://drive.google.com/uc?id=1hyt14hFPN3XEBu_0rh9XYIgLdXJau22y)
+
+   ⚠️ Vous ne pourrez plus voir le token après avoir quitté cette page. Si vous le perdez, générez-en un nouveau. Ne le partagez jamais publiquement : il donne accès à vos albums Immich.
+
+   🔒 Nous recommandons de créer un compte Immich réservé au cadre et de lui donner accès à un seul album partagé, que vous pourrez alimenter depuis un autre compte.
+
+### Se connecter à Pimmich
+
+Dans un navigateur, entrez l'adresse IP du Raspberry Pi, par exemple `http://192.168.1.XX:5000`.
+
+![Écran de connexion à Pimmich](https://drive.google.com/uc?id=1VynC6umiYqPaln_kAb_DDd990YUkbT88)
+
+### Page de configuration
+
+#### Configuration du diaporama
+
+Définissez la durée d'affichage de chaque photo et les heures de fonctionnement du diaporama. La durée minimale est actuellement d'environ 10 secondes, probablement à cause du temps nécessaire au traitement des photos en portrait pour générer le fond flou.
+
+![Configuration du diaporama](https://drive.google.com/uc?id=1t_7MCKNNfHfTi5Pjc7_hDxbDzU18UvO7)
+
+#### Configuration de l'import des photos
+
+![Configuration de l'import des photos](https://drive.google.com/uc?id=1AwUgYbzGcdskt99q32VlaOc7jM303Tbd)
+
 ---
 
 ## 🗣️ Contrôle Vocal
@@ -194,10 +234,6 @@ Pour toute question ou problème, consultez notre **Foire Aux Questions (FAQ.md)
 
 ## 🛣️ Feuille de Route
 
-#*
-- **Projet du :** Gadgetaulab
-
-
 > 🎂 **SORTIE IMMINENTE : Version Anniversaire - 27 Mai**
 > Cette mise à jour majeure marque une étape clé dans le développement de Pimmich :
 > - 🚀 **Mise à jour fiabilisée :** Le moteur de mise à jour via l'interface est désormais 100% opérationnel et sécurisé.
@@ -241,7 +277,7 @@ Pour toute question ou problème, consultez notre **Foire Aux Questions (FAQ.md)
     - ✅ Créez des albums virtuels, visualisez leur contenu, renommez-les et lancez des diaporamas thématiques.
 - 🔘 **Bouton Physique :**
     - ✅ Ajout du support pour un bouton physique (via GPIO) pour mettre en veille et réveiller le cadre.
-- �️ **Contrôle Vocal :**
+- 🗣️ **Contrôle Vocal :**
     - ✅ Ajout de la commande vocale ("Cadre Magique") et intégration profonde avec le système.
 - 🚀 **Optimisations et Stabilité :**
     - ✅ Amélioration de la réactivité de l'onglet "Système" grâce à une lecture optimisée des logs.
@@ -249,7 +285,6 @@ Pour toute question ou problème, consultez notre **Foire Aux Questions (FAQ.md)
     - ✅ Nombreuses corrections de bugs pour une meilleure stabilité générale.
 
 ## 🛠️✅ Août 2025  - (Version précédente)
-�
 - ✅ Gestion des vidéos
 -  Ajout d'une vignette lors de lecture de la vidéo (onglet Actions)
 - ✅ Ajout de la fonction "Carte Postle" par telegram
@@ -297,7 +332,7 @@ Pour toute question ou problème, consultez notre **Foire Aux Questions (FAQ.md)
 
 
  
-## 💡 Idées pour les versions suivantes
+### 💡 Idées pour les versions suivantes
 
 - 📱 Création d’une APK Android pour contrôler le cadre 
 - Pimmich télécomande
@@ -307,63 +342,6 @@ Pour toute question ou problème, consultez notre **Foire Aux Questions (FAQ.md)
 
 
 
-### Récupérer la Clef API (Token Immich)
+## 💖 Crédits
 
-🧭 1. Se connecter à l'interface web d’Immich
-
-⚙️ 2. Accéder à la page "Paramètres du compte"
-Une fois connecté :
-
-Clique sur l’icône de profil (en haut à droite) ou ton nom d'utilisateur.
-
-![Paramètre du compte](https://drive.google.com/uc?id=1_c12UZ7g8IwsL99xP55eB4qqacGAY8Kc)
-
-
-Sélectionne “Account settings” ou “Paramètres du compte”.
-
-![Menu Clef API](https://drive.google.com/uc?id=1rofAi6HNhvJbBh2D_AUsedj3HwSrQHjP)
-
-
-🧪 3. Générer un nouveau token API
-Dans la section "API Key" ou "Clés API" :
-
-![Menu Clef API](https://drive.google.com/uc?id=1HrBVgvR4UXdkhLj-4KDohufr5nt57t2G)
-
-Clique sur “Generate new API Key” ou “Générer une nouvelle clé API”.
-![Menu Clef API](https://drive.google.com/uc?id=1dRBQMs0dsdM7vKlEuUzBnMmzzH3RNplc)
-
-
-
-Donne un nom à ta clé, par exemple :
-PimmichFrame
-
-✅ Une fois générée, une clé s'affiche. C’est le token à copier.
-
-![Menu Clef API](https://drive.google.com/uc?id=1hyt14hFPN3XEBu_0rh9XYIgLdXJau22y)
-
-⚠️ Attention
-
-Tu ne pourras plus voir cette clé après avoir quitté la page. Si tu la perds, il faudra en générer une nouvelle.
-
-Ne partage jamais ce token publiquement. Il donne un accès total à tes albums Immich.
-
-Le mieux est de créer un compte Immich réservé au cadre photo avec accès à un seul album que tu pourras alimenter à partir d'un autre compte.
-
-### Se connecter à Pimmich
-
-Dans un navigateur taper l'adresse ip du raspberry : http://xxx.xxx.xxx.xxx:5000
-
-![Menu Clef API](https://drive.google.com/uc?id=1VynC6umiYqPaln_kAb_DDd990YUkbT88)
-
-
-### Page de configuration
-
-## configuration du diaporama
-
-Dans ce cadre vous pourrez régler le temps d'affichage de chaque photo (pour l'instant on ne peut descendre en dessous de 10 secondes surement du temps de traitement des photos porttrait pour générer le fond flou). Vous pouvez aussi défoinir les heures où le diaporama fonctionnera.
-
-![Menu Clef API](https://drive.google.com/uc?id=1t_7MCKNNfHfTi5Pjc7_hDxbDzU18UvO7)
-
-## configuration de l'import des photos
-
-![Menu Clef API](https://drive.google.com/uc?id=1AwUgYbzGcdskt99q32VlaOc7jM303Tbd)
+Pimmich est un projet de **Gadgetaulab**.

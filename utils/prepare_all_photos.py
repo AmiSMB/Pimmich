@@ -1,3 +1,4 @@
+from .localization import tr
 import os
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
 import json
@@ -89,7 +90,7 @@ if not logger.handlers:
     logger.addHandler(file_handler)
 
 # Messages de démarrage
-logger.debug("----------------Initialisation Prepare All Photos----------------")
+logger.debug(tr("----------------Initialisation Prepare All Photos----------------"))
 # Mappage des types de messages vers les niveaux de log
 TYPE_TO_LOGGER = {
     "progress": logger.info,
@@ -164,7 +165,7 @@ def prepare_photo(source_path, dest_path, output_width, output_height, source_ty
             if HEIF_SUPPORT:
                 pillow_heif.register_heif_opener()
             else:
-                logger.warning(f"Support HEIF désactivé (pillow-heif non installé). Impossible de traiter {source_path}")
+                logger.warning(tr('Support HEIF désactivé (pillow-heif non installé). Impossible de traiter %(value_0)s', value_0=source_path))
                 return None
         
         img = Image.open(source_path)

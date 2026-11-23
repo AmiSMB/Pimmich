@@ -28,6 +28,7 @@ Assurez-vous que le fichier `babel.cfg` existe à la racine du projet avec le co
 
 ```ini
 [python: **.py]
+keywords = _ tr
 [jinja2: **/templates/**.jinja]
 extensions=jinja2.ext.i18n
 ```
@@ -65,6 +66,11 @@ python utils/translate_po.py translations/en/LC_MESSAGES/messages.po en
 
 # Traduire le fichier espagnol
 python utils/translate_po.py translations/es/LC_MESSAGES/messages.po es
+
+# Traduire les autres langues prises en charge
+python utils/translate_po.py translations/fr/LC_MESSAGES/messages.po fr
+python utils/translate_po.py translations/de/LC_MESSAGES/messages.po de
+python utils/translate_po.py translations/ja/LC_MESSAGES/messages.po ja
 ```
 **Conseil :** Après cette étape, il est recommandé d'ouvrir les fichiers `.po` avec un éditeur comme Poedit pour relire rapidement les traductions automatiques et corriger d'éventuels contresens.
 

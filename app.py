@@ -1,3 +1,4 @@
+from utils.localization import tr
 from flask import Flask, render_template, request, redirect, url_for, session, flash, stream_with_context, Response, jsonify, send_from_directory
 import os
 import json
@@ -27,6 +28,7 @@ from utils.download_album import download_and_extract_album
 from utils.auth import login_required # type: ignore
 from utils.slideshow_manager import is_slideshow_running, start_slideshow, stop_slideshow, restart_slideshow_process, restart_slideshow_for_update
 from utils.config_manager import load_config, save_config
+from utils.tide_format import format_tide_day, format_tide_type
 from utils.playlist_manager import load_playlists, save_playlists
 from utils.auth_manager import change_password
 from utils.network_manager import get_interface_status, set_interface_state
@@ -157,22 +159,19 @@ app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
 
 
 def get_locale():
-    # Vérifier si nous sommes dans un contexte de requête (HTTP)
-    # Si appelé depuis un thread en arrière-plan (worker), on retourne la langue par défaut
+    # Use the shared application language in request and background contexts.
     from flask import has_request_context
-    if not has_request_context():
-        return app.config.get('BABEL_DEFAULT_LOCALE', 'fr')
+    config = load_config()
+    if has_request_context():
+        requested_language = request.args.get('lang')
+        if requested_language in app.config['LANGUAGES']:
+            if config.get('ui_language') != requested_language:
+                config['ui_language'] = requested_language
+                save_config(config)
+            return requested_language
 
-    # 1. Si un argument 'lang' est passé dans l'URL
-    lang = request.args.get('lang')
-    if lang and lang in app.config['LANGUAGES']:
-        session['lang'] = lang
-        return lang
-    # 2. Si l'utilisateur a une langue définie dans sa session
-    if 'lang' in session and session['lang'] in app.config['LANGUAGES']:
-        return session['lang']
-    # 3. Depuis l'en-tête 'Accept-Language' du navigateur
-    return request.accept_languages.best_match(list(app.config['LANGUAGES'].keys()))
+    language = config.get('ui_language', app.config.get('BABEL_DEFAULT_LOCALE', 'fr'))
+    return language if language in app.config['LANGUAGES'] else 'fr'
 
 # --- Configuration de Babel (i18n) ---
 app.config['LANGUAGES'] = {'fr': 'Français', 'en': 'English', 'es': 'Español', 'de': 'Deutsch', 'ja': '日本語'}
@@ -273,7 +272,7 @@ def get_screen_resolution():
             if socks:
                 os.environ["SWAYSOCK"] = socks[0]
             else:
-                logger.warning("SWAYSOCK non trouvé, utilisation de la résolution de secours depuis la config.")
+                logger.warning(tr("SWAYSOCK non trouvé, utilisation de la résolution de secours depuis la config."))
                 return default_width, default_height
 
         # Utiliser HDMI_OUTPUT du slideshow_manager pour cibler la bonne sortie
@@ -288,16 +287,16 @@ def get_screen_resolution():
         for output in outputs:
             if output.get('current_mode'):
                 mode = output['current_mode']
-                logger.info(f"Résolution détectée sur la sortie '{output.get('name')}': {mode['width']}x{mode['height']} (Active: {output.get('active', False)})")
+                logger.info(tr("Résolution détectée sur la sortie '%(value_0)s': %(value_1)sx%(value_2)s (Active: %(value_3)s)", value_0=output.get('name'), value_1=mode['width'], value_2=mode['height'], value_3=output.get('active', False)))
                 return mode['width'], mode['height']
         
-        logger.info(f"😒 Aucune sortie avec un mode configuré trouvée (écran en veille ?), utilisation de la résolution de secours depuis la config.")
+        logger.info(tr('😒 Aucune sortie avec un mode configuré trouvée (écran en veille ?), utilisation de la résolution de secours depuis la config.'))
         return default_width, default_height
     except (subprocess.CalledProcessError, json.JSONDecodeError, FileNotFoundError, IndexError) as e:
-        logger.info(f"😒 Erreur lors de la détection de la résolution de l'écran : {e}. Utilisation de la résolution de secours depuis la config.")
+        logger.info(tr("😒 Erreur lors de la détection de la résolution de l'écran : %(value_0)s. Utilisation de la résolution de secours depuis la config.", value_0=e))
         return default_width, default_height
     except Exception as e:
-        logger.info(f"😒 Erreur inattendue lors de la détection de la résolution : {e}. Utilisation de la résolution de secours depuis la config.")
+        logger.info(tr('😒 Erreur inattendue lors de la détection de la résolution : %(value_0)s. Utilisation de la résolution de secours depuis la config.', value_0=e))
         return default_width, default_height
 
 def get_photo_previews():
@@ -344,7 +343,7 @@ def save_filter_states(states):
         with open(FILTER_STATES_PATH, 'w') as f:
             json.dump(states, f, indent=4)
     except Exception as e:
-        logger.info(f"Erreur lors de la sauvegarde des états de filtre : {e}")
+        logger.info(tr('Erreur lors de la sauvegarde des états de filtre : %(value_0)s', value_0=e))
 
 def load_favorites():
     """Charge la liste des photos favorites depuis un fichier JSON."""
@@ -362,7 +361,7 @@ def save_favorites(favorites_list):
         with open(FAVORITES_PATH, 'w') as f:
             json.dump(favorites_list, f, indent=2)
     except Exception as e:
-        logger.info(f"😒 Erreur lors de la sauvegarde des favoris : {e}")
+        logger.info(tr('😒 Erreur lors de la sauvegarde des favoris : %(value_0)s', value_0=e))
 
 def load_polaroid_texts():
     """Charge les textes des polaroids depuis un fichier JSON."""
@@ -380,7 +379,7 @@ def save_polaroid_texts(texts_dict):
         with open(POLAROID_TEXTS_PATH, 'w') as f:
             json.dump(texts_dict, f, indent=2)
     except Exception as e:
-        logger.info(f"😒 Erreur lors de la sauvegarde des textes polaroid : {e}")
+        logger.info(tr('😒 Erreur lors de la sauvegarde des textes polaroid : %(value_0)s', value_0=e))
 
 def load_text_states():
     """Charge les textes des photos depuis un fichier JSON."""
@@ -398,7 +397,7 @@ def save_text_states(states):
         with open(TEXT_STATES_PATH, 'w', encoding='utf-8') as f:
             json.dump(states, f, indent=4)
     except IOError as e:
-        logger.info(f"😒 Erreur lors de la sauvegarde des états de texte : {e}")
+        logger.info(tr('😒 Erreur lors de la sauvegarde des états de texte : %(value_0)s', value_0=e))
 
 def load_telegram_guest_users():
     """Charge les utilisateurs invités de Telegram depuis un fichier JSON."""
@@ -416,7 +415,7 @@ def save_telegram_guest_users(guest_users_dict):
         with open(TELEGRAM_GUEST_USERS_PATH, 'w') as f:
             json.dump(guest_users_dict, f, indent=4)
     except Exception as e:
-        logger.info(f"😒 Erreur lors de la sauvegarde des invités Telegram : {e}")
+        logger.info(tr('😒 Erreur lors de la sauvegarde des invités Telegram : %(value_0)s', value_0=e))
 
 def add_telegram_guest_user(user_id, guest_name):
     """Ajoute un nouvel invité Telegram et sauvegarde le fichier."""
@@ -440,7 +439,7 @@ def save_invitations(invitations_dict):
         with open(INVITATIONS_PATH, 'w') as f:
             json.dump(invitations_dict, f, indent=4)
     except Exception as e:
-        logger.info(f"😒 Erreur lors de la sauvegarde des invitations : {e}")
+        logger.info(tr('😒 Erreur lors de la sauvegarde des invitations : %(value_0)s', value_0=e))
 
 def get_prepared_photos_by_source():
     """
@@ -508,7 +507,7 @@ def get_prepared_photos_by_source():
                                     if photo_date.month == datetime.now().month and photo_date.day == datetime.now().day:
                                         media_item["is_anniversary"] = True
                                 except Exception as e:
-                                    logger.debug(f"Erreur lors de la lecture de la date pour l'icône anniversaire: {e}")
+                                    logger.debug(tr("Erreur lors de la lecture de la date pour l'icône anniversaire: %(value_0)s", value_0=e))
 
                     # Les options de filtre ne s'appliquent qu'aux images
                     if media_type == 'image':
@@ -539,7 +538,7 @@ def handle_new_telegram_photo(temp_photo_path_str, caption, user_name=None):
     Cette fonction est synchrone et peut maintenant inclure le nom de l'expéditeur.
     """
     with app.app_context():
-        logger.info(f"[Telegram] Traitement de la nouvelle photo : {temp_photo_path_str}")
+        logger.info(tr('[Telegram] Traitement de la nouvelle photo : %(value_0)s', value_0=temp_photo_path_str))
         try:
             # Construire la légende finale en ajoutant le nom de l'expéditeur
             final_caption = caption
@@ -588,11 +587,11 @@ def handle_new_telegram_photo(temp_photo_path_str, caption, user_name=None):
             try:
                 with open(NEW_POSTCARD_FLAG_PATH, 'w') as f:
                     f.write(path_to_write)
-                logger.info(f"[Telegram] Fichier de notification sonore créé avec le chemin : {path_to_write}")
+                logger.info(tr('[Telegram] Fichier de notification sonore créé avec le chemin : %(value_0)s', value_0=path_to_write))
             except Exception as e:
-                logger.info(f"[Telegram] ERREUR lors de la création du fichier de notification : {e}")
+                logger.info(tr('[Telegram] ERREUR lors de la création du fichier de notification : %(value_0)s', value_0=e))
 
-            logger.info(f"[Telegram] Photo {new_filename_base}.jpg traitée avec succès.")
+            logger.info(tr('[Telegram] Photo %(value_0)s.jpg traitée avec succès.', value_0=new_filename_base))
         except Exception as e:
             error_message = f"[Telegram] ERREUR lors du traitement de la photo : {e}\n{traceback.format_exc()}"
             print(error_message)
@@ -641,7 +640,7 @@ def revoke_telegram_invitation(code):
     """Révoque l'accès d'un utilisateur en dissociant son ID de l'invitation."""
     invitations = load_invitations()
     if code not in invitations:
-        return jsonify({"success": False, "message": "Invitation non trouvée."}), 404
+        return jsonify({"success": False, "message": tr("Invitation non trouvée.")}), 404
 
     # Récupérer le nom de l'utilisateur avant de le supprimer pour le message de confirmation
     guest_name = invitations[code].get('used_by_user_name', 'Utilisateur inconnu')
@@ -662,7 +661,7 @@ def revoke_telegram_invitation(code):
     save_invitations(invitations)
     
     flash(_("L'accès pour l'invité '%(name)s' a été révoqué.", name=guest_name), "success")
-    return jsonify({"success": True, "message": "Accès révoqué."})
+    return jsonify({"success": True, "message": tr("Accès révoqué.")})
 
 @app.route('/api/telegram/bot_info')
 @login_required
@@ -672,7 +671,7 @@ def get_telegram_bot_info():
     token = config.get("telegram_bot_token")
 
     if not token:
-        return jsonify({"success": False, "message": "Le token du bot Telegram n'est pas configuré."})
+        return jsonify({"success": False, "message": tr("Le token du bot Telegram n'est pas configuré.")})
 
     url = f"https://api.telegram.org/bot{token}/getMe"
 
@@ -685,12 +684,12 @@ def get_telegram_bot_info():
             if bot_username:
                 return jsonify({"success": True, "username": bot_username})
             else:
-                return jsonify({"success": False, "message": "Le bot n'a pas de nom d'utilisateur ou le token est incorrect."})
+                return jsonify({"success": False, "message": tr("Le bot n'a pas de nom d'utilisateur ou le token est incorrect.")})
         else:
             error_description = response_data.get('description', 'Réponse invalide de Telegram.')
-            return jsonify({"success": False, "message": f"Échec de la récupération des infos du bot : {error_description}"})
+            return jsonify({"success": False, "message": tr('Échec de la récupération des infos du bot : %(value_0)s', value_0=error_description)})
     except requests.exceptions.RequestException as e:
-        return jsonify({"success": False, "message": f"Erreur de connexion à l'API Telegram : {e}"})
+        return jsonify({"success": False, "message": tr("Erreur de connexion à l'API Telegram : %(value_0)s", value_0=e)})
 
 
 # --- Routes principales ---
@@ -724,7 +723,7 @@ def handle_upload():
             unique_suffix = f"{int(time.time())}_{secrets.token_hex(2)}"
             final_path = PENDING_UPLOADS_DIR / f"{base}_{unique_suffix}{ext}"
             file.save(final_path)
-            logger.info(f"[Upload] Nouveau fichier reçu de l'invité et en attente : {final_path.name}")
+            logger.info(tr("[Upload] Nouveau fichier reçu de l'invité et en attente : %(value_0)s", value_0=final_path.name))
             count += 1
 
     flash(_('%(count)s photo(s) envoyée(s) pour validation avec succès !', count=count), "success")
@@ -739,7 +738,7 @@ def get_pending_photos():
         if not PENDING_UPLOADS_DIR.exists():
             PENDING_UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
-        logger.debug(f"Listing pending photos in: {PENDING_UPLOADS_DIR}")
+        logger.debug(tr('Listing pending photos in: %(value_0)s', value_0=PENDING_UPLOADS_DIR))
 
         # Lister les fichiers dans le dossier des uploads en attente.
         files_with_mtime = []
@@ -748,13 +747,13 @@ def get_pending_photos():
                 try:
                     files_with_mtime.append((f.name, f.stat().st_mtime))
                 except OSError as e:
-                    logger.debug(f"Error reading file {f.name}: {e}")
+                    logger.debug(tr('Error reading file %(value_0)s: %(value_1)s', value_0=f.name, value_1=e))
 
         # Trier par date de modification (le plus récent en premier)
         files_with_mtime.sort(key=lambda x: x[1], reverse=True)
         pending_files = [f[0] for f in files_with_mtime]
         
-        logger.debug(f"Found {len(pending_files)} pending photos.")
+        logger.debug(tr('Found %(value_0)s pending photos.', value_0=len(pending_files)))
 
         # Retourner une réponse structurée et ajouter des en-têtes anti-cache.
         response = jsonify({"success": True, "photos": pending_files})
@@ -763,7 +762,7 @@ def get_pending_photos():
         response.headers["Expires"] = "0"
         return response
     except Exception as e:
-        logger.info(f"[ERROR] get_pending_photos failed: {e}")
+        logger.info(tr('[ERROR] get_pending_photos failed: %(value_0)s', value_0=e))
         traceback.print_exc()
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -776,19 +775,19 @@ def manage_pending_photo():
     action = data.get('action')
 
     if not filename or not action in ['approve', 'reject']:
-        return jsonify({"success": False, "message": "Données invalides."}), 400
+        return jsonify({"success": False, "message": tr("Données invalides.")}), 400
 
     pending_path = PENDING_UPLOADS_DIR / secure_filename(filename)
 
     if not pending_path.is_file():
-        return jsonify({"success": False, "message": "Fichier non trouvé."}), 404
+        return jsonify({"success": False, "message": tr("Fichier non trouvé.")}), 404
 
     if action == 'reject':
         try:
             pending_path.unlink()
             return jsonify({"success": True, "message": _("Photo rejetée.")})
         except Exception as e:
-            return jsonify({"success": False, "message": f"Erreur: {e}"}), 500
+            return jsonify({"success": False, "message": tr('Erreur: %(value_0)s', value_0=e)}), 500
 
     if action == 'approve':
         # Processus d'approbation rendu plus robuste :
@@ -833,7 +832,7 @@ def manage_pending_photo():
             else:
                 return jsonify({"success": False, "message": _("La préparation de la photo a échoué. La photo reste en attente.")}), 500
         except Exception as e:
-            return jsonify({"success": False, "message": f"Erreur lors de la préparation: {e}"}), 500
+            return jsonify({"success": False, "message": tr('Erreur lors de la préparation: %(value_0)s', value_0=e)}), 500
 
     return jsonify({"success": False, "message": _("Action inconnue.")}), 400
 
@@ -879,11 +878,11 @@ def configure():
     try:
         if PENDING_UPLOADS_DIR.exists():
             pending_files = [f.name for f in PENDING_UPLOADS_DIR.iterdir() if f.is_file() and not f.name.startswith('.')]
-            logger.info(f"🔳 {len(pending_files)} photo(s) des invités en attente dans {PENDING_UPLOADS_DIR}: {pending_files}")
+            logger.info(tr('🔳 %(value_0)s photo(s) des invités en attente dans %(value_1)s: %(value_2)s', value_0=len(pending_files), value_1=PENDING_UPLOADS_DIR, value_2=pending_files))
         else:
-            logger.warning(f"🔳️ Le dossier {PENDING_UPLOADS_DIR} n'existe pas encore.")
+            logger.warning(tr("🔳️ Le dossier %(value_0)s n'existe pas encore.", value_0=PENDING_UPLOADS_DIR))
     except Exception as e:
-        logger.error(f"🔳️ Erreur lors du listage des fichiers en attente : {e}")
+        logger.error(tr('🔳️ Erreur lors du listage des fichiers en attente : %(value_0)s', value_0=e))
 
     config = load_config()
     invitations = load_invitations()
@@ -921,6 +920,7 @@ def configure():
 
         for key in [
             'immich_url', 'immich_token', 'album_name',
+            'ui_language',
             'display_duration', 
             'active_start_weekday', 'active_end_weekday',
             'active_start_weekend', 'active_end_weekend',
@@ -935,7 +935,7 @@ def configure():
             'transition_fps', # Added transition_fps
             'pan_zoom_factor', 'favorite_boost_factor',
             'immich_update_interval_hours', 'date_format', 
-            'weather_api_key', 'weather_city', 'weather_units', 'weather_update_interval_minutes', 'anniversary_boost_factor',
+            'weather_api_key', 'weather_city', 'weather_units', 'weather_language', 'weather_update_interval_minutes', 'anniversary_boost_factor',
             'smart_plug_on_url', 'smart_plug_off_url', 'smart_plug_on_delay', 'smart_plug_status_url',
             'smb_host', 'smb_share', 'smb_path', 'smb_user', 'smb_password', 'video_audio_output', 'video_audio_volume', 'telegram_boost_duration_days',
             'telegram_boost_factor', 'screen_orientation',
@@ -944,7 +944,7 @@ def configure():
             , 'wifi_ssid', 'wifi_password', 'info_display_duration', 'telegram_bot_token',
             'telegram_authorized_users', 'voice_control_language',
             'voice_control_engine', 'skip_initial_auto_import',
-            'tide_latitude', 'tide_longitude', 'stormglass_api_key', 'tide_offset_x', 'tide_offset_y', 'notification_sound_volume'
+            'tide_latitude', 'tide_longitude', 'stormglass_api_key', 'tide_language', 'tide_offset_x', 'tide_offset_y', 'notification_sound_volume'
             , 'button_pin',
             'timezone'
         ]:
@@ -966,6 +966,9 @@ def configure():
                         config[key] = float(value)
                     except (ValueError, TypeError):
                         config[key] = 0.0 # Default to no transition
+                elif key == 'ui_language':
+                    if value in app.config['LANGUAGES']:
+                        config[key] = value
                 else: # Gérer les champs texte
                     config[key] = value
         
@@ -975,9 +978,9 @@ def configure():
             if new_tz and new_tz != config.get('timezone', 'Europe/Paris'):
                 try:
                     subprocess.run(['sudo', '-n', 'timedatectl', 'set-timezone', new_tz], check=True)
-                    logger.info(f"📅 Fuseau horaire système mis à jour : {new_tz}")
+                    logger.info(tr('📅 Fuseau horaire système mis à jour : %(value_0)s', value_0=new_tz))
                 except Exception as e:
-                    logger.error(f"❌ Erreur lors du réglage du fuseau horaire : {e}")
+                    logger.error(tr('❌ Erreur lors du réglage du fuseau horaire : %(value_0)s', value_0=e))
 
         # Traiter les clés de métadonnées (Style et Positionnement)
         # Champs texte / select
@@ -1023,14 +1026,14 @@ def configure():
             # Si on est en portrait mais que la largeur est plus grande que la hauteur, on inverse
             if config['display_width'] > config['display_height']:
                 config['display_width'], config['display_height'] = config['display_height'], config['display_width']
-                logger.info(f"Orientation Portrait forcée : dimensions inversées à {config['display_width']}x{config['display_height']}")
+                logger.info(tr('Orientation Portrait forcée : dimensions inversées à %(value_0)sx%(value_1)s', value_0=config['display_width'], value_1=config['display_height']))
         else: # landscape
             # Si on est en paysage mais que la hauteur est plus grande que la largeur, on inverse
             if config['display_height'] > config['display_width']:
                 config['display_width'], config['display_height'] = config['display_height'], config['display_width']
-                logger.info(f"Orientation Paysage forcée : dimensions inversées à {config['display_width']}x{config['display_height']}")
+                logger.info(tr('Orientation Paysage forcée : dimensions inversées à %(value_0)sx%(value_1)s', value_0=config['display_width'], value_1=config['display_height']))
 
-        logger.info(f"Résolution d'écran configurée : {config['display_width']}x{config['display_height']}. Sauvegarde dans la configuration.")
+        logger.info(tr("Résolution d'écran configurée : %(value_0)sx%(value_1)s. Sauvegarde dans la configuration.", value_0=config['display_width'], value_1=config['display_height']))
         # Gérer la clé display_sources (checkboxes)
         # request.form.getlist() retourne une liste vide si aucune checkbox avec ce nom n'est cochée.
         config['display_sources'] = request.form.getlist('display_sources')
@@ -1259,7 +1262,7 @@ def import_smartphone():
                 yield stream_event(update)
 
         except Exception as e:
-            logger.info(f"[Import Smartphone] Erreur : {e}")
+            logger.info(tr('[Import Smartphone] Erreur : %(value_0)s', value_0=e))
             yield stream_event({"type": "error", "message": f"Erreur critique lors de l'import : {str(e)}"})
 
     return Response(generate(), mimetype='text/event-stream', headers={"Cache-Control": "no-cache", "Connection": "keep-alive"})
@@ -1277,7 +1280,7 @@ def test_samba_connection():
     password = data.get("smb_password")
     
     if not all([server, share]):
-        return jsonify({"success": False, "message": "Le serveur et le nom du partage sont requis."})
+        return jsonify({"success": False, "message": tr("Le serveur et le nom du partage sont requis.")})
     
     # Construction robuste du chemin UNC pour éviter les problèmes de slashs finaux.
     if path_in_share:
@@ -1294,22 +1297,22 @@ def test_samba_connection():
             password=password,
             connection_timeout=15
         )
-        return jsonify({"success": True, "message": f"Connexion réussie ! {len(files)} élément(s) trouvé(s) dans le dossier."})
+        return jsonify({"success": True, "message": tr('Connexion réussie ! %(value_0)s élément(s) trouvé(s) dans le dossier.', value_0=len(files))})
 
     except SMBException as e:
         # Fournir un message plus utile pour les erreurs communes
         if "STATUS_LOGON_FAILURE" in str(e):
-            return jsonify({"success": False, "message": "Échec de l'authentification. Vérifiez l'utilisateur et le mot de passe."})
+            return jsonify({"success": False, "message": tr("Échec de l'authentification. Vérifiez l'utilisateur et le mot de passe.")})
         elif "STATUS_BAD_NETWORK_NAME" in str(e):
-            return jsonify({"success": False, "message": f"Le nom du partage '{share}' est introuvable sur le serveur."})
+            return jsonify({"success": False, "message": tr("Le nom du partage '%(value_0)s' est introuvable sur le serveur.", value_0=share)})
         elif "STATUS_OBJECT_NAME_NOT_FOUND" in str(e) or "STATUS_OBJECT_PATH_NOT_FOUND" in str(e):
             # Erreur spécifique si le sous-dossier n'existe pas
-            return jsonify({"success": False, "message": f"Le chemin '{path_in_share}' est introuvable dans le partage."})
+            return jsonify({"success": False, "message": tr("Le chemin '%(value_0)s' est introuvable dans le partage.", value_0=path_in_share)})
         elif "STATUS_HOST_UNREACHABLE" in str(e) or "timed out" in str(e):
-             return jsonify({"success": False, "message": f"Impossible de joindre le serveur '{server}'. Vérifiez l'adresse et le pare-feu."})
-        return jsonify({"success": False, "message": f"Erreur Samba : {e}"})
+             return jsonify({"success": False, "message": tr("Impossible de joindre le serveur '%(value_0)s'. Vérifiez l'adresse et le pare-feu.", value_0=server)})
+        return jsonify({"success": False, "message": tr('Erreur Samba : %(value_0)s', value_0=e)})
     except Exception as e:
-        return jsonify({"success": False, "message": f"Erreur inattendue : {e}"})
+        return jsonify({"success": False, "message": tr('Erreur inattendue : %(value_0)s', value_0=e)})
 
 @app.route('/prepare-photos')
 @login_required
@@ -1351,7 +1354,7 @@ def prepare_photos():
                             with open(immich_cache_path, 'r', encoding='utf-8') as f:
                                 base_description_map = json.load(f)
                         except Exception as e:
-                            logger.info(f"[App] Avertissement: Impossible de charger le cache de description Immich: {e}")
+                            logger.info(tr('[App] Avertissement: Impossible de charger le cache de description Immich: %(value_0)s', value_0=e))
 
                 # 2. Charger les légendes manuelles de Pimmich
                 manual_captions = load_text_states()
@@ -1407,7 +1410,7 @@ def test_weather_api():
     city = data.get("city")
 
     if not api_key or not city:
-        return jsonify({"success": False, "message": "La clé API et la ville sont requises."})
+        return jsonify({"success": False, "message": tr("La clé API et la ville sont requises.")})
 
     # Utilise l'URL de l'API OpenWeatherMap pour le test
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
@@ -1415,18 +1418,18 @@ def test_weather_api():
     try:
         response = requests.get(url, timeout=5) # type: ignore
         if response.status_code == 200:
-            return jsonify({"success": True, "message": "Clé API et ville valides !"})
+            return jsonify({"success": True, "message": tr("Clé API et ville valides !")})
         elif response.status_code == 401:
             # 401 Unauthorized est la réponse typique pour une clé invalide
-            return jsonify({"success": False, "message": "Clé API invalide ou non activée."})
+            return jsonify({"success": False, "message": tr("Clé API invalide ou non activée.")})
         elif response.status_code == 404:
             # 404 Not Found pour une ville invalide
-            return jsonify({"success": False, "message": "Ville non trouvée."})
+            return jsonify({"success": False, "message": tr("Ville non trouvée.")})
         else:
-            return jsonify({"success": False, "message": f"Erreur de l'API: {response.status_code} - {response.text}"})
+            return jsonify({"success": False, "message": tr("Erreur de l'API: %(value_0)s - %(value_1)s", value_0=response.status_code, value_1=response.text)})
     except requests.exceptions.RequestException as e:
         # Gère les erreurs de connexion (timeout, pas d'internet, etc.)
-        return jsonify({"success": False, "message": f"Erreur de connexion : {e}"})
+        return jsonify({"success": False, "message": tr('Erreur de connexion : %(value_0)s', value_0=e)})
 
 @app.route('/test-stormglass-api', methods=['POST'])
 @login_required
@@ -1438,7 +1441,7 @@ def test_stormglass_api():
     lon = data.get("lon")
 
     if not all([api_key, lat, lon]):
-        return jsonify({"success": False, "message": "La clé API, la latitude et la longitude sont requises."})
+        return jsonify({"success": False, "message": tr("La clé API, la latitude et la longitude sont requises.")})
 
     try:
         # Test avec une très courte fenêtre de temps pour minimiser l'utilisation des données
@@ -1451,22 +1454,22 @@ def test_stormglass_api():
         response = requests.get('https://api.stormglass.io/v2/tide/extremes/point', params=params, headers=headers, timeout=10)
 
         if response.status_code == 200:
-            return jsonify({"success": True, "message": "Connexion à StormGlass réussie !"})
+            return jsonify({"success": True, "message": tr("Connexion à StormGlass réussie !")})
         elif response.status_code == 401:
-            return jsonify({"success": False, "message": "Clé API invalide."})
+            return jsonify({"success": False, "message": tr("Clé API invalide.")})
         elif response.status_code == 402:
-            return jsonify({"success": False, "message": "Crédits API épuisés ou plan inadapté."})
+            return jsonify({"success": False, "message": tr("Crédits API épuisés ou plan inadapté.")})
         elif response.status_code == 429:
-            return jsonify({"success": False, "message": "Trop de requêtes. Veuillez réessayer plus tard."})
+            return jsonify({"success": False, "message": tr("Trop de requêtes. Veuillez réessayer plus tard.")})
         else:
             try:
                 error_details = response.json().get('errors', {})
-                message = f"Erreur de l'API ({response.status_code}): {error_details}"
+                message = tr("Erreur de l'API (%(status)s) : %(details)s", status=response.status_code, details=error_details)
             except json.JSONDecodeError:
-                message = f"Erreur de l'API ({response.status_code})"
+                message = tr("Erreur de l'API (%(status)s)", status=response.status_code)
             return jsonify({"success": False, "message": message})
     except requests.exceptions.RequestException as e:
-        return jsonify({"success": False, "message": f"Erreur de connexion : {e}"})
+        return jsonify({"success": False, "message": tr("Erreur de connexion : %(error)s", error=e)})
 
 @app.route('/api/test_smart_plug', methods=['POST'])
 @login_required
@@ -1476,19 +1479,19 @@ def test_smart_plug():
     url = data.get("url")
 
     if not url:
-        return jsonify({"success": False, "message": "L'URL est requise."})
+        return jsonify({"success": False, "message": tr("L'URL est requise.")})
 
     try:
         # Utiliser un timeout court pour ne pas bloquer l'interface
         response = requests.post(url, timeout=5)
         if 200 <= response.status_code < 300:
-            return jsonify({"success": True, "message": f"Succès ! La prise a répondu avec le code {response.status_code}."})
+            return jsonify({"success": True, "message": tr('Succès ! La prise a répondu avec le code %(value_0)s.', value_0=response.status_code)})
         else:
-            return jsonify({"success": False, "message": f"Échec. La prise a répondu avec une erreur : {response.status_code}."})
+            return jsonify({"success": False, "message": tr('Échec. La prise a répondu avec une erreur : %(value_0)s.', value_0=response.status_code)})
     except requests.exceptions.Timeout:
-        return jsonify({"success": False, "message": "Échec. La requête a expiré (timeout). Vérifiez l'adresse IP de la prise."})
+        return jsonify({"success": False, "message": tr("Échec. La requête a expiré (timeout). Vérifiez l'adresse IP de la prise.")})
     except requests.exceptions.RequestException as e:
-        return jsonify({"success": False, "message": f"Échec. Erreur de connexion : {e}"})
+        return jsonify({"success": False, "message": tr('Échec. Erreur de connexion : %(value_0)s', value_0=e)})
 
 @app.route('/test-telegram', methods=['POST'])
 @login_required
@@ -1526,7 +1529,7 @@ def force_tide_update():
     tide_cache_path = Path('cache/tides.json')
 
     if not all([api_key, lat, lon]):
-        return jsonify({"success": False, "message": "Configuration StormGlass incomplète."})
+        return jsonify({"success": False, "message": tr("Configuration StormGlass incomplète.")})
 
     try:
         start_time_utc = datetime.utcnow()
@@ -1544,7 +1547,7 @@ def force_tide_update():
         future_extremes = [e for e in extremes_data if datetime.fromisoformat(e['time'].replace('Z', '+00:00')).replace(tzinfo=None) > now_utc]
 
         if not future_extremes:
-            return jsonify({"success": False, "message": "Aucune marée future trouvée par l'API."})
+            return jsonify({"success": False, "message": tr("Aucune marée future trouvée par l'API.")})
 
         # --- CORRECTION: Sauvegarder la liste complète des marées futures, pas juste les deux prochaines ---
         data_to_cache = {'data': future_extremes, 'timestamp': datetime.now().isoformat()}
@@ -1553,7 +1556,7 @@ def force_tide_update():
         with open(tide_cache_path, 'w') as f:
             json.dump(data_to_cache, f, indent=2)
 
-        return jsonify({"success": True, "message": "Données de marée mises à jour avec succès !"})
+        return jsonify({"success": True, "message": tr("Données de marée mises à jour avec succès !")})
 
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 402:
@@ -1562,10 +1565,10 @@ def force_tide_update():
             try:
                 with open(tide_cache_path, 'w') as f: json.dump(cooldown_data, f, indent=2)
             except Exception: pass
-            return jsonify({"success": False, "message": "Quota API StormGlass dépassé."})
-        return jsonify({"success": False, "message": f"Erreur API ({e.response.status_code})."})
+            return jsonify({"success": False, "message": tr("Quota API StormGlass dépassé.")})
+        return jsonify({"success": False, "message": tr("Erreur API (%(status)s).", status=e.response.status_code)})
     except Exception as e:
-        return jsonify({"success": False, "message": f"Erreur inattendue : {e}"})
+        return jsonify({"success": False, "message": tr("Erreur inattendue : %(error)s", error=e)})
 
 
 @app.route('/immich_update_status')
@@ -1619,7 +1622,7 @@ def download_photos():
         # Note: download_and_extract_album is now a generator. This call will do nothing.
         # This route seems to be a simple POST fallback and might need to be updated or removed. (Translated comment)
         flash("Photos téléchargées avec succès", "success")
-        logger.info(f"Photos téléchargées avec succès.")
+        logger.info(tr('Photos téléchargées avec succès.'))
 
     except Exception as e:
         flash(f"Erreur téléchargement : {e}", "danger")
@@ -1636,12 +1639,12 @@ def schedule_worker():
     Thread en arrière-plan qui gère le démarrage et l'arrêt du diaporama
     en fonction des heures d'activité configurées.
     """
-    logger.debug("📅️🔄 Démarrage du worker de planification du diaporama")
+    logger.debug(tr("📅️🔄 Démarrage du worker de planification du diaporama"))
     
     # --- Séquence de démarrage unique ---
     # Cette partie ne s'exécute qu'une seule fois au lancement de l'application.
     try:
-        logger.info("📅 Séquence de démarrage initiale.")
+        logger.info(tr("📅 Séquence de démarrage initiale."))
         # Attendre que le système soit stable avant de manipuler l'affichage
         time.sleep(5)
         config = load_config()
@@ -1649,7 +1652,7 @@ def schedule_worker():
         if output_name:
             width = config.get('display_width', 1920)
             height = config.get('display_height', 1080)
-            logger.info(f"📅 Forçage de la résolution {width}x{height} sur l'écran '{output_name}' au démarrage.")
+            logger.info(tr("📅 Forçage de la résolution %(value_0)sx%(value_1)s sur l'écran '%(value_2)s' au démarrage.", value_0=width, value_1=height, value_2=output_name))
             try:
                 # ⭐ NOUVEAU FIX : Forcer la résolution via swaymsg au démarrage
                 subprocess.run(
@@ -1659,9 +1662,9 @@ def schedule_worker():
                     env=os.environ  # Important pour SWAYSOCK
                 )
                 time.sleep(2)  # Laisser le temps à l'écran de se stabiliser
-                logger.info(f"📅 Résolution {width}x{height} appliquée avec succès sur {output_name}")
+                logger.info(tr('📅 Résolution %(value_0)sx%(value_1)s appliquée avec succès sur %(value_2)s', value_0=width, value_1=height, value_2=output_name))
             except Exception as e:
-                logger.error(f"❌ Échec du forçage de la résolution au démarrage : {e}")
+                logger.error(tr('❌ Échec du forçage de la résolution au démarrage : %(value_0)s', value_0=e))
         
         # Calcul des heures actives selon le jour (Semaine vs Weekend)
         now = datetime.now()
@@ -1681,10 +1684,10 @@ def schedule_worker():
                               (start_time > end_time and (now_time >= start_time or now_time <= end_time))
         
         if in_schedule_at_boot:
-            logger.info(f"📅 Entre {start_str} et {end_str} = Heures actives au démarrage, lancement du diaporama.")
+            logger.info(tr('📅 Entre %(value_0)s et %(value_1)s = Heures actives au démarrage, lancement du diaporama.', value_0=start_str, value_1=end_str))
             start_slideshow()
     except Exception as e:
-        logger.error(f"❌ Erreur critique dans la séquence de démarrage : {e}", exc_info=True)
+        logger.error(tr('❌ Erreur critique dans la séquence de démarrage : %(value_0)s', value_0=e), exc_info=True)
 
     last_schedule_state = None
     while True:
@@ -1712,7 +1715,7 @@ def schedule_worker():
 
             # Réinitialiser l'override manuel si on change de plage horaire (ex: passage de nuit à jour)
             if last_schedule_state is not None and last_schedule_state != in_schedule:
-                logger.info(f"📅 Changement de planning détecté, réinitialisation de l'override manuel.")
+                logger.info(tr("📅 Changement de planning détecté, réinitialisation de l'override manuel."))
                 config['manual_override'] = None
                 save_config(config)
             
@@ -1722,11 +1725,11 @@ def schedule_worker():
 
             # Arrêt auto : uniquement si pas d'override "start"
             if not in_schedule and slideshow_is_running and manual_override != "start":
-                logger.info("📅 Heure inactive détectée et diaporama en cours. Arrêt...")
+                logger.info(tr("📅 Heure inactive détectée et diaporama en cours. Arrêt..."))
                 stop_slideshow()
             # Démarrage auto : uniquement si pas d'override "stop"
             elif in_schedule and not slideshow_is_running and manual_override != "stop":
-                logger.info("📅 Heure active mais le diaporama est arrêté. Séquence de démarrage...")
+                logger.info(tr("📅 Heure active mais le diaporama est arrêté. Séquence de démarrage..."))
                 # 1. On s'assure que l'écran est allumé (via DPMS si pas de prise)
                 set_display_power(on=True)
                 # 2. On attend un court instant pour laisser l'environnement d'affichage se stabiliser
@@ -1737,7 +1740,7 @@ def schedule_worker():
                 if output_name:
                     width = config.get('display_width', 1920)
                     height = config.get('display_height', 1080)
-                    logger.info(f"📅 Forçage de la résolution {width}x{height} sur l'écran '{output_name}' au réveil.")
+                    logger.info(tr("📅 Forçage de la résolution %(value_0)sx%(value_1)s sur l'écran '%(value_2)s' au réveil.", value_0=width, value_1=height, value_2=output_name))
                     try:
                         subprocess.run(
                             ['swaymsg', 'output', output_name, 'mode', f'{width}x{height}'],
@@ -1745,13 +1748,13 @@ def schedule_worker():
                         )
                         time.sleep(2) # Laisser le temps à l'écran de se stabiliser
                     except Exception as e:
-                        logger.error(f"❌ Échec du forçage de la résolution au réveil : {e}")
+                        logger.error(tr('❌ Échec du forçage de la résolution au réveil : %(value_0)s', value_0=e))
 
                 # 3. On lance explicitement le diaporama
                 start_slideshow()
 
         except Exception as e:
-            logger.error(f"📅❌ Erreur dans le worker de planification : {e}", exc_info=True)
+            logger.error(tr('📅❌ Erreur dans le worker de planification : %(value_0)s', value_0=e), exc_info=True)
 
         # Attendre 60 secondes avant la prochaine vérification
         time.sleep(60)
@@ -1760,7 +1763,7 @@ def immich_update_worker():
     """
     Thread en arrière-plan qui vérifie et met à jour l'album Immich périodiquement.
     """
-    logger.debug("🖼️🔄 Démarrage du worker de mise à jour automatique Immich")
+    logger.debug(tr("🖼️🔄 Démarrage du worker de mise à jour automatique Immich"))
     while True:
         config = load_config()
         is_enabled = config.get("immich_auto_update", False)
@@ -1769,7 +1772,7 @@ def immich_update_worker():
 
         global _immich_first_run_skipped
         if not _immich_first_run_skipped and skip_initial:
-            logger.debug("🖼️🔄 Import initial skipped as per configuration.")
+            logger.debug(tr("🖼️🔄 Import initial skipped as per configuration."))
             with app.app_context():
                 immich_status_manager.update_status(message=_("Import initial ignoré."))
             _immich_first_run_skipped = True
@@ -1785,13 +1788,13 @@ def immich_update_worker():
         if is_enabled:
             with app.app_context():
                 status_msg = _("Mise à jour auto. activée. Intervalle : %(hours)sh.", hours=interval_hours)
-                logger.info(f"🖼️🔄  {status_msg}")
+                logger.info(tr('🖼️🔄  %(value_0)s', value_0=status_msg))
                 immich_status_manager.update_status(message=status_msg)
             
             try:
                 with app.app_context():
                     immich_status_manager.update_status(message=_("Lancement du téléchargement..."))
-                logger.info("🖼️🔄 Lancement du téléchargement et de la préparation...")
+                logger.info(tr("🖼️🔄 Lancement du téléchargement et de la préparation..."))
                 
                 # Étape 1: Téléchargement
                 download_success = False
@@ -1799,10 +1802,10 @@ def immich_update_worker():
                 for update in download_and_extract_album(config):
                     # NOUVEAU: Afficher les messages de progression du worker dans les logs pour le débogage
                     if update.get("message"):
-                        logger.info(f"🖼️🔄  {update.get('message')}")
+                        logger.info(tr('🖼️🔄  %(value_0)s', value_0=update.get('message')))
 
                     if update.get("type") == "error":
-                        logger.error(f"🖼️🔄❌ Erreur lors du téléchargement : {update.get('message')}")
+                        logger.error(tr('🖼️🔄❌ Erreur lors du téléchargement : %(value_0)s', value_0=update.get('message')))
                         immich_status_manager.update_status(message=f"Erreur téléchargement: {update.get('message')}")
                     immich_status_manager.update_status(message=update.get('message', '')) # Update status with download message
                     if update.get("type") == "done":
@@ -1829,7 +1832,7 @@ def immich_update_worker():
                     for update in prepare_all_photos_with_progress(screen_width=screen_width, screen_height=screen_height, source_type="immich", description_map=final_description_map):
                         immich_status_manager.update_status(message=update.get('message', '')) # Update status with preparation message
                         if update.get("type") == "error":
-                            logger.error(f"🖼️🔄❌ Erreur lors de la préparation : {update.get('message')}")
+                            logger.error(tr('🖼️🔄❌ Erreur lors de la préparation : %(value_0)s', value_0=update.get('message')))
                             immich_status_manager.update_status(message=f"Erreur préparation: {update.get('message')}")
                             break # Sortir de la boucle de préparation
                         if update.get("type") == "done":
@@ -1848,12 +1851,12 @@ def immich_update_worker():
                             immich_status_manager.update_status(message=_("Mise à jour terminée avec avertissements/erreurs."))
 
             except Exception as e:
-                logger.error(f"🖼️🔄❌ Erreur critique dans le worker : {e}", exc_info=True)
+                logger.error(tr('🖼️🔄❌ Erreur critique dans le worker : %(value_0)s', value_0=e), exc_info=True)
                 immich_status_manager.update_status(message=f"Erreur critique : {e}")
 
         else:
             status_msg = _("Mise à jour automatique désactivée.")
-            logger.info(f"🖼️🔄❌ {status_msg}")
+            logger.info(tr('🖼️🔄❌ %(value_0)s', value_0=status_msg))
             immich_status_manager.update_status(message=status_msg)
         
         # Attendre avant la prochaine vérification
@@ -1893,7 +1896,7 @@ def samba_update_worker():
         if is_enabled:
             with app.app_context():
                 status_msg = _("Mise à jour auto. activée. Intervalle : %(hours)sh.", hours=interval_hours)
-                logger.info(f"[Auto-Update Samba] {status_msg}")
+                logger.info(tr('[Auto-Update Samba] %(value_0)s', value_0=status_msg))
                 samba_status_manager.update_status(message=status_msg)
             
             try:
@@ -1904,7 +1907,7 @@ def samba_update_worker():
                 import_success = False
                 for update in import_samba_photos(config):
                     if update.get("type") == "error":
-                        logger.info(f"[Auto-Update Samba] Erreur lors de l'import : {update.get('message')}")
+                        logger.info(tr("[Auto-Update Samba] Erreur lors de l'import : %(value_0)s", value_0=update.get('message')))
                         samba_status_manager.update_status(message=f"Erreur import: {update.get('message')}")
                     samba_status_manager.update_status(message=update.get('message', '')) # Update status with import message
                     if update.get("type") == "done":
@@ -1945,7 +1948,7 @@ def samba_update_worker():
                         with app.app_context():
                             samba_status_manager.update_status(message=_("Mise à jour terminée avec avertissements/erreurs."))
             except Exception as e:
-                logger.error(f"[Auto-Update Samba] Erreur critique dans le worker : {e}", exc_info=True)
+                logger.error(tr('[Auto-Update Samba] Erreur critique dans le worker : %(value_0)s', value_0=e), exc_info=True)
                 samba_status_manager.update_status(message=f"Erreur critique : {e}")
         else:
             with app.app_context():
@@ -1992,7 +1995,7 @@ def telegram_bot_worker():
                     error_msg = f"Erreur critique du bot : {str(e)[:100]}..."
                 
                 final_error_msg = f"{error_msg} Redémarrage dans 60s."
-                logger.info(f"[Telegram Worker] {final_error_msg}")
+                logger.info(tr('[Telegram Worker] %(value_0)s', value_0=final_error_msg))
                 telegram_status_manager.update_status(message=error_msg) # On affiche le message concis dans l'UI
         else:
             telegram_status_manager.update_status(message="Bot désactivé ou non configuré.")
@@ -2093,7 +2096,7 @@ def delete_photo(photo):
 def delete_source_photos(source_name):
     """Supprime toutes les photos préparées pour une source donnée, y compris les sauvegardes."""
     if not re.match(r'^[a-zA-Z0-9_-]+$', source_name):
-        return jsonify({"success": False, "message": "Nom de source invalide."}), 400
+        return jsonify({"success": False, "message": tr("Nom de source invalide.")}), 400
 
     prepared_dir = PREPARED_DIR / source_name
     backup_dir = BASE_DIR / 'static' / '.backups' / source_name
@@ -2101,11 +2104,11 @@ def delete_source_photos(source_name):
     try:
         if prepared_dir.is_dir():
             shutil.rmtree(prepared_dir)
-            logger.info(f"Dossier préparé supprimé : {prepared_dir}")
+            logger.info(tr('Dossier préparé supprimé : %(value_0)s', value_0=prepared_dir))
         
         if backup_dir.is_dir():
             shutil.rmtree(backup_dir)
-            logger.info(f"Dossier de sauvegarde supprimé : {backup_dir}")
+            logger.info(tr('Dossier de sauvegarde supprimé : %(value_0)s', value_0=backup_dir))
 
         # Supprimer les états de filtre pour cette source
         states = load_filter_states()
@@ -2114,10 +2117,10 @@ def delete_source_photos(source_name):
             for key in keys_to_delete:
                 del states[key]
             save_filter_states(states)
-        return jsonify({"success": True, "message": "Photos supprimées."}), 200
+        return jsonify({"success": True, "message": tr("Photos supprimées.")}), 200
     except Exception as e:
-        logger.info(f"Erreur lors de la suppression des photos de la source {source_name}: {e}")
-        return jsonify({"success": False, "message": f"Erreur serveur : {e}"}), 500
+        logger.info(tr('Erreur lors de la suppression des photos de la source %(value_0)s: %(value_1)s', value_0=source_name, value_1=e))
+        return jsonify({"success": False, "message": tr('Erreur serveur : %(value_0)s', value_0=e)}), 500
 
 @app.route('/shutdown', methods=['POST'])
 @login_required
@@ -2176,7 +2179,7 @@ def trigger_reboot():
         reboot_thread.daemon = True
         reboot_thread.start()
         
-        return jsonify({"success": True, "message": "Redémarrage initié"})
+        return jsonify({"success": True, "message": tr("Redémarrage initié")})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -2237,7 +2240,7 @@ def restart_slideshow_for_update_route():
     try:
         if is_slideshow_running():
             restart_slideshow_for_update()
-        return jsonify({"success": True, "message": "Commande de redémarrage envoyée."})
+        return jsonify({"success": True, "message": tr("Commande de redémarrage envoyée.")})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -2247,7 +2250,7 @@ def cancel_import():
     """Crée un fichier drapeau pour signaler l'annulation aux processus d'import/préparation."""
     try:
         Path('/tmp/pimmich_cancel_import.flag').touch()
-        return jsonify({"success": True, "message": "Signal d'annulation envoyé."})
+        return jsonify({"success": True, "message": tr("Signal d'annulation envoyé.")})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -2255,22 +2258,22 @@ def cancel_import():
 def play_playlist():
     # Sécurité : n'accepter que les requêtes venant de la machine elle-même (contrôle vocal) ou d'un utilisateur connecté
     if not session.get('logged_in') and request.remote_addr != '127.0.0.1':
-        return jsonify({"success": False, "message": "Accès non autorisé."}), 403
+        return jsonify({"success": False, "message": tr("Accès non autorisé.")}), 403
 
     data = request.get_json()
     playlist_id = data.get('id')
     if not playlist_id:
-        return jsonify({"success": False, "message": "ID de playlist manquant."}), 400
+        return jsonify({"success": False, "message": tr("ID de playlist manquant.")}), 400
 
     try:
         playlists = load_playlists()
         target_playlist = next((p for p in playlists if p.get('id') == playlist_id), None)
 
         if not target_playlist:
-            return jsonify({"success": False, "message": "Playlist non trouvée."}), 404
+            return jsonify({"success": False, "message": tr("Playlist non trouvée.")}), 404
 
         if not target_playlist.get('photos'):
-            return jsonify({"success": False, "message": "La playlist est vide."}), 400
+            return jsonify({"success": False, "message": tr("La playlist est vide.")}), 400
 
         # CORRECTION : Créer un objet JSON avec le nom, les photos ET la musique
         playlist_data_to_save = {
@@ -2286,10 +2289,10 @@ def play_playlist():
         # Redémarrer le diaporama pour charger la nouvelle playlist sans éteindre l'écran
         restart_slideshow_for_update()
 
-        return jsonify({"success": True, "message": f"Lancement du diaporama pour la playlist '{target_playlist.get('name')}'."})
+        return jsonify({"success": True, "message": tr("Lancement du diaporama pour la playlist '%(value_0)s'.", value_0=target_playlist.get('name'))})
     except Exception as e:
-        logger.info(f"Erreur lors du lancement de la playlist : {e}")
-        return jsonify({"success": False, "message": "Erreur interne du serveur."}), 500
+        logger.info(tr('Erreur lors du lancement de la playlist : %(value_0)s', value_0=e))
+        return jsonify({"success": False, "message": tr("Erreur interne du serveur.")}), 500
 
 @app.route('/api/slideshow/restart_standard', methods=['POST'])
 def restart_standard_slideshow():
@@ -2301,9 +2304,9 @@ def restart_standard_slideshow():
         
         # Redémarrer le diaporama en mode standard sans éteindre l'écran
         restart_slideshow_for_update()
-        return jsonify({"success": True, "message": "Diaporama standard relancé."})
+        return jsonify({"success": True, "message": tr("Diaporama standard relancé.")})
     except Exception as e:
-        logger.info(f"Erreur lors du redémarrage du diaporama standard : {e}")
+        logger.info(tr('Erreur lors du redémarrage du diaporama standard : %(value_0)s', value_0=e))
         return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route('/api/slideshow/toggle_sleep', methods=['POST'])
@@ -2311,21 +2314,21 @@ def toggle_sleep_api():
     """Bascule l'état du diaporama (actif/veille). Pour utilisation avec un bouton physique."""
     # Sécurité : n'accepter que les requêtes venant de la machine elle-même
     if request.remote_addr != '127.0.0.1':
-        logger.warning(f"Tentative d'accès non autorisé à toggle_sleep depuis {request.remote_addr}")
-        return jsonify({"success": False, "message": "Accès non autorisé."}), 403
+        logger.warning(tr("Tentative d'accès non autorisé à toggle_sleep depuis %(value_0)s", value_0=request.remote_addr))
+        return jsonify({"success": False, "message": tr("Accès non autorisé.")}), 403
     
     try:
         if is_slideshow_running():
-            logger.info("API toggle_sleep: Diaporama en cours -> Arrêt.")
+            logger.info(tr("API toggle_sleep: Diaporama en cours -> Arrêt."))
             stop_slideshow()
             message = "Diaporama mis en veille."
         else:
-            logger.info("API toggle_sleep: Diaporama arrêté -> Démarrage.")
+            logger.info(tr("API toggle_sleep: Diaporama arrêté -> Démarrage."))
             start_slideshow()
             message = "Diaporama réveillé."
         return jsonify({"success": True, "message": message})
     except Exception as e:
-        logger.error(f"Erreur lors du basculement de la veille via API : {e}", exc_info=True)
+        logger.error(tr('Erreur lors du basculement de la veille via API : %(value_0)s', value_0=e), exc_info=True)
         return jsonify({"success": False, "message": str(e)}), 500
 
 # --- API pour la gestion des Playlists ---
@@ -2344,13 +2347,13 @@ def create_playlist():
     name = data.get('name')
     music_file = data.get('music_file') # Cette ligne doit être en dehors du bloc 'if'
     if not name or not name.strip():
-        return jsonify({"success": False, "message": "Le nom de la playlist est requis."}), 400
+        return jsonify({"success": False, "message": tr("Le nom de la playlist est requis.")}), 400
 
     playlists = load_playlists()
     
     # Vérifier si une playlist avec le même nom existe déjà
     if any(p['name'].lower() == name.strip().lower() for p in playlists):
-        return jsonify({"success": False, "message": "Une playlist avec ce nom existe déjà."}), 409
+        return jsonify({"success": False, "message": tr("Une playlist avec ce nom existe déjà.")}), 409
 
     new_playlist = {
         "id": secrets.token_hex(8),
@@ -2378,10 +2381,10 @@ def update_playlist_music(playlist_id):
             break
     
     if not found:
-        return jsonify({"success": False, "message": "Playlist non trouvée."}), 404
+        return jsonify({"success": False, "message": tr("Playlist non trouvée.")}), 404
 
     save_playlists(playlists)
-    return jsonify({"success": True, "message": "Musique de la playlist mise à jour."})
+    return jsonify({"success": True, "message": tr("Musique de la playlist mise à jour.")})
 
 @app.route('/api/music_files', methods=['GET'])
 @login_required
@@ -2407,34 +2410,34 @@ def delete_music_file(filename):
     if music_path.exists() and music_path.is_file():
         try:
             music_path.unlink()
-            logger.info(f"🎵 Musique supprimée : {filename}")
-            return jsonify({"success": True, "message": f"Fichier '{filename}' supprimé avec succès."})
+            logger.info(tr('🎵 Musique supprimée : %(value_0)s', value_0=filename))
+            return jsonify({"success": True, "message": tr("Fichier '%(value_0)s' supprimé avec succès.", value_0=filename)})
         except Exception as e:
-            return jsonify({"success": False, "message": f"Erreur lors de la suppression : {str(e)}"}), 500
+            return jsonify({"success": False, "message": tr('Erreur lors de la suppression : %(value_0)s', value_0=str(e))}), 500
     else:
-        logger.warning(f"❌ Tentative de suppression de fichier introuvable: {music_path}")
-        return jsonify({"success": False, "message": "Fichier introuvable."}), 404
+        logger.warning(tr('❌ Tentative de suppression de fichier introuvable: %(value_0)s', value_0=music_path))
+        return jsonify({"success": False, "message": tr("Fichier introuvable.")}), 404
 
 @app.route('/api/upload_music', methods=['POST'])
 @login_required
 def upload_music():
     """Télécharge un nouveau fichier musical vers static/music/."""
     if 'music_file' not in request.files:
-        return jsonify({"success": False, "message": "Aucun fichier sélectionné."}), 400
+        return jsonify({"success": False, "message": tr("Aucun fichier sélectionné.")}), 400
     
     file = request.files['music_file']
     if file.filename == '':
-        return jsonify({"success": False, "message": "Aucun fichier sélectionné."}), 400
+        return jsonify({"success": False, "message": tr("Aucun fichier sélectionné.")}), 400
     
     if file and file.filename.lower().endswith(('.mp3', '.wav')):
         filename = secure_filename(file.filename)
         music_dir = BASE_DIR / "static" / "music"
         music_dir.mkdir(parents=True, exist_ok=True)
         file.save(music_dir / filename)
-        logger.info(f"🎵 Nouvelle musique importée : {filename}")
-        return jsonify({"success": True, "message": f"Fichier '{filename}' téléchargé avec succès."})
+        logger.info(tr('🎵 Nouvelle musique importée : %(value_0)s', value_0=filename))
+        return jsonify({"success": True, "message": tr("Fichier '%(value_0)s' téléchargé avec succès.", value_0=filename)})
     else:
-        return jsonify({"success": False, "message": "Format de fichier non supporté. MP3 ou WAV uniquement."}), 400
+        return jsonify({"success": False, "message": tr("Format de fichier non supporté. MP3 ou WAV uniquement.")}), 400
 
 @app.route('/api/playlists/<playlist_id>', methods=['DELETE'])
 def delete_playlist(playlist_id):
@@ -2450,12 +2453,12 @@ def rename_playlist(playlist_id):
     data = request.get_json()
     new_name = data.get('name')
     if not new_name or not new_name.strip():
-        return jsonify({"success": False, "message": "Le nouveau nom ne peut pas être vide."}), 400
+        return jsonify({"success": False, "message": tr("Le nouveau nom ne peut pas être vide.")}), 400
 
     playlists = load_playlists()
     
     if any(p['name'].lower() == new_name.strip().lower() and p.get('id') != playlist_id for p in playlists):
-        return jsonify({"success": False, "message": "Une autre playlist avec ce nom existe déjà."}), 409
+        return jsonify({"success": False, "message": tr("Une autre playlist avec ce nom existe déjà.")}), 409
 
     found = False
     for playlist in playlists:
@@ -2465,7 +2468,7 @@ def rename_playlist(playlist_id):
             break
     
     save_playlists(playlists)
-    return jsonify({"success": True, "message": "Playlist renommée."})
+    return jsonify({"success": True, "message": tr("Playlist renommée.")})
 
 @app.route('/api/playlists/<playlist_id>/photos', methods=['POST'])
 def add_photo_to_playlist(playlist_id):
@@ -2473,7 +2476,7 @@ def add_photo_to_playlist(playlist_id):
     data = request.get_json()
     photo_path = data.get('photo_path')
     if not photo_path:
-        return jsonify({"success": False, "message": "Chemin de la photo manquant."}), 400
+        return jsonify({"success": False, "message": tr("Chemin de la photo manquant.")}), 400
 
     playlists = load_playlists()
     for playlist in playlists:
@@ -2482,7 +2485,7 @@ def add_photo_to_playlist(playlist_id):
                 playlist['photos'].append(photo_path)
             save_playlists(playlists)
             return jsonify({"success": True})
-    return jsonify({"success": False, "message": "Playlist non trouvée."}), 404
+    return jsonify({"success": False, "message": tr("Playlist non trouvée.")}), 404
 
 @app.route('/api/playlists/<playlist_id>/photos/<path:photo_path>', methods=['DELETE'])
 def remove_photo_from_playlist(playlist_id, photo_path):
@@ -2494,7 +2497,7 @@ def remove_photo_from_playlist(playlist_id, photo_path):
                 playlist['photos'].remove(photo_path)
             save_playlists(playlists)
             return jsonify({"success": True})
-    return jsonify({"success": False, "message": "Playlist non trouvée."}), 404
+    return jsonify({"success": False, "message": tr("Playlist non trouvée.")}), 404
 
 @app.route('/api/playlists/<playlist_id>/reorder', methods=['POST'])
 def reorder_playlist(playlist_id):
@@ -2504,7 +2507,7 @@ def reorder_playlist(playlist_id):
     """
     data = request.get_json()
     if not data or 'photos' not in data:
-        return jsonify({"success": False, "message": "Données manquantes."}), 400
+        return jsonify({"success": False, "message": tr("Données manquantes.")}), 400
 
     new_photo_order = data['photos']
 
@@ -2520,22 +2523,22 @@ def reorder_playlist(playlist_id):
                 new_photos_set = set(new_photo_order)
 
                 if original_photos_set != new_photos_set:
-                     return jsonify({"success": False, "message": "Incohérence dans la liste des photos."}), 400
+                     return jsonify({"success": False, "message": tr("Incohérence dans la liste des photos.")}), 400
 
                 playlist['photos'] = new_photo_order
                 playlist_found = True
                 break
         
         if not playlist_found:
-            return jsonify({"success": False, "message": "Playlist non trouvée."}), 404
+            return jsonify({"success": False, "message": tr("Playlist non trouvée.")}), 404
 
         save_playlists(playlists) 
 
-        return jsonify({"success": True, "message": "Ordre de la playlist sauvegardé."})
+        return jsonify({"success": True, "message": tr("Ordre de la playlist sauvegardé.")})
 
     except Exception as e:
-        logger.info(f"Erreur lors de la réorganisation de la playlist : {e}")
-        return jsonify({"success": False, "message": "Erreur interne du serveur."}), 500
+        logger.info(tr('Erreur lors de la réorganisation de la playlist : %(value_0)s', value_0=e))
+        return jsonify({"success": False, "message": tr("Erreur interne du serveur.")}), 500
 
 
 @app.route('/api/audio_devices', methods=['GET'])
@@ -2555,7 +2558,7 @@ def get_audio_devices():
         # Renvoyer une erreur JSON claire au lieu de planter ou de renvoyer une liste vide.
         # Cela permet au frontend d'afficher un message d'erreur utile.
         error_message = f"Erreur API Audio: {type(e).__name__} - {e}"
-        logger.info(f"[ERROR] in get_audio_devices: {error_message}") # Log pour le débogage côté serveur
+        logger.info(tr('[ERROR] in get_audio_devices: %(value_0)s', value_0=error_message)) # Log pour le débogage côté serveur
         return jsonify({"success": False, "message": error_message, "devices": []})
 
 @app.route('/api/voice_control/status', methods=['GET'])
@@ -2570,7 +2573,7 @@ def get_voice_control_status():
             with open(status_file, 'r') as f:
                 return jsonify(json.load(f))
         except Exception as e:
-            return jsonify({"status": "unknown", "message": f"Erreur lecture statut: {e}"})
+            return jsonify({"status": "unknown", "message": tr('Erreur lecture statut: %(value_0)s', value_0=e)})
     else:
         return jsonify({"status": "starting", "message": _("Démarrage du service...")})
 
@@ -2607,22 +2610,22 @@ def system_shutdown():
     """Éteint le système."""
     # Sécurité : n'accepter que les requêtes venant de la machine elle-même
     if request.remote_addr != '127.0.0.1':
-        return jsonify({"success": False, "message": "Accès non autorisé."}), 403
+        return jsonify({"success": False, "message": tr("Accès non autorisé.")}), 403
     print("Arrêt du système demandé via API.")
     subprocess.run(['sudo', '-n', 'shutdown', '-h', 'now'])
-    return jsonify({"success": True, "message": "Arrêt en cours."})
+    return jsonify({"success": True, "message": tr("Arrêt en cours.")})
 
 @app.route('/api/display/power', methods=['POST'])
 def display_power():
     """Allume ou éteint l'écran."""
     if request.remote_addr != '127.0.0.1':
-        return jsonify({"success": False, "message": "Accès non autorisé."}), 403
+        return jsonify({"success": False, "message": tr("Accès non autorisé.")}), 403
     
     data = request.get_json()
     state = data.get('state') # 'on' or 'off'
 
     if state not in ['on', 'off']:
-        return jsonify({"success": False, "message": "État invalide. Utilisez 'on' ou 'off'."}), 400
+        return jsonify({"success": False, "message": tr("État invalide. Utilisez 'on' ou 'off'.")}), 400
 
     # La logique est maintenant dans le slideshow_manager
     if state == 'on':
@@ -2640,11 +2643,11 @@ def display_power():
 def play_source_as_playlist(source_name):
     """Joue toutes les photos d'une source donnée comme une playlist."""
     if request.remote_addr != '127.0.0.1':
-        return jsonify({"success": False, "message": "Accès non autorisé."}), 403
+        return jsonify({"success": False, "message": tr("Accès non autorisé.")}), 403
 
     source_dir = PREPARED_DIR / source_name
     if not source_dir.is_dir():
-        return jsonify({"success": False, "message": f"La source '{source_name}' n'existe pas."}), 404
+        return jsonify({"success": False, "message": tr("La source '%(value_0)s' n'existe pas.", value_0=source_name)}), 404
 
     photos = [
         f"{source_name}/{f.name}" for f in source_dir.iterdir() 
@@ -2652,7 +2655,7 @@ def play_source_as_playlist(source_name):
     ]
 
     if not photos:
-        return jsonify({"success": False, "message": f"La source '{source_name}' est vide."}), 400
+        return jsonify({"success": False, "message": tr("La source '%(value_0)s' est vide.", value_0=source_name)}), 400
     
     playlist_data = {"name": f"Source: {source_name.capitalize()}", "photos": photos}
     
@@ -2664,31 +2667,31 @@ def play_source_as_playlist(source_name):
         time.sleep(1.5) # Donner un peu plus de temps pour l'arrêt
         start_slideshow()
         
-        return jsonify({"success": True, "message": f"Lancement du diaporama pour la source '{source_name}'."})
+        return jsonify({"success": True, "message": tr("Lancement du diaporama pour la source '%(value_0)s'.", value_0=source_name)})
     except Exception as e:
-        return jsonify({"success": False, "message": f"Erreur lors du lancement de la playlist source: {e}"}), 500
+        return jsonify({"success": False, "message": tr('Erreur lors du lancement de la playlist source: %(value_0)s', value_0=e)}), 500
 
 @app.route('/api/sources/toggle', methods=['POST'])
 def toggle_source():
     """Active ou désactive une source dans la configuration."""
-    app.logger.info(f"API /api/sources/toggle reçue de {request.remote_addr}")
+    app.logger.info(tr('API /api/sources/toggle reçue de %(value_0)s', value_0=request.remote_addr))
     if request.remote_addr != '127.0.0.1':
-        app.logger.warning(f"Accès non autorisé à /api/sources/toggle de {request.remote_addr}")
-        return jsonify({"success": False, "message": "Accès non autorisé."}), 403
+        app.logger.warning(tr('Accès non autorisé à /api/sources/toggle de %(value_0)s', value_0=request.remote_addr))
+        return jsonify({"success": False, "message": tr("Accès non autorisé.")}), 403
         
     data = request.get_json()
     source_name = data.get('source')
     state = data.get('state') # 'on' or 'off'
-    app.logger.info(f"Action demandée : '{state}' pour la source '{source_name}'")
+    app.logger.info(tr("Action demandée : '%(value_0)s' pour la source '%(value_1)s'", value_0=state, value_1=source_name))
 
     if not source_name or state not in ['on', 'off']:
-        app.logger.error(f"Paramètres invalides reçus : source='{source_name}', state='{state}'")
-        return jsonify({"success": False, "message": "Paramètres 'source' ou 'state' invalides."}), 400
+        app.logger.error(tr("Paramètres invalides reçus : source='%(value_0)s', state='%(value_1)s'", value_0=source_name, value_1=state))
+        return jsonify({"success": False, "message": tr("Paramètres 'source' ou 'state' invalides.")}), 400
 
     try:
         config = load_config()
         original_sources = config.get('display_sources', [])
-        app.logger.info(f"Sources avant modification : {original_sources}")
+        app.logger.info(tr('Sources avant modification : %(value_0)s', value_0=original_sources))
         display_sources = set(original_sources)
 
         if state == 'on':
@@ -2700,29 +2703,29 @@ def toggle_source():
 
         new_sources_list = sorted(list(display_sources))
         config['display_sources'] = new_sources_list
-        app.logger.info(f"Sources après modification (avant sauvegarde) : {new_sources_list}")
+        app.logger.info(tr('Sources après modification (avant sauvegarde) : %(value_0)s', value_0=new_sources_list))
         save_config(config)
-        app.logger.info("Configuration sauvegardée avec succès dans config.json.")
+        app.logger.info(tr("Configuration sauvegardée avec succès dans config.json."))
         
         # Le diaporama détectera le changement automatiquement au prochain cycle.
         # Il n'est plus nécessaire de le redémarrer de force, ce qui causait le timeout.
-        return jsonify({"success": True, "message": f"Source '{source_name}' {action_msg}. Le changement sera appliqué sur le diaporama."})
+        return jsonify({"success": True, "message": tr("Source '%(value_0)s' %(value_1)s. Le changement sera appliqué sur le diaporama.", value_0=source_name, value_1=action_msg)})
     except Exception as e:
-        app.logger.error(f"Erreur dans la fonction toggle_source : {e}", exc_info=True)
-        return jsonify({"success": False, "message": f"Erreur lors de la modification de la source : {e}"}), 500
+        app.logger.error(tr('Erreur dans la fonction toggle_source : %(value_0)s', value_0=e), exc_info=True)
+        return jsonify({"success": False, "message": tr('Erreur lors de la modification de la source : %(value_0)s', value_0=e)}), 500
 
 @app.route('/api/slideshow/set_duration', methods=['POST'])
 def set_slideshow_duration():
     """Modifie la durée d'affichage des photos et redémarre le diaporama."""
     # Sécurité : n'accepter que les requêtes venant de la machine elle-même
     if request.remote_addr != '127.0.0.1':
-        return jsonify({"success": False, "message": "Accès non autorisé."}), 403
+        return jsonify({"success": False, "message": tr("Accès non autorisé.")}), 403
     
     data = request.get_json()
     duration = data.get('duration')
 
     if not isinstance(duration, int) or duration <= 0:
-        return jsonify({"success": False, "message": "Durée invalide. Un entier positif est requis."}), 400
+        return jsonify({"success": False, "message": tr("Durée invalide. Un entier positif est requis.")}), 400
 
     try:
         config = load_config()
@@ -2736,22 +2739,22 @@ def set_slideshow_duration():
         
         start_slideshow()
         
-        return jsonify({"success": True, "message": f"Durée d'affichage réglée à {duration} secondes."})
+        return jsonify({"success": True, "message": tr("Durée d'affichage réglée à %(value_0)s secondes.", value_0=duration)})
     except Exception as e:
-        app.logger.error(f"Erreur lors du changement de la durée d'affichage : {e}", exc_info=True)
-        return jsonify({"success": False, "message": f"Erreur interne du serveur : {e}"}), 500
+        app.logger.error(tr("Erreur lors du changement de la durée d'affichage : %(value_0)s", value_0=e), exc_info=True)
+        return jsonify({"success": False, "message": tr('Erreur interne du serveur : %(value_0)s', value_0=e)}), 500
 
 def _send_slideshow_signal(sig):
     """Helper function to send a signal to the slideshow process."""
     if not is_slideshow_running():
-        return jsonify({"success": False, "message": "Le diaporama n'est pas en cours."}), 404
+        return jsonify({"success": False, "message": tr("Le diaporama n'est pas en cours.")}), 404
     try:
         with open("/tmp/pimmich_slideshow.pid", "r") as f:
             pid = int(f.read())
         os.kill(pid, sig)
         return jsonify({"success": True})
     except (FileNotFoundError, ValueError, ProcessLookupError) as e:
-        return jsonify({"success": False, "message": f"Impossible de communiquer avec le diaporama : {e}"}), 500
+        return jsonify({"success": False, "message": tr('Impossible de communiquer avec le diaporama : %(value_0)s', value_0=e)}), 500
 
 @app.route('/api/slideshow/next', methods=['POST'])
 def slideshow_next():
@@ -2769,7 +2772,7 @@ def slideshow_toggle_pause():
 def toggle_notifications_api():
     """Bascule l'affichage des notifications sur le diaporama."""
     if not session.get('logged_in') and request.remote_addr != '127.0.0.1':
-        return jsonify({"success": False, "message": "Accès non autorisé."}), 403
+        return jsonify({"success": False, "message": tr("Accès non autorisé.")}), 403
     
     try:
         config = load_config()
@@ -2803,7 +2806,7 @@ def get_available_resolutions():
     try:
         output_name = get_display_output_name()
         if not output_name:
-            return jsonify({"success": False, "message": "Aucune sortie d'affichage principale trouvée."})
+            return jsonify({"success": False, "message": tr("Aucune sortie d'affichage principale trouvée.")})
 
         result = subprocess.run(['swaymsg', '-t', 'get_outputs'], capture_output=True, text=True, check=True, env=os.environ)
         outputs = json.loads(result.stdout)
@@ -2822,10 +2825,10 @@ def get_available_resolutions():
                 resolutions.reverse()
                 return jsonify({"success": True, "resolutions": resolutions})
 
-        return jsonify({"success": False, "message": "Aucun mode trouvé pour la sortie principale."})
+        return jsonify({"success": False, "message": tr("Aucun mode trouvé pour la sortie principale.")})
 
     except Exception as e:
-        return jsonify({"success": False, "message": f"Erreur lors de la récupération des résolutions : {e}"})
+        return jsonify({"success": False, "message": tr('Erreur lors de la récupération des résolutions : %(value_0)s', value_0=e)})
 
 @app.route('/api/set_resolution', methods=['POST'])
 @login_required
@@ -2838,12 +2841,12 @@ def set_resolution():
     height = data.get('height')
 
     if not width or not height:
-        return jsonify({"success": False, "message": "Largeur et hauteur requises."}), 400
+        return jsonify({"success": False, "message": tr("Largeur et hauteur requises.")}), 400
 
     try:
         output_name = get_display_output_name()
         if not output_name:
-            return jsonify({"success": False, "message": "Aucune sortie d'affichage à configurer."})
+            return jsonify({"success": False, "message": tr("Aucune sortie d'affichage à configurer.")})
 
         # Appliquer la résolution via swaymsg
         subprocess.run(['swaymsg', 'output', output_name, 'resolution', f'{width}x{height}'], check=True)
@@ -2864,7 +2867,7 @@ def set_resolution():
 
         return jsonify({"success": True, "message": message})
     except Exception as e:
-        return jsonify({"success": False, "message": f"Erreur lors de l'application de la résolution : {e}"}), 500
+        return jsonify({"success": False, "message": tr("Erreur lors de l'application de la résolution : %(value_0)s", value_0=e)}), 500
 
 @app.route('/api/smart_plug/status', methods=['GET'])
 @login_required
@@ -2874,7 +2877,7 @@ def get_smart_plug_status():
     """
     config = load_config()
     if not config.get("smart_plug_enabled") or not config.get("smart_plug_status_url"):
-        return jsonify({"status": "disabled", "message": "Le statut de la prise n'est pas configuré."})
+        return jsonify({"status": "disabled", "message": tr("Le statut de la prise n'est pas configuré.")})
 
     status_url = config.get("smart_plug_status_url")
     token = config.get("home_assistant_token") # Le nom de la clé dans la config est 'home_assistant_token'
@@ -2891,18 +2894,18 @@ def get_smart_plug_status():
         # Pour Home Assistant, l'état est dans la clé 'state'
         plug_state = data.get('state', 'unknown').lower()
 
-        return jsonify({"status": plug_state, "message": f"État de la prise : {plug_state}"})
+        return jsonify({"status": plug_state, "message": tr('État de la prise : %(value_0)s', value_0=plug_state)})
 
     except requests.exceptions.Timeout:
-        return jsonify({"status": "unreachable", "message": "Timeout lors de la connexion à la prise."})
+        return jsonify({"status": "unreachable", "message": tr("Timeout lors de la connexion à la prise.")})
     except requests.exceptions.HTTPError as e:
         # Gérer spécifiquement les erreurs d'authentification pour un meilleur feedback
         if e.response.status_code == 401:
-            return jsonify({"status": "error", "message": "Erreur 401: Non autorisé. Vérifiez votre token d'accès Home Assistant."})
-        return jsonify({"status": "error", "message": f"Erreur HTTP: {str(e)}"})
+            return jsonify({"status": "error", "message": tr("Erreur 401: Non autorisé. Vérifiez votre token d'accès Home Assistant.")})
+        return jsonify({"status": "error", "message": tr('Erreur HTTP: %(value_0)s', value_0=str(e))})
     except requests.exceptions.RequestException as e:
         # Renvoyer une erreur plus explicite
-        return jsonify({"status": "error", "message": f"Erreur de connexion: {str(e)}"})
+        return jsonify({"status": "error", "message": tr('Erreur de connexion: %(value_0)s', value_0=str(e))})
 
 @app.route('/get_current_resolution')
 @login_required
@@ -2916,7 +2919,7 @@ def get_current_resolution_route():
          return jsonify({"success": True, "width": width, "height": height})
     else:
          # Ce cas ne devrait plus arriver car get_screen_resolution a un fallback, mais on le garde par sécurité.
-         return jsonify({"success": False, "message": "Impossible de détecter la résolution. L'écran est-il branché ?"})
+         return jsonify({"success": False, "message": tr("Impossible de détecter la résolution. L'écran est-il branché ?")})
 
 @app.route('/current_photo_status')
 @login_required
@@ -2933,7 +2936,7 @@ def current_photo_status():
                 # Construire l'URL complète pour l'attribut src de l'image
                 return jsonify({"current_photo": url_for('static', filename=photo_path), "status": "running"})
     except Exception as e:
-        logger.info(f"Erreur lecture fichier photo actuelle : {e}")
+        logger.info(tr('Erreur lecture fichier photo actuelle : %(value_0)s', value_0=e))
         
     return jsonify({"current_photo": None, "status": "running"})
 
@@ -2998,7 +3001,7 @@ def get_wifi_status():
             return {"is_connected": False, "ssid": "Non connecté", "ip_address": "N/A"}
 
     except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired, IndexError, ValueError) as e:
-        logger.info(f"Erreur lors de la récupération du statut Wi-Fi : {e}")
+        logger.info(tr('Erreur lors de la récupération du statut Wi-Fi : %(value_0)s', value_0=e))
         return {"is_connected": False, "ssid": "Erreur", "ip_address": "N/A"}
 
 @app.route('/api/wifi_status')
@@ -3041,7 +3044,7 @@ def get_interface_status_api(interface_name):
     """Retourne l'état d'une interface réseau spécifique."""
     # Valider le nom de l'interface pour la sécurité
     if not re.match(r'^[a-zA-Z0-9-]+$', interface_name):
-        return jsonify({"success": False, "message": "Nom d'interface invalide."}), 400
+        return jsonify({"success": False, "message": tr("Nom d'interface invalide.")}), 400
     
     status = get_interface_status(interface_name)
     return jsonify({"success": True, **status})
@@ -3055,14 +3058,14 @@ def set_interface_state_api():
     state = data.get('state')
 
     if not interface_name or not state in ['up', 'down']:
-        return jsonify({"success": False, "message": "Données invalides."}), 400
+        return jsonify({"success": False, "message": tr("Données invalides.")}), 400
     
     if not re.match(r'^[a-zA-Z0-9-]+$', interface_name):
-        return jsonify({"success": False, "message": "Nom d'interface invalide."}), 400
+        return jsonify({"success": False, "message": tr("Nom d'interface invalide.")}), 400
 
     try:
         set_interface_state(interface_name, state)
-        return jsonify({"success": True, "message": f"L'interface {interface_name} a été passée à l'état '{state}'."})
+        return jsonify({"success": True, "message": tr("L'interface %(value_0)s a été passée à l'état '%(value_1)s'.", value_0=interface_name, value_1=state)})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 # --- Lancement de l'application ---
@@ -3214,7 +3217,7 @@ def get_logs_api():
     
     log_info = LOG_FILES_MAP.get(log_type)
     if not log_info:
-        return jsonify({"success": False, "message": "Type de log invalide."})
+        return jsonify({"success": False, "message": tr("Type de log invalide.")})
 
     log_file_path = log_info['path']
 
@@ -3240,16 +3243,16 @@ def clear_logs_api():
 
     log_info = LOG_FILES_MAP.get(log_type)
     if not log_info:
-        return jsonify({"success": False, "message": "Type de log invalide."}), 400
+        return jsonify({"success": False, "message": tr("Type de log invalide.")}), 400
     log_file_path = log_info['path']
 
     try:
         if os.path.exists(log_file_path):
             with open(log_file_path, 'w') as f:
                 f.truncate(0) # Efface le contenu du fichier
-            return jsonify({"success": True, "message": f"Le log '{log_type}' a été effacé."})
+            return jsonify({"success": True, "message": tr("Le log '%(value_0)s' a été effacé.", value_0=log_type)})
         else:
-            return jsonify({"success": False, "message": f"Fichier de log '{log_file_path}' non trouvé."})
+            return jsonify({"success": False, "message": tr("Fichier de log '%(value_0)s' non trouvé.", value_0=log_file_path)})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -3375,9 +3378,10 @@ def expand_filesystem():
 @login_required
 def get_tide_info_api():
     """Retourne les informations de marée depuis le fichier cache."""
+    tide_language = load_config().get("tide_language", "fr")
     tide_cache_path = Path('cache/tides.json')
     if not tide_cache_path.exists():
-        return jsonify({"success": False, "message": "Cache des marées non trouvé. Le diaporama doit tourner au moins une fois."})
+        return jsonify({"success": False, "message": tr("Cache des marées non trouvé. Le diaporama doit tourner au moins une fois.")})
 
     try:
         with open(tide_cache_path, 'r') as f:
@@ -3385,43 +3389,38 @@ def get_tide_info_api():
         
         last_update_iso = cache_data.get('timestamp')
         last_update_dt = datetime.fromisoformat(last_update_iso)
-        last_update_str = last_update_dt.strftime('%d/%m/%Y à %H:%M:%S')
+        time_separator = " at " if tide_language == "en" else " à "
+        last_update_str = f"{last_update_dt.strftime('%d/%m/%Y')}{time_separator}{last_update_dt.strftime('%H:%M:%S')}"
         api_status = "OK"
         formatted_tides = []
 
         if cache_data.get('cooldown'):
-            api_status = f"En cooldown (quota API probablement atteint). Prochaine tentative après { (last_update_dt + timedelta(hours=12)).strftime('%H:%M') }."
+            next_attempt = (last_update_dt + timedelta(hours=12)).strftime('%H:%M')
+            api_status = tr("En cooldown (quota API probablement atteint). Prochaine tentative après %(time)s.", time=next_attempt)
         
         tides_data = cache_data.get('data', [])
         
         # --- CORRECTION: Gérer l'ancien format de cache (dictionnaire) ---
         if not tides_data or not isinstance(tides_data, list):
-            api_status = "Aucune donnée de marée valide dans le cache. Forcez une mise à jour."
+            api_status = tr("Aucune donnée de marée valide dans le cache. Forcez une mise à jour.")
             if isinstance(tides_data, dict):
-                api_status = "Ancien format de cache détecté. Forcez une mise à jour."
+                api_status = tr("Ancien format de cache détecté. Forcez une mise à jour.")
         else:
-            today = datetime.now().date()
-            tomorrow = today + timedelta(days=1)
-            day_map = {'Mon':'Lun', 'Tue':'Mar', 'Wed':'Mer', 'Thu':'Jeu', 'Fri':'Ven', 'Sat':'Sam', 'Sun':'Dim'}
-
             # On ne prend que les 5 prochaines marées pour l'affichage web
             for tide in tides_data[:5]:
                 tide_dt = datetime.fromisoformat(tide['time']).astimezone()
-                tide_date = tide_dt.date()
-
-                if tide_date == today: day_str = "Aujourd'hui"
-                elif tide_date == tomorrow: day_str = "Demain"
-                else: day_str = day_map.get(tide_dt.strftime('%a'), tide_dt.strftime('%a'))
+                day_str = format_tide_day(tide_dt, tide_language)
+                type_label = format_tide_type(tide['type'], tide_language)
 
                 formatted_tides.append({
-                    "type": "Pleine Mer" if tide['type'] == 'high' else "Basse Mer",
-                    "time": f"{day_str} à {tide_dt.strftime('%H:%M')}",
+                    "type": type_label,
+                    "time": f"{day_str}{time_separator}{tide_dt.strftime('%H:%M')}",
                     "height": f"{tide['height']:.2f}m"
                 })
 
         return jsonify({"success": True, "last_update": last_update_str, "tides": formatted_tides, "api_status": api_status})
     except (json.JSONDecodeError, KeyError, Exception) as e:
-        return jsonify({"success": False, "message": f"Erreur lecture du cache: {str(e)}"})
+        return jsonify({"success": False, "message": tr("Erreur lecture du cache : %(error)s", error=str(e))})
 
 @app.route('/api/apply_filter', methods=['POST'])
 @login_required
@@ -3432,24 +3431,24 @@ def apply_filter_api():
     filter_name = data.get('filter')
 
     if not photo_relative_path or not filter_name:
-        return jsonify({"success": False, "message": "Chemin de la photo ou nom du filtre manquant."}), 400
+        return jsonify({"success": False, "message": tr("Chemin de la photo ou nom du filtre manquant.")}), 400
 
     # Le chemin relatif est de la forme 'source/nom_photo.jpg'
     photo_full_path = PREPARED_DIR / photo_relative_path
 
     if not photo_full_path.is_file():
-        return jsonify({"success": False, "message": f"Photo non trouvée : {photo_full_path}"}), 404
+        return jsonify({"success": False, "message": tr('Photo non trouvée : %(value_0)s', value_0=photo_full_path)}), 404
 
     try:
         apply_filter_to_image(str(photo_full_path), filter_name)
         # Le chemin ne change pas, mais on le renvoie pour forcer le rafraîchissement du cache du navigateur
         new_url = url_for('static', filename=f'prepared/{photo_relative_path}')
-        return jsonify({"success": True, "message": "Filtre appliqué !", "new_path": new_url})
+        return jsonify({"success": True, "message": tr("Filtre appliqué !"), "new_path": new_url})
     except ValueError as e: # Pour les noms de filtres invalides
         return jsonify({"success": False, "message": str(e)}), 400
     except Exception as e:
-        logger.info(f"Erreur lors de l'application du filtre : {e}")
-        return jsonify({"success": False, "message": f"Erreur interne du serveur : {e}"}), 500
+        logger.info(tr("Erreur lors de l'application du filtre : %(value_0)s", value_0=e))
+        return jsonify({"success": False, "message": tr('Erreur interne du serveur : %(value_0)s', value_0=e)}), 500
 
 @app.route('/api/set_photo_filter', methods=['POST'])
 @login_required
@@ -3460,7 +3459,7 @@ def set_photo_filter():
     filter_name = data.get('filter')
 
     if not photo_relative_path or not filter_name:
-        return jsonify({"success": False, "message": "Données manquantes."}), 400
+        return jsonify({"success": False, "message": tr("Données manquantes.")}), 400
 
     states = load_filter_states()
     
@@ -3471,7 +3470,7 @@ def set_photo_filter():
         states[photo_relative_path] = filter_name
     
     save_filter_states(states)
-    return jsonify({"success": True, "message": "Préférence de filtre enregistrée."})
+    return jsonify({"success": True, "message": tr("Préférence de filtre enregistrée.")})
 
 @app.route('/api/toggle_favorite', methods=['POST'])
 @login_required
@@ -3481,7 +3480,7 @@ def toggle_favorite():
     photo_relative_path = data.get('photo')
 
     if not photo_relative_path:
-        return jsonify({"success": False, "message": "Chemin de la photo manquant."}), 400
+        return jsonify({"success": False, "message": tr("Chemin de la photo manquant.")}), 400
 
     favorites = load_favorites()
     is_currently_favorite = photo_relative_path in favorites
@@ -3504,7 +3503,7 @@ def set_polaroid_text():
     text = data.get('text', '')
 
     if not photo_relative_path:
-        return jsonify({"success": False, "message": "Chemin de la photo manquant."}), 400
+        return jsonify({"success": False, "message": tr("Chemin de la photo manquant.")}), 400
 
     try:
         # Construire le chemin vers la version polaroid de l'image
@@ -3514,7 +3513,7 @@ def set_polaroid_text():
         polaroid_full_path = PREPARED_DIR / polaroid_relative_path
 
         if not polaroid_full_path.exists():
-             return jsonify({"success": False, "message": "La version Polaroid de cette photo n'existe pas."}), 404
+             return jsonify({"success": False, "message": tr("La version Polaroid de cette photo n'existe pas.")}), 404
 
         # Appeler la fonction pour ajouter le texte
         add_text_to_polaroid(str(polaroid_full_path), text)
@@ -3527,9 +3526,9 @@ def set_polaroid_text():
             texts.pop(photo_relative_path, None) # Supprimer la clé si le texte est vide
         save_polaroid_texts(texts)
 
-        return jsonify({"success": True, "message": "Texte mis à jour."})
+        return jsonify({"success": True, "message": tr("Texte mis à jour.")})
     except Exception as e:
-        return jsonify({"success": False, "message": f"Erreur interne du serveur : {e}"}), 500
+        return jsonify({"success": False, "message": tr('Erreur interne du serveur : %(value_0)s', value_0=e)}), 500
 
 @app.route('/api/set_image_text', methods=['POST'])
 @login_required
@@ -3540,14 +3539,14 @@ def set_image_text():
     text = data.get('text', '')
 
     if not photo_relative_path:
-        return jsonify({"success": False, "message": "Chemin de la photo manquant."}), 400
+        return jsonify({"success": False, "message": tr("Chemin de la photo manquant.")}), 400
 
     try:
         # Le chemin relatif est de la forme 'source/nom_photo.jpg'
         photo_full_path = PREPARED_DIR / photo_relative_path
 
         if not photo_full_path.is_file():
-            return jsonify({"success": False, "message": f"Photo non trouvée : {photo_full_path}"}), 404
+            return jsonify({"success": False, "message": tr('Photo non trouvée : %(value_0)s', value_0=photo_full_path)}), 404
 
         # Appeler la fonction pour ajouter le texte
         add_text_to_image(str(photo_full_path), text)
@@ -3560,9 +3559,9 @@ def set_image_text():
             texts.pop(photo_relative_path, None) # Supprimer la clé si le texte est vide
         save_text_states(texts)
 
-        return jsonify({"success": True, "message": "Texte mis à jour."})
+        return jsonify({"success": True, "message": tr("Texte mis à jour.")})
     except Exception as e:
-        return jsonify({"success": False, "message": f"Erreur interne du serveur : {e}"}), 500
+        return jsonify({"success": False, "message": tr('Erreur interne du serveur : %(value_0)s', value_0=e)}), 500
 
 @app.route('/api/telegram/invitations', methods=['GET', 'POST'])
 @login_required
@@ -3582,7 +3581,7 @@ def manage_telegram_invitations():
         duration_days = int(data.get('duration', 7))
 
         if not guest_name:
-            return jsonify({"success": False, "message": "Le nom de l'invité est requis."}), 400
+            return jsonify({"success": False, "message": tr("Le nom de l'invité est requis.")}), 400
 
         invitations = load_invitations()
         code = secrets.token_urlsafe(6) # Génère un code court et sécurisé
@@ -3595,7 +3594,7 @@ def manage_telegram_invitations():
             "used_by_user_id": None
         }
         save_invitations(invitations)
-        return jsonify({"success": True, "message": "Invitation créée.", "invitation": invitations[code]})
+        return jsonify({"success": True, "message": tr("Invitation créée."), "invitation": invitations[code]})
 
 @app.route('/api/telegram/invitations/<code>', methods=['DELETE'])
 @login_required
@@ -3604,9 +3603,9 @@ def delete_telegram_invitation(code):
     if code in invitations:
         del invitations[code]
         save_invitations(invitations)
-        return jsonify({"success": True, "message": "Invitation supprimée."})
+        return jsonify({"success": True, "message": tr("Invitation supprimée.")})
     else:
-        return jsonify({"success": False, "message": "Invitation non trouvée."}), 404
+        return jsonify({"success": False, "message": tr("Invitation non trouvée.")}), 404
 
 @app.route('/api/scan_wifi', methods=['GET'])
 @login_required
@@ -3663,13 +3662,13 @@ def scan_wifi():
         return jsonify({"success": True, "networks": networks})
 
     except FileNotFoundError:
-        return jsonify({"success": False, "message": "La commande 'nmcli' est introuvable. NetworkManager est-il installé et actif ?"}), 500
+        return jsonify({"success": False, "message": tr("La commande 'nmcli' est introuvable. NetworkManager est-il installé et actif ?")}), 500
     except subprocess.CalledProcessError as e:
-        return jsonify({"success": False, "message": f"Erreur lors du scan Wi-Fi : {e.stderr}"}), 500
+        return jsonify({"success": False, "message": tr('Erreur lors du scan Wi-Fi : %(value_0)s', value_0=e.stderr)}), 500
     except subprocess.TimeoutExpired:
-        return jsonify({"success": False, "message": "Le scan Wi-Fi a pris trop de temps (timeout)."}), 500
+        return jsonify({"success": False, "message": tr("Le scan Wi-Fi a pris trop de temps (timeout).")}), 500
     except Exception as e:
-        return jsonify({"success": False, "message": f"Erreur inattendue : {str(e)}"}), 500
+        return jsonify({"success": False, "message": tr('Erreur inattendue : %(value_0)s', value_0=str(e))}), 500
 
 @app.route('/api/voice_control/toggle', methods=['POST'])
 @login_required
@@ -3697,7 +3696,7 @@ def toggle_voice_control():
         
         return jsonify({"success": True, "message": message})
     except Exception as e:
-        logger.error(f"Erreur lors du basculement du contrôle vocal : {e}", exc_info=True)
+        logger.error(tr('Erreur lors du basculement du contrôle vocal : %(value_0)s', value_0=e), exc_info=True)
         return jsonify({"success": False, "message": _("Erreur interne du serveur : %(error)s", error=str(e))}), 500
 
 def migrate_guest_folders():
@@ -3715,7 +3714,7 @@ def migrate_guest_folders():
         # Migration des photos sources
         legacy_photos_dir = base_photos / legacy
         if legacy_photos_dir.exists() and legacy_photos_dir.is_dir():
-            logger.info(f"[Migration] Déplacement des photos de '{legacy}' vers '{target_name}'...")
+            logger.info(tr("[Migration] Déplacement des photos de '%(value_0)s' vers '%(value_1)s'...", value_0=legacy, value_1=target_name))
             for item in legacy_photos_dir.iterdir():
                 dest = base_photos / target_name / item.name
                 if not dest.exists():
@@ -3729,7 +3728,7 @@ def migrate_guest_folders():
         # Migration des photos préparées
         legacy_prepared_dir = base_prepared / legacy
         if legacy_prepared_dir.exists() and legacy_prepared_dir.is_dir():
-            logger.info(f"[Migration] Déplacement des fichiers préparés de '{legacy}' vers '{target_name}'...")
+            logger.info(tr("[Migration] Déplacement des fichiers préparés de '%(value_0)s' vers '%(value_1)s'...", value_0=legacy, value_1=target_name))
             for item in legacy_prepared_dir.iterdir():
                 dest = base_prepared / target_name / item.name
                 if not dest.exists():
@@ -3753,7 +3752,7 @@ def migrate_guest_folders():
     if modified:
         config['display_sources'] = list(new_sources)
         save_config(config)
-        logger.info(f"[Migration] Configuration mise à jour : sources {sources} -> {list(new_sources)}")
+        logger.info(tr('[Migration] Configuration mise à jour : sources %(value_0)s -> %(value_1)s', value_0=sources, value_1=list(new_sources)))
 
 if __name__ == '__main__':
     # Lancer la migration des dossiers invités au démarrage

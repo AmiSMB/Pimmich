@@ -6,6 +6,7 @@ CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.js
 def create_default_config():
     """Crée et retourne un dictionnaire de configuration par défaut. Source unique de vérité."""
     return {
+        "ui_language": "fr",
         "level_log": "INFO",
         "display_duration": 10,
         "active_start": "07:00",
@@ -51,11 +52,13 @@ def create_default_config():
         "weather_api_key": "",
         "weather_city": "Paris",
         "weather_units": "metric",
+        "weather_language": "fr",
         "weather_update_interval_minutes": 60,
         "show_tides": False,
         "tide_latitude": "",
         "tide_longitude": "",
         "stormglass_api_key": "",
+        "tide_language": "fr",
         "tide_offset_x": 0,
         "tide_offset_y": 0,
         # --- Paramètres de la prise connectée ---

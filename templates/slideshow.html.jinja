@@ -2,7 +2,7 @@
 <html lang="{{ get_locale() }}">
 
 <head>
-    <title>Diaporama - Pimmich</title>
+    <title>{{ _('Diaporama') }} - Pimmich</title>
     <style>
         html,
         body {
@@ -24,7 +24,7 @@
 </head>
 
 <body>
-    <img id="slideshow" src="" alt="Diaporama">
+    <img id="slideshow" src="" alt="{{ _('Diaporama') }}">
     <script>
         const photos = {{ photo_previews | tojson }};
         let index = 0;
@@ -43,7 +43,7 @@
             img.src = "/static/photos/" + photos[0];
             setInterval(showNext, 5000); // 5 secondes entre les photos
         } else {
-            document.body.innerHTML = "<p style='color:white;text-align:center;margin-top:20%'>Aucune photo à afficher.</p>";
+            document.body.innerHTML = `<p style="color:white;text-align:center;margin-top:20%">${{{ _('Aucune photo à afficher.')|tojson }}}</p>`;
         }
     </script>
 </body>
