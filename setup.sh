@@ -260,23 +260,26 @@ else
         say "❌ Échec de l'installation de pvporcupine !" "❌ Failed to install pvporcupine!"
         exit 1
     fi
-    say "Vérification manuelle et téléchargement du modèle de langue français s'il est absent..." "Checking for the French language model and downloading it if missing..."
+    if [ "$APP_LANGUAGE" = "fr" ]; then
+        say "Vérification manuelle et téléchargement du modèle de langue français s'il est absent..." "Checking for the French language model and downloading it if missing..."
+        SITE_PACKAGES_DIR=$(python3 -c "import site; print(site.getsitepackages()[0])")
+        FR_MODEL_PATH="$SITE_PACKAGES_DIR/pvporcupine/lib/common/porcupine_params_fr.pv"
 
-    SITE_PACKAGES_DIR=$(python3 -c "import site; print(site.getsitepackages()[0])")
-    FR_MODEL_PATH="$SITE_PACKAGES_DIR/pvporcupine/lib/common/porcupine_params_fr.pv"
-
-    if [ ! -f "$FR_MODEL_PATH" ]; then
-        say "⚠️ Le modèle de langue français est absent. Tentative de téléchargement manuel..." "⚠️ The French language model is missing. Trying a manual download..."
-        FR_MODEL_URL="https://github.com/Picovoice/porcupine/raw/master/lib/common/porcupine_params_fr.pv"
-        DEST_DIR=$(dirname "$FR_MODEL_PATH")
-        mkdir -p "$DEST_DIR"
-        if ! wget -q -O "$FR_MODEL_PATH" "$FR_MODEL_URL"; then
-            say "❌ ERREUR : le téléchargement manuel du modèle de langue a échoué. Le contrôle vocal ne fonctionnera pas." "❌ ERROR: Manual download of the language model failed. Voice control will not work."
+        if [ ! -f "$FR_MODEL_PATH" ]; then
+            say "⚠️ Le modèle de langue français est absent. Tentative de téléchargement manuel..." "⚠️ The French language model is missing. Trying a manual download..."
+            FR_MODEL_URL="https://github.com/Picovoice/porcupine/raw/master/lib/common/porcupine_params_fr.pv"
+            DEST_DIR=$(dirname "$FR_MODEL_PATH")
+            mkdir -p "$DEST_DIR"
+            if ! wget -q -O "$FR_MODEL_PATH" "$FR_MODEL_URL"; then
+                say "❌ ERREUR : le téléchargement manuel du modèle de langue a échoué. Le contrôle vocal ne fonctionnera pas." "❌ ERROR: Manual download of the language model failed. Voice control will not work."
+            else
+                say "✅ Modèle de langue français téléchargé et installé manuellement." "✅ French language model downloaded and installed manually."
+            fi
         else
-            say "✅ Modèle de langue français téléchargé et installé manuellement." "✅ French language model downloaded and installed manually."
+            say "✅ Le modèle de langue français est déjà présent." "✅ The French language model is already present."
         fi
     else
-        say "✅ Le modèle de langue français est déjà présent." "✅ The French language model is already present."
+        say "Le modèle anglais par défaut de Porcupine sera utilisé." "Porcupine's default English model will be used."
     fi
 
     say "=== [NOUVEAU] Téléchargement du son de notification vocale ===" "=== Downloading the voice notification sound ==="
@@ -291,35 +294,39 @@ else
         say "✅ Le son de notification est déjà présent." "✅ The notification sound is already present."
     fi
 
-    say "=== [NOUVEAU] Téléchargement du modèle de reconnaissance vocale (Vosk) ===" "=== Downloading the speech-recognition model (Vosk) ==="
+    say "=== Téléchargement du modèle de reconnaissance vocale (Vosk) ===" "=== Downloading the speech-recognition model (Vosk) ==="
     MODELS_DIR="models"
-    VOSK_MODEL_DIR="$MODELS_DIR/vosk-model-small-fr-0.22"
-    VOSK_ZIP_FILE="$MODELS_DIR/vosk-model-fr.zip"
-
-    if [ ! -d "$VOSK_MODEL_DIR" ]; then
-        say "Modèle Vosk non trouvé. Téléchargement..." "Vosk model not found. Downloading..."
-        mkdir -p "$MODELS_DIR"
-        wget -q --show-progress -O "$VOSK_ZIP_FILE" "https://alphacephei.com/vosk/models/vosk-model-small-fr-0.22.zip"
-        unzip -o "$VOSK_ZIP_FILE" -d "$MODELS_DIR"
-        rm "$VOSK_ZIP_FILE"
-        say "✅ Modèle Vosk français installé." "✅ French Vosk model installed."
+    if [ "$APP_LANGUAGE" = "fr" ]; then
+        VOSK_MODEL_DIR="$MODELS_DIR/vosk-model-small-fr-0.22"
+        VOSK_ZIP_FILE="$MODELS_DIR/vosk-model-fr.zip"
+        VOSK_MODEL_URL="https://alphacephei.com/vosk/models/vosk-model-small-fr-0.22.zip"
     else
-        say "✅ Le modèle Vosk français est déjà présent." "✅ The French Vosk model is already present."
+        VOSK_MODEL_DIR="$MODELS_DIR/vosk-model-small-en-us-0.15"
+        VOSK_ZIP_FILE="$MODELS_DIR/vosk-model-en.zip"
+        VOSK_MODEL_URL="https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
     fi
 
-    say "=== [NOUVEAU] Téléchargement du modèle de reconnaissance vocale anglais (Vosk) ===" "=== Downloading the English speech-recognition model (Vosk) ==="
-    VOSK_MODEL_EN_DIR="$MODELS_DIR/vosk-model-small-en-us-0.15"
-    VOSK_ZIP_EN_FILE="$MODELS_DIR/vosk-model-en.zip"
-
-    if [ ! -d "$VOSK_MODEL_EN_DIR" ]; then
-        say "Modèle Vosk anglais non trouvé. Téléchargement..." "English Vosk model not found. Downloading..."
+    if [ ! -d "$VOSK_MODEL_DIR" ]; then
+        if [ "$APP_LANGUAGE" = "fr" ]; then
+            say "Modèle Vosk français non trouvé. Téléchargement..." "French Vosk model not found. Downloading..."
+        else
+            say "Modèle Vosk anglais non trouvé. Téléchargement..." "English Vosk model not found. Downloading..."
+        fi
         mkdir -p "$MODELS_DIR"
-        wget -q --show-progress -O "$VOSK_ZIP_EN_FILE" "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
-        unzip -o "$VOSK_ZIP_EN_FILE" -d "$MODELS_DIR"
-        rm "$VOSK_ZIP_EN_FILE"
-        say "✅ Modèle Vosk anglais installé." "✅ English Vosk model installed."
+        wget -q --show-progress -O "$VOSK_ZIP_FILE" "$VOSK_MODEL_URL"
+        unzip -o "$VOSK_ZIP_FILE" -d "$MODELS_DIR"
+        rm "$VOSK_ZIP_FILE"
+        if [ "$APP_LANGUAGE" = "fr" ]; then
+            say "✅ Modèle Vosk français installé." "✅ French Vosk model installed."
+        else
+            say "✅ Modèle Vosk anglais installé." "✅ English Vosk model installed."
+        fi
     else
-        say "✅ Le modèle Vosk anglais est déjà présent." "✅ The English Vosk model is already present."
+        if [ "$APP_LANGUAGE" = "fr" ]; then
+            say "✅ Le modèle Vosk français est déjà présent." "✅ The French Vosk model is already present."
+        else
+            say "✅ Le modèle Vosk anglais est déjà présent." "✅ The English Vosk model is already present."
+        fi
     fi
 fi
 
@@ -330,7 +337,7 @@ mkdir -p static/photos
 mkdir -p static/prepared
 mkdir -p static/pending_uploads
 mkdir -p config
-"$VENV_PYTHON" -c 'import sys; from utils.config_manager import load_config, save_config; config = load_config(); config["ui_language"] = sys.argv[1]; save_config(config)' "$APP_LANGUAGE"
+"$VENV_PYTHON" -c 'import sys; from utils.config_manager import load_config, save_config; config = load_config(); config["ui_language"] = sys.argv[1]; config["voice_control_language"] = sys.argv[1]; save_config(config)' "$APP_LANGUAGE"
 say "Langue de l'application Pimmich réglée sur : $APP_LANGUAGE" "Pimmich application language set to: $APP_LANGUAGE"
 say "✅ Arborescence des dossiers créée." "✅ Directory structure created."
 
@@ -349,7 +356,7 @@ if [ ! -f "$CREDENTIALS_FILE" ]; then
     # The sudo -E option preserves the environment, which may be helpful.
     # Le script python affichera lui-même le mot de passe généré.
     # The Python script will display the generated password.
-    sudo -E "$VENV_PYTHON" utils/create_initial_user.py --output "$CREDENTIALS_FILE"
+    sudo -E "$VENV_PYTHON" utils/create_initial_user.py --output "$CREDENTIALS_FILE" --language "$APP_LANGUAGE"
     
     say "🔑 Configuration des droits sudo (sécurité, redémarrage, arrêt)..." "🔑 Configuring sudo permissions (security, reboot, shutdown)..."
     SUDOERS_CONF="/etc/sudoers.d/pimmich-auth"
