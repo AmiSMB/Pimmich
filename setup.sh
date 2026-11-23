@@ -330,6 +330,8 @@ mkdir -p static/photos
 mkdir -p static/prepared
 mkdir -p static/pending_uploads
 mkdir -p config
+"$VENV_PYTHON" -c 'import sys; from utils.config_manager import load_config, save_config; config = load_config(); config["ui_language"] = sys.argv[1]; save_config(config)' "$APP_LANGUAGE"
+say "Langue de l'application Pimmich réglée sur : $APP_LANGUAGE" "Pimmich application language set to: $APP_LANGUAGE"
 say "✅ Arborescence des dossiers créée." "✅ Directory structure created."
 
 # Corriger les permissions même si script lancé avec sudo
@@ -399,8 +401,8 @@ if ! grep -q 'start_pimmich.sh' "$SWAY_CONFIG_FILE" 2>/dev/null; then
     echo "exec_always --no-startup-id $START_SCRIPT $APP_LANGUAGE" >> "$SWAY_CONFIG_FILE"
     say "Ajout de start_pimmich.sh dans la configuration Sway (langue : $APP_LANGUAGE)." "Added start_pimmich.sh to the Sway configuration (language: $APP_LANGUAGE)."
 else
-    sed -i -E "/start_pimmich\\.sh/s#(start_pimmich\\.sh)([[:space:]]+(fr|en))?\$#\\1 $APP_LANGUAGE#" "$SWAY_CONFIG_FILE"
-    say "✅ start_pimmich.sh est déjà présent dans la configuration Sway." "✅ start_pimmich.sh is already present in the Sway configuration."
+    sed -i -E "/start_pimmich\\.sh/s#(start_pimmich\\.sh)([[:space:]]+(fr|en))?[[:space:]]*\$#\\1 $APP_LANGUAGE#" "$SWAY_CONFIG_FILE"
+    say "✅ Langue de démarrage de Pimmich mise à jour dans la configuration Sway : $APP_LANGUAGE." "✅ Updated Pimmich startup language in the Sway configuration: $APP_LANGUAGE."
 fi
 
 # Configuration des règles de fenêtres pour assurer que les vidéos mpv passent au premier plan
