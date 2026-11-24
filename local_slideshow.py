@@ -34,6 +34,25 @@ def _(text, **kwargs):
     except (KeyError, TypeError, ValueError):
         return text
 
+
+def set_date_locale(language=None):
+    """Set month and weekday names from the currently selected UI language."""
+    import locale
+
+    language = language or get_global_language()
+    language_locales = {
+        "fr": "fr_FR.UTF-8",
+        "en": "C",
+        "es": "es_ES.UTF-8",
+        "de": "de_DE.UTF-8",
+        "ja": "ja_JP.UTF-8",
+    }
+    try:
+        locale.setlocale(locale.LC_TIME, language_locales.get(language, "C"))
+    except locale.Error:
+        # The C locale is always available and uses English month names.
+        locale.setlocale(locale.LC_TIME, "C")
+
 # Définition des chemins
 # Define file paths.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -923,6 +942,9 @@ def control_fan(temperature, threshold=55, pin=14):
 
 # New function to draw the overlay elements (clock, date, weather)
 def draw_overlay(screen, screen_width, screen_height, config, main_font, photo_metadata=None):
+    # The web UI can change the saved language while this process is running.
+    # Refresh LC_TIME so month names follow that choice without requiring a restart.
+    set_date_locale()
     now = datetime.now()
     text_color = parse_color(config.get("clock_color", "#FFFFFF"))
     outline_color = parse_color(config.get("clock_outline_color", "#000000"))
@@ -2101,20 +2123,7 @@ def start_slideshow():
         # Initialize the status file.
         update_status_file({"paused": False})
 
-        import locale
-        language_locales = {
-            "fr": "fr_FR.UTF-8",
-            "en": "C",
-            "es": "es_ES.UTF-8",
-            "de": "de_DE.UTF-8",
-            "ja": "ja_JP.UTF-8",
-        }
-        date_locale = language_locales.get(get_global_language(), "C")
-        try:
-            locale.setlocale(locale.LC_TIME, date_locale)
-        except locale.Error:
-            # English locale is always available and avoids French date names as a fallback.
-            locale.setlocale(locale.LC_TIME, "C")
+        set_date_locale()
 
         # --- Gestion du bouton physique ---
         # --- Physical button handling ---

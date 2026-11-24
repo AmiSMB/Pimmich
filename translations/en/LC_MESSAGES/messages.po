@@ -2743,27 +2743,6 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ msgstr[0] ""
 #~ msgstr[1] ""
 
-#~ msgid ""
-#~ "État de la\n"
-#~ "                            prise : Inconnu"
-#~ msgstr ""
-#~ "State of the\n"
-#~ "                            taken: Unknown"
-
-#~ msgid ""
-#~ "URL\n"
-#~ "                                de Statut (Optionnel) :"
-#~ msgstr ""
-#~ "URL\n"
-#~ "                                Status (Optional):"
-
-#~ msgid ""
-#~ "Langue\n"
-#~ "                            du contrôle vocal"
-#~ msgstr ""
-#~ "Language\n"
-#~ "                            voice control"
-
 #~ msgid "URL pour ALLUMER la prise :"
 #~ msgstr "URL to turn the plug ON:"
 
@@ -2775,41 +2754,6 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 
 #~ msgid "URL de Statut (Optionnel) :"
 #~ msgstr "Status URL (Optional):"
-
-#~ msgid ""
-#~ "Couleur du fond (hex RGBA)\n"
-#~ "                            :"
-#~ msgstr ""
-#~ "Background color (hex RGBA)\n"
-#~ "                            :"
-
-#~ msgid ""
-#~ "Intervalle de MàJ\n"
-#~ "                            (min) :"
-#~ msgstr ""
-#~ "Update Interval\n"
-#~ "                            (min):"
-
-#~ msgid ""
-#~ "Une clé API est\n"
-#~ "                        requise. Vous pouvez trouver les coordonnées de votre port sur des sites comme"
-#~ msgstr ""
-#~ "An API key is\n"
-#~ "                        required. You can find your port coordinates on sites like"
-
-#~ msgid ""
-#~ "Note : Cette API fournit les hauteurs de marée, mais pas\n"
-#~ "                        le coefficient de marée."
-#~ msgstr ""
-#~ "Note: This API provides tide heights, but not\n"
-#~ "                        the tidal coefficient."
-
-#~ msgid ""
-#~ "Dernière mise à jour des données\n"
-#~ "                                    :"
-#~ msgstr ""
-#~ "Last data update\n"
-#~ "                                    :"
 
 #~ msgid ""
 #~ "La détection automatique du fuseau horaire a échoué lors de l'installation. "
@@ -2828,20 +2772,6 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ "                            by executing the command:"
 
 #~ msgid ""
-#~ "Le fuseau horaire a été configuré automatiquement\n"
-#~ "                            lors de l'installation."
-#~ msgstr ""
-#~ "The time zone has been configured automatically\n"
-#~ "                            during installation."
-
-#~ msgid ""
-#~ "Nombre maximum de photos à récupérer depuis Immich.\n"
-#~ "                        Mettez 0, -1 ou laissez vide pour ne pas avoir de limite."
-#~ msgstr ""
-#~ "Maximum number of photos to recover from Immich.\n"
-#~ "                        Put 0, -1 or leave empty to have no limit."
-
-#~ msgid ""
 #~ "Activer la mise à jour\n"
 #~ "                            automatique"
 #~ msgstr ""
@@ -2849,34 +2779,11 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ "                            automatic"
 
 #~ msgid ""
-#~ "Sélectionnez les sources de photos à inclure dans le diaporama.\n"
-#~ "                        Les photos seront mélangées entre les sources sélectionnées."
-#~ msgstr ""
-#~ "Select photo sources to include in the slideshow.\n"
-#~ "                        Photos will be mixed between the selected sources."
-
-#~ msgid ""
 #~ "Photos des invités\n"
 #~ "                            (validées)"
 #~ msgstr ""
 #~ "Guest photos\n"
 #~ "                            (validated)"
-
-#~ msgid ""
-#~ "Tester la\n"
-#~ "                            connexion"
-#~ msgstr ""
-#~ "Test the\n"
-#~ "                            connection"
-
-#~ msgid ""
-#~ "Activez cette fonction pour permettre à des utilisateurs autorisés d'envoyer des photos\n"
-#~ "                        directement sur le cadre via un bot Telegram. Les photos reçues seront ajoutées à la source\n"
-#~ "                        \"Telegram\"."
-#~ msgstr ""
-#~ "Enable this feature to allow authorized users to send photos\n"
-#~ "                        directly on the frame via a Telegram bot. Photos received will be added to the source\n"
-#~ "                        \"Telegram\"."
 
 #~ msgid ""
 #~ "Pour créer un bot et obtenir un token, parlez à @BotFather sur Telegram. "
@@ -2888,41 +2795,6 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ "                        example)."
 
 #~ msgid ""
-#~ "ID de l'administrateur\n"
-#~ "                            :"
-#~ msgstr ""
-#~ "Administrator ID\n"
-#~ "                            :"
-
-#~ msgid ""
-#~ "Créez des codes d'invitation uniques pour permettre à vos amis et votre famille d'envoyer\n"
-#~ "                        des photos au cadre. Ils devront envoyer ce code à votre bot Telegram pour être autorisés."
-#~ msgstr ""
-#~ "Create unique invitation codes to allow friends and family to send\n"
-#~ "                        photos in the frame. They will need to send this code to your Telegram bot to be authorized."
-
-#~ msgid ""
-#~ "N'oubliez pas d'activer la source \"Telegram\" dans l'onglet\n"
-#~ "                        \"Sources\" pour que les photos reçues apparaissent dans le diaporama."
-#~ msgstr ""
-#~ "Don't forget to activate the \"Telegram\" source in the tab\n"
-#~ "                        \"Sources\" so that the received photos appear in the slideshow."
-
-#~ msgid ""
-#~ "Augmentez temporairement la fréquence d'affichage des\n"
-#~ "                        nouvelles cartes postales reçues pour qu'elles apparaissent plus souvent."
-#~ msgstr ""
-#~ "Temporarily increase the display frequency of\n"
-#~ "                        new postcards received so that they appear more often."
-
-#~ msgid ""
-#~ "Durée du boost (jours)\n"
-#~ "                            :"
-#~ msgstr ""
-#~ "Boost duration (days)\n"
-#~ "                            :"
-
-#~ msgid ""
 #~ "Pour utiliser le mot-clé personnalisé \"Cadre Magique\", vous devez créer un"
 #~ " modèle sur le site de Picovoice, le télécharger, et le placer dans le "
 #~ "dossier `voice_models` sous le nom `cadre-magique_raspberry-pi.ppn`."
@@ -2930,20 +2802,6 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ "To use the custom wake word \"Magic Frame\", create a model on the Picovoice"
 #~ " website, download it, and place it in the `voice_models` folder as `cadre-"
 #~ "magique_raspberry-pi.ppn`."
-
-#~ msgid ""
-#~ "Moteur\n"
-#~ "                            de mot-clé"
-#~ msgstr ""
-#~ "Engine\n"
-#~ "                            keyword"
-
-#~ msgid ""
-#~ "Choisissez 'Vosk' si vous ne souhaitez pas créer de\n"
-#~ "                            compte Picovoice."
-#~ msgstr ""
-#~ "Choose 'Vosk' if you do not want to create\n"
-#~ "                            Picovoice account."
 
 #~ msgid "Langue du contrôle vocal"
 #~ msgstr "Voice control language"
@@ -2962,41 +2820,6 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ msgstr "Get your key with a free tier account from"
 
 #~ msgid ""
-#~ "Règle le volume pour les sons de notification (confirmation du contrôle vocal, réception\n"
-#~ "                        de carte postale, etc.)."
-#~ msgstr ""
-#~ "Adjusts the volume for notification sounds (voice control confirmation, receiving\n"
-#~ "                        postcard, etc.)."
-
-#~ msgid ""
-#~ "Volume des notifications\n"
-#~ "                            :"
-#~ msgstr ""
-#~ "Notification volume\n"
-#~ "                            :"
-
-#~ msgid ""
-#~ "Si votre microphone n'apparaît pas dans la liste ci-dessus, utilisez cet outil pour\n"
-#~ "                        vérifier si le système d'exploitation le détecte correctement."
-#~ msgstr ""
-#~ "If your microphone is not listed above, use this tool to\n"
-#~ "                        check if the operating system detects it correctly."
-
-#~ msgid ""
-#~ "Configurez ici l'affichage des informations (date, lieu)\n"
-#~ "                        extraites depuis Immich sur vos photos."
-#~ msgstr ""
-#~ "Configure the display of information here (date, location)\n"
-#~ "                        extracted from Immich on your photos."
-
-#~ msgid ""
-#~ "Format de\n"
-#~ "                            la date"
-#~ msgstr ""
-#~ "Format of\n"
-#~ "                            the date"
-
-#~ msgid ""
 #~ "Utilise les codes de formatage Python (ex:\n"
 #~ "                            %%d/%%m/%%Y, %%B %%Y)."
 #~ msgstr ""
@@ -3009,27 +2832,6 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ msgstr ""
 #~ "Show location\n"
 #~ "                            (city/country)"
-
-#~ msgid ""
-#~ "Format\n"
-#~ "                            de la localisation"
-#~ msgstr ""
-#~ "Format\n"
-#~ "                            of the location"
-
-#~ msgid ""
-#~ "Taille du\n"
-#~ "                            drapeau"
-#~ msgstr ""
-#~ "Size of\n"
-#~ "                            flag"
-
-#~ msgid ""
-#~ "Opacité\n"
-#~ "                            du drapeau (0.1 à 1.0)"
-#~ msgstr ""
-#~ "Opacity\n"
-#~ "                            of the flag (0.1 to 1.0)"
 
 #~ msgid ""
 #~ "Afficher un fond\n"
@@ -3064,20 +2866,6 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ "regulations."
 
 #~ msgid ""
-#~ "Pays (pour la\n"
-#~ "                            réglementation Wi-Fi)"
-#~ msgstr ""
-#~ "Country (for\n"
-#~ "                            Wi-Fi regulations)"
-
-#~ msgid ""
-#~ "SSID (Nom du\n"
-#~ "                            réseau)"
-#~ msgstr ""
-#~ "SSID (Name of\n"
-#~ "                            network)"
-
-#~ msgid ""
 #~ "Note : Après avoir appliqué les paramètres, la connexion peut prendre "
 #~ "jusqu'à une minute. Si le statut de connexion ci-dessus ne passe pas à "
 #~ "\"Connecté\", vérifiez le mot de passe puis essayez de redémarrer le "
@@ -3096,32 +2884,6 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ "If Wi-Fi does not connect while an Ethernet cable is plugged in, network "
 #~ "priority may be the cause. Disable the Ethernet interface to use Wi-Fi only."
 #~ " This restarts the network service."
-
-#~ msgid ""
-#~ "Cliquez sur le bouton pour rechercher les réseaux Wi-Fi disponibles.\n"
-#~ "                    Cliquer sur un réseau dans la liste remplira automatiquement le champ SSID ci-dessus."
-#~ msgstr ""
-#~ "Click the button to search for available Wi-Fi networks.\n"
-#~ "                    Clicking on a network in the list will automatically populate the SSID field above."
-
-#~ msgid ""
-#~ "Nouveau mot de\n"
-#~ "                            passe"
-#~ msgstr "New Password"
-
-#~ msgid ""
-#~ "Confirmer le\n"
-#~ "                            nouveau mot de passe"
-#~ msgstr ""
-#~ "Confirm the\n"
-#~ "                            new password"
-
-#~ msgid ""
-#~ "Les mots de passe ne\n"
-#~ "                            correspondent pas."
-#~ msgstr ""
-#~ "Passwords do not\n"
-#~ "                            do not match."
 
 #~ msgid ""
 #~ "Sauvegardez votre configuration (API, partages, affichage...) dans un "
@@ -3172,47 +2934,12 @@ msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 #~ msgstr[1] ""
 
 #~ msgid ""
-#~ "Aucune photo préparée n'a été trouvée. Veuillez\n"
-#~ "                    en importer depuis l'onglet \"Actions\"."
-#~ msgstr ""
-#~ "No prepared photos found. Please\n"
-#~ "                    import it from the “Actions” tab."
-
-#~ msgid ""
 #~ "Créez des albums virtuels (playlists) en sélectionnant des photos de "
 #~ "n'importe quelle source. Vous pouvez ensuite lancer un diaporama contenant "
 #~ "uniquement les photos d'une playlist."
 #~ msgstr ""
 #~ "Create virtual albums (playlists) by selecting photos from any source. You "
 #~ "can then start a slideshow with only photos from a playlist."
-
-#~ msgid ""
-#~ "Contrôle du Diaporama\n"
-#~ "                                Actuel"
-#~ msgstr ""
-#~ "Slideshow Control\n"
-#~ "                                Current"
-
-#~ msgid ""
-#~ "Le diaporama est\n"
-#~ "                                arrêté."
-#~ msgstr ""
-#~ "The slideshow is\n"
-#~ "                                stopped."
-
-#~ msgid ""
-#~ "Voici toutes vos photos marquées comme favorites. Vous pouvez les\n"
-#~ "                    gérer ici."
-#~ msgstr ""
-#~ "Here are all your photos marked as favorites. You can\n"
-#~ "                    manage here."
-
-#~ msgid ""
-#~ "Vous n'avez aucune\n"
-#~ "                    photo en favori pour le moment."
-#~ msgstr ""
-#~ "You have no\n"
-#~ "                    favorite photo for the moment."
 
 #: templates/configure.html.jinja:331
 msgid "Paramètres d'affichage"
@@ -5127,3 +4854,247 @@ msgstr "Audio capture devices"
 #: templates/configure.html.jinja:5510
 msgid "Erreur lors de la récupération des diagnostics."
 msgstr "Error retrieving diagnostics."
+
+#: templates/configure.html.jinja:536
+msgid "État de la\n                            prise : Inconnu"
+msgstr "State of the\n                            taken: Unknown"
+
+#: templates/configure.html.jinja:543
+msgid "URL\n                                pour ALLUMER la prise :"
+msgstr "URL to TURN ON the plug:"
+
+#: templates/configure.html.jinja:556
+msgid "URL\n                                pour ÉTEINDRE la prise :"
+msgstr "URL to TURN OFF the plug:"
+
+#: templates/configure.html.jinja:569
+msgid "Délai\n                                après allumage (secondes) :"
+msgstr "Delay after turning on (seconds):"
+
+#: templates/configure.html.jinja:577
+msgid "URL\n                                de Statut (Optionnel) :"
+msgstr "URL\n                                Status (Optional):"
+
+#: templates/configure.html.jinja:682
+msgid "Couleur du fond (hex RGBA)\n                            :"
+msgstr "Background color (hex RGBA)\n                            :"
+
+#: templates/configure.html.jinja:773
+msgid "Intervalle de MàJ\n                            (min) :"
+msgstr "Update Interval\n                            (min):"
+
+#: templates/configure.html.jinja:783
+msgid "Une clé API est\n                        requise. Vous pouvez trouver les coordonnées de votre port sur des sites comme"
+msgstr "An API key is\n                        required. You can find your port coordinates on sites like"
+
+#: templates/configure.html.jinja:787
+msgid "Note : Cette API fournit les hauteurs de marée, mais pas\n                        le coefficient de marée."
+msgstr "Note: This API provides tide heights, but not\n                        the tidal coefficient."
+
+#: templates/configure.html.jinja:863
+msgid "Dernière mise à jour des données\n                                    :"
+msgstr "Last data update\n                                    :"
+
+#: templates/configure.html.jinja:880
+msgid "La détection automatique du fuseau horaire a\n                            échoué lors de l'installation. Le système est configuré sur <strong>UTC</strong>. L'heure\n                            affichée peut être incorrecte."
+msgstr "Automatic time zone detection failed during installation. The system is set to <strong>UTC</strong>. The displayed time may be incorrect."
+
+#: templates/configure.html.jinja:884
+msgid "Vous pouvez le corriger manuellement en vous connectant au Raspberry Pi (via SSH) et\n                            en exécutant la commande :"
+msgstr "You can correct this manually by connecting to the Raspberry Pi (via SSH) and running the command:"
+
+#: templates/configure.html.jinja:890
+msgid "Le fuseau horaire a été configuré automatiquement\n                            lors de l'installation."
+msgstr "The time zone has been configured automatically\n                            during installation."
+
+#: templates/configure.html.jinja:931
+msgid "Nombre maximum de photos à récupérer depuis Immich.\n                        Mettez 0, -1 ou laissez vide pour ne pas avoir de limite."
+msgstr "Maximum number of photos to recover from Immich.\n                        Put 0, -1 or leave empty to have no limit."
+
+#: templates/configure.html.jinja:966
+msgid "Sélectionnez les sources de photos à inclure dans le diaporama.\n                        Les photos seront mélangées entre les sources sélectionnées."
+msgstr "Select photo sources to include in the slideshow.\n                        Photos will be mixed between the selected sources."
+
+#: templates/configure.html.jinja:1028
+msgid "Tester la\n                            connexion"
+msgstr "Test the\n                            connection"
+
+#: templates/configure.html.jinja:1072
+msgid "Activez cette fonction pour permettre à des utilisateurs autorisés d'envoyer des photos\n                        directement sur le cadre via un bot Telegram. Les photos reçues seront ajoutées à la source\n                        \"Telegram\"."
+msgstr "Enable this feature to allow authorized users to send photos\n                        directly on the frame via a Telegram bot. Photos received will be added to the source\n                        \"Telegram\"."
+
+#: templates/configure.html.jinja:1076
+msgid "Pour créer un bot et obtenir un token, parlez à @BotFather sur Telegram. L'ID de\n                        l'administrateur est votre propre ID utilisateur Telegram (obtenu via @userinfobot par\n                        exemple)."
+msgstr "To create a bot and get a token, message @BotFather on Telegram. The administrator ID is your own Telegram user ID (you can get it from @userinfobot, for example)."
+
+#: templates/configure.html.jinja:1103
+msgid "ID de l'administrateur\n                            :"
+msgstr "Administrator ID\n                            :"
+
+#: templates/configure.html.jinja:1127
+msgid "Créez des codes d'invitation uniques pour permettre à vos amis et votre famille d'envoyer\n                        des photos au cadre. Ils devront envoyer ce code à votre bot Telegram pour être autorisés."
+msgstr "Create unique invitation codes to allow friends and family to send\n                        photos in the frame. They will need to send this code to your Telegram bot to be authorized."
+
+#: templates/configure.html.jinja:1164
+msgid "N'oubliez pas d'activer la source \"Telegram\" dans l'onglet\n                        \"Sources\" pour que les photos reçues apparaissent dans le diaporama."
+msgstr "Don't forget to activate the \"Telegram\" source in the tab\n                        \"Sources\" so that the received photos appear in the slideshow."
+
+#: templates/configure.html.jinja:1172
+msgid "Augmentez temporairement la fréquence d'affichage des\n                        nouvelles cartes postales reçues pour qu'elles apparaissent plus souvent."
+msgstr "Temporarily increase the display frequency of\n                        new postcards received so that they appear more often."
+
+#: templates/configure.html.jinja:1182
+msgid "Durée du boost (jours)\n                            :"
+msgstr "Boost duration (days)\n                            :"
+
+#: templates/configure.html.jinja:1219
+msgid "Pour utiliser le mot-clé\n                            personnalisé \"Cadre Magique\", vous devez créer un modèle sur le site de Picovoice, le\n                            télécharger, et le placer dans le dossier `voice_models` sous le nom\n                            `cadre-magique_raspberry-pi.ppn`."
+msgstr "To use the custom wake word \"Magic Frame\", create a model on the Picovoice website, download it, and place it in the `voice_models` folder named `cadre-magique_raspberry-pi.ppn`."
+
+#: templates/configure.html.jinja:1226
+msgid "Moteur\n                            de mot-clé"
+msgstr "Engine\n                            keyword"
+
+#: templates/configure.html.jinja:1235
+msgid "Choisissez 'Vosk' si vous ne souhaitez pas créer de\n                            compte Picovoice."
+msgstr "Choose 'Vosk' if you do not want to create\n                            Picovoice account."
+
+#: templates/configure.html.jinja:1245
+msgid "Langue\n                            du contrôle vocal"
+msgstr "Language\n                            voice control"
+
+#: templates/configure.html.jinja:1254
+msgid "Le changement de langue nécessite un redémarrage du\n                            service vocal (désactiver puis réactiver le contrôle vocal)."
+msgstr "Changing the language requires restarting the voice service (disable and then re-enable voice control)."
+
+#: templates/configure.html.jinja:1259
+msgid "Clé\n                            d'accès Picovoice Porcupine"
+msgstr "Picovoice Porcupine access key"
+
+#: templates/configure.html.jinja:1274
+msgid "Obtenez votre clé via le compte gratuit (Free Tier)\n                            sur la"
+msgstr "Get your key through the free tier account at"
+
+#: templates/configure.html.jinja:1307
+msgid "Règle le volume pour les sons de notification (confirmation du contrôle vocal, réception\n                        de carte postale, etc.)."
+msgstr "Adjusts the volume for notification sounds (voice control confirmation, receiving\n                        postcard, etc.)."
+
+#: templates/configure.html.jinja:1311
+msgid "Volume des notifications\n                            :"
+msgstr "Notification volume\n                            :"
+
+#: templates/configure.html.jinja:1327
+msgid "Si votre microphone n'apparaît pas dans la liste ci-dessus, utilisez cet outil pour\n                        vérifier si le système d'exploitation le détecte correctement."
+msgstr "If your microphone is not listed above, use this tool to\n                        check if the operating system detects it correctly."
+
+#: templates/configure.html.jinja:1349
+msgid "Configurez ici l'affichage des informations (date, lieu)\n                        extraites depuis Immich sur vos photos."
+msgstr "Configure the display of information here (date, location)\n                        extracted from Immich on your photos."
+
+#: templates/configure.html.jinja:1358
+msgid "Format de\n                            la date"
+msgstr "Format of\n                            the date"
+
+#: templates/configure.html.jinja:1372
+msgid "Format\n                            de la localisation"
+msgstr "Format\n                            of the location"
+
+#: templates/configure.html.jinja:1391
+msgid "Taille du\n                            drapeau"
+msgstr "Size of\n                            flag"
+
+#: templates/configure.html.jinja:1404
+msgid "Opacité\n                            du drapeau (0.1 à 1.0)"
+msgstr "Opacity\n                            of the flag (0.1 to 1.0)"
+
+#: templates/configure.html.jinja:1618
+msgid "L'import depuis Telegram se fait automatiquement à la\n                            réception des photos. Activez la source dans l'onglet \"Sources\" pour les voir."
+msgstr "Telegram imports happen automatically when photos are received. Enable the source in the \"Sources\" tab to see them."
+
+#: templates/configure.html.jinja:1627
+msgid "Envoyez des photos directement depuis votre\n                            téléphone via le navigateur."
+msgstr "Send photos directly from your phone using the browser."
+
+#: templates/configure.html.jinja:1673
+msgid "Approuvez ou rejetez les photos envoyées. Les photos approuvées\n                        seront ajoutées à la source \"Invités\"."
+msgstr "Approve or reject submitted photos. Approved photos will be added to the \"Guests\" source."
+
+#: templates/configure.html.jinja:1708
+msgid "La sélection du pays est obligatoire pour activer\n                    l'interface Wi-Fi et respecter les réglementations locales sur les fréquences radio."
+msgstr "You must select a country to enable Wi-Fi and comply with local radio frequency regulations."
+
+#: templates/configure.html.jinja:1712
+msgid "Pays (pour la\n                            réglementation Wi-Fi)"
+msgstr "Country (for\n                            Wi-Fi regulations)"
+
+#: templates/configure.html.jinja:1726
+msgid "SSID (Nom du\n                            réseau)"
+msgstr "SSID (Name of\n                            network)"
+
+#: templates/configure.html.jinja:1754
+msgid "Note : Après avoir appliqué les paramètres, la connexion\n                    peut prendre jusqu'à une minute. Si le statut de connexion ci-dessus ne passe pas à \"Connecté\",\n                    vérifiez le mot de passe puis essayez de redémarrer le système."
+msgstr "Note: After applying the settings, the connection may take up to a minute. If the status above does not change to \"Connected\", check the password and try restarting the system."
+
+#: templates/configure.html.jinja:1763
+msgid "Si le Wi-Fi ne se connecte pas alors qu'un câble Ethernet\n                    est branché, c'est souvent un problème de priorité. Désactivez l'interface Ethernet pour forcer le\n                    système à utiliser exclusivement le Wi-Fi. Cette action redémarre le service réseau."
+msgstr "If Wi-Fi will not connect while an Ethernet cable is plugged in, the connection priority may be the cause. Disable the Ethernet interface to force the system to use Wi-Fi only. This restarts the network service."
+
+#: templates/configure.html.jinja:1787
+msgid "Cliquez sur le bouton pour rechercher les réseaux Wi-Fi disponibles.\n                    Cliquer sur un réseau dans la liste remplira automatiquement le champ SSID ci-dessus."
+msgstr "Click the button to search for available Wi-Fi networks.\n                    Clicking on a network in the list will automatically populate the SSID field above."
+
+#: templates/configure.html.jinja:1809
+msgid "Nouveau mot de\n                            passe"
+msgstr "New Password"
+
+#: templates/configure.html.jinja:1825
+msgid "Confirmer le\n                            nouveau mot de passe"
+msgstr "Confirm the\n                            new password"
+
+#: templates/configure.html.jinja:1838
+msgid "Les mots de passe ne\n                            correspondent pas."
+msgstr "Passwords do not\n                            do not match."
+
+#: templates/configure.html.jinja:1852
+msgid "Sauvegardez votre configuration (API, partages,\n                    affichage...) dans un fichier. Vous pourrez le restaurer plus tard ou sur une nouvelle\n                    installation."
+msgstr "Save your configuration (APIs, shares, display settings, etc.) to a file. You can restore it later or use it on a new installation."
+
+#: templates/configure.html.jinja:1883
+msgid "Cliquez sur le bouton pour rechercher et installer les\n                    dernières mises à jour de Pimmich depuis GitHub. L'application redémarrera automatiquement après la\n                    mise à jour."
+msgstr "Click the button to find and install the latest Pimmich updates from GitHub. The application will restart automatically after the update."
+
+#: templates/configure.html.jinja:1897
+msgid "Si vous avez flashé Pimmich sur une carte SD plus grande que\n                    l'image, utilisez cette option pour étendre la partition et utiliser tout l'espace disponible. Un\n                    redémarrage du système sera nécessaire pour finaliser l'opération."
+msgstr "If you installed Pimmich on an SD card larger than the image, use this option to expand the partition and use all available space. The system must restart to complete the operation."
+
+#: templates/configure.html.jinja:1901
+msgid "Cette opération est sûre et ne supprime aucune donnée.\n                        Elle prépare simplement le système à s'étendre au prochain démarrage."
+msgstr "This operation is safe and does not delete any data. It prepares the system to expand the partition at the next startup."
+
+#: templates/configure.html.jinja:2036
+msgid "Voici les photos qui sont prêtes à être affichées par le diaporama,\n                    classées par source. Cliquez sur une photo pour l'agrandir."
+msgstr "These photos are ready to be shown in the slideshow, organized by source. Click a photo to enlarge it."
+
+#: templates/configure.html.jinja:2180
+msgid "Aucune photo préparée n'a été trouvée. Veuillez\n                    en importer depuis l'onglet \"Actions\"."
+msgstr "No prepared photos found. Please\n                    import it from the “Actions” tab."
+
+#: templates/configure.html.jinja:2191
+msgid "Créez des albums virtuels (playlists) en sélectionnant des\n                    photos de n'importe quelle source. Vous pouvez ensuite lancer un diaporama contenant uniquement les\n                    photos d'une playlist."
+msgstr "Create virtual albums (playlists) by selecting photos from any source. You can then start a slideshow using only the photos in a playlist."
+
+#: templates/configure.html.jinja:2199
+msgid "Contrôle du Diaporama\n                                Actuel"
+msgstr "Slideshow Control\n                                Current"
+
+#: templates/configure.html.jinja:2239
+msgid "Le diaporama est\n                                arrêté."
+msgstr "The slideshow is\n                                stopped."
+
+#: templates/configure.html.jinja:2281
+msgid "Voici toutes vos photos marquées comme favorites. Vous pouvez les\n                    gérer ici."
+msgstr "Here are all your photos marked as favorites. You can\n                    manage here."
+
+#: templates/configure.html.jinja:2402
+msgid "Vous n'avez aucune\n                    photo en favori pour le moment."
+msgstr "You have no\n                    favorite photo for the moment."

@@ -4383,3 +4383,247 @@ msgstr ""
 #: templates/configure.html.jinja:5510
 msgid "Erreur lors de la récupération des diagnostics."
 msgstr ""
+
+#: templates/configure.html.jinja:536
+msgid "État de la\n                            prise : Inconnu"
+msgstr ""
+
+#: templates/configure.html.jinja:543
+msgid "URL\n                                pour ALLUMER la prise :"
+msgstr ""
+
+#: templates/configure.html.jinja:556
+msgid "URL\n                                pour ÉTEINDRE la prise :"
+msgstr ""
+
+#: templates/configure.html.jinja:569
+msgid "Délai\n                                après allumage (secondes) :"
+msgstr ""
+
+#: templates/configure.html.jinja:577
+msgid "URL\n                                de Statut (Optionnel) :"
+msgstr ""
+
+#: templates/configure.html.jinja:682
+msgid "Couleur du fond (hex RGBA)\n                            :"
+msgstr ""
+
+#: templates/configure.html.jinja:773
+msgid "Intervalle de MàJ\n                            (min) :"
+msgstr ""
+
+#: templates/configure.html.jinja:783
+msgid "Une clé API est\n                        requise. Vous pouvez trouver les coordonnées de votre port sur des sites comme"
+msgstr ""
+
+#: templates/configure.html.jinja:787
+msgid "Note : Cette API fournit les hauteurs de marée, mais pas\n                        le coefficient de marée."
+msgstr ""
+
+#: templates/configure.html.jinja:863
+msgid "Dernière mise à jour des données\n                                    :"
+msgstr ""
+
+#: templates/configure.html.jinja:880
+msgid "La détection automatique du fuseau horaire a\n                            échoué lors de l'installation. Le système est configuré sur <strong>UTC</strong>. L'heure\n                            affichée peut être incorrecte."
+msgstr ""
+
+#: templates/configure.html.jinja:884
+msgid "Vous pouvez le corriger manuellement en vous connectant au Raspberry Pi (via SSH) et\n                            en exécutant la commande :"
+msgstr ""
+
+#: templates/configure.html.jinja:890
+msgid "Le fuseau horaire a été configuré automatiquement\n                            lors de l'installation."
+msgstr ""
+
+#: templates/configure.html.jinja:931
+msgid "Nombre maximum de photos à récupérer depuis Immich.\n                        Mettez 0, -1 ou laissez vide pour ne pas avoir de limite."
+msgstr ""
+
+#: templates/configure.html.jinja:966
+msgid "Sélectionnez les sources de photos à inclure dans le diaporama.\n                        Les photos seront mélangées entre les sources sélectionnées."
+msgstr ""
+
+#: templates/configure.html.jinja:1028
+msgid "Tester la\n                            connexion"
+msgstr ""
+
+#: templates/configure.html.jinja:1072
+msgid "Activez cette fonction pour permettre à des utilisateurs autorisés d'envoyer des photos\n                        directement sur le cadre via un bot Telegram. Les photos reçues seront ajoutées à la source\n                        \"Telegram\"."
+msgstr ""
+
+#: templates/configure.html.jinja:1076
+msgid "Pour créer un bot et obtenir un token, parlez à @BotFather sur Telegram. L'ID de\n                        l'administrateur est votre propre ID utilisateur Telegram (obtenu via @userinfobot par\n                        exemple)."
+msgstr ""
+
+#: templates/configure.html.jinja:1103
+msgid "ID de l'administrateur\n                            :"
+msgstr ""
+
+#: templates/configure.html.jinja:1127
+msgid "Créez des codes d'invitation uniques pour permettre à vos amis et votre famille d'envoyer\n                        des photos au cadre. Ils devront envoyer ce code à votre bot Telegram pour être autorisés."
+msgstr ""
+
+#: templates/configure.html.jinja:1164
+msgid "N'oubliez pas d'activer la source \"Telegram\" dans l'onglet\n                        \"Sources\" pour que les photos reçues apparaissent dans le diaporama."
+msgstr ""
+
+#: templates/configure.html.jinja:1172
+msgid "Augmentez temporairement la fréquence d'affichage des\n                        nouvelles cartes postales reçues pour qu'elles apparaissent plus souvent."
+msgstr ""
+
+#: templates/configure.html.jinja:1182
+msgid "Durée du boost (jours)\n                            :"
+msgstr ""
+
+#: templates/configure.html.jinja:1219
+msgid "Pour utiliser le mot-clé\n                            personnalisé \"Cadre Magique\", vous devez créer un modèle sur le site de Picovoice, le\n                            télécharger, et le placer dans le dossier `voice_models` sous le nom\n                            `cadre-magique_raspberry-pi.ppn`."
+msgstr ""
+
+#: templates/configure.html.jinja:1226
+msgid "Moteur\n                            de mot-clé"
+msgstr ""
+
+#: templates/configure.html.jinja:1235
+msgid "Choisissez 'Vosk' si vous ne souhaitez pas créer de\n                            compte Picovoice."
+msgstr ""
+
+#: templates/configure.html.jinja:1245
+msgid "Langue\n                            du contrôle vocal"
+msgstr ""
+
+#: templates/configure.html.jinja:1254
+msgid "Le changement de langue nécessite un redémarrage du\n                            service vocal (désactiver puis réactiver le contrôle vocal)."
+msgstr ""
+
+#: templates/configure.html.jinja:1259
+msgid "Clé\n                            d'accès Picovoice Porcupine"
+msgstr ""
+
+#: templates/configure.html.jinja:1274
+msgid "Obtenez votre clé via le compte gratuit (Free Tier)\n                            sur la"
+msgstr ""
+
+#: templates/configure.html.jinja:1307
+msgid "Règle le volume pour les sons de notification (confirmation du contrôle vocal, réception\n                        de carte postale, etc.)."
+msgstr ""
+
+#: templates/configure.html.jinja:1311
+msgid "Volume des notifications\n                            :"
+msgstr ""
+
+#: templates/configure.html.jinja:1327
+msgid "Si votre microphone n'apparaît pas dans la liste ci-dessus, utilisez cet outil pour\n                        vérifier si le système d'exploitation le détecte correctement."
+msgstr ""
+
+#: templates/configure.html.jinja:1349
+msgid "Configurez ici l'affichage des informations (date, lieu)\n                        extraites depuis Immich sur vos photos."
+msgstr ""
+
+#: templates/configure.html.jinja:1358
+msgid "Format de\n                            la date"
+msgstr ""
+
+#: templates/configure.html.jinja:1372
+msgid "Format\n                            de la localisation"
+msgstr ""
+
+#: templates/configure.html.jinja:1391
+msgid "Taille du\n                            drapeau"
+msgstr ""
+
+#: templates/configure.html.jinja:1404
+msgid "Opacité\n                            du drapeau (0.1 à 1.0)"
+msgstr ""
+
+#: templates/configure.html.jinja:1618
+msgid "L'import depuis Telegram se fait automatiquement à la\n                            réception des photos. Activez la source dans l'onglet \"Sources\" pour les voir."
+msgstr ""
+
+#: templates/configure.html.jinja:1627
+msgid "Envoyez des photos directement depuis votre\n                            téléphone via le navigateur."
+msgstr ""
+
+#: templates/configure.html.jinja:1673
+msgid "Approuvez ou rejetez les photos envoyées. Les photos approuvées\n                        seront ajoutées à la source \"Invités\"."
+msgstr ""
+
+#: templates/configure.html.jinja:1708
+msgid "La sélection du pays est obligatoire pour activer\n                    l'interface Wi-Fi et respecter les réglementations locales sur les fréquences radio."
+msgstr ""
+
+#: templates/configure.html.jinja:1712
+msgid "Pays (pour la\n                            réglementation Wi-Fi)"
+msgstr ""
+
+#: templates/configure.html.jinja:1726
+msgid "SSID (Nom du\n                            réseau)"
+msgstr ""
+
+#: templates/configure.html.jinja:1754
+msgid "Note : Après avoir appliqué les paramètres, la connexion\n                    peut prendre jusqu'à une minute. Si le statut de connexion ci-dessus ne passe pas à \"Connecté\",\n                    vérifiez le mot de passe puis essayez de redémarrer le système."
+msgstr ""
+
+#: templates/configure.html.jinja:1763
+msgid "Si le Wi-Fi ne se connecte pas alors qu'un câble Ethernet\n                    est branché, c'est souvent un problème de priorité. Désactivez l'interface Ethernet pour forcer le\n                    système à utiliser exclusivement le Wi-Fi. Cette action redémarre le service réseau."
+msgstr ""
+
+#: templates/configure.html.jinja:1787
+msgid "Cliquez sur le bouton pour rechercher les réseaux Wi-Fi disponibles.\n                    Cliquer sur un réseau dans la liste remplira automatiquement le champ SSID ci-dessus."
+msgstr ""
+
+#: templates/configure.html.jinja:1809
+msgid "Nouveau mot de\n                            passe"
+msgstr ""
+
+#: templates/configure.html.jinja:1825
+msgid "Confirmer le\n                            nouveau mot de passe"
+msgstr ""
+
+#: templates/configure.html.jinja:1838
+msgid "Les mots de passe ne\n                            correspondent pas."
+msgstr ""
+
+#: templates/configure.html.jinja:1852
+msgid "Sauvegardez votre configuration (API, partages,\n                    affichage...) dans un fichier. Vous pourrez le restaurer plus tard ou sur une nouvelle\n                    installation."
+msgstr ""
+
+#: templates/configure.html.jinja:1883
+msgid "Cliquez sur le bouton pour rechercher et installer les\n                    dernières mises à jour de Pimmich depuis GitHub. L'application redémarrera automatiquement après la\n                    mise à jour."
+msgstr ""
+
+#: templates/configure.html.jinja:1897
+msgid "Si vous avez flashé Pimmich sur une carte SD plus grande que\n                    l'image, utilisez cette option pour étendre la partition et utiliser tout l'espace disponible. Un\n                    redémarrage du système sera nécessaire pour finaliser l'opération."
+msgstr ""
+
+#: templates/configure.html.jinja:1901
+msgid "Cette opération est sûre et ne supprime aucune donnée.\n                        Elle prépare simplement le système à s'étendre au prochain démarrage."
+msgstr ""
+
+#: templates/configure.html.jinja:2036
+msgid "Voici les photos qui sont prêtes à être affichées par le diaporama,\n                    classées par source. Cliquez sur une photo pour l'agrandir."
+msgstr ""
+
+#: templates/configure.html.jinja:2180
+msgid "Aucune photo préparée n'a été trouvée. Veuillez\n                    en importer depuis l'onglet \"Actions\"."
+msgstr ""
+
+#: templates/configure.html.jinja:2191
+msgid "Créez des albums virtuels (playlists) en sélectionnant des\n                    photos de n'importe quelle source. Vous pouvez ensuite lancer un diaporama contenant uniquement les\n                    photos d'une playlist."
+msgstr ""
+
+#: templates/configure.html.jinja:2199
+msgid "Contrôle du Diaporama\n                                Actuel"
+msgstr ""
+
+#: templates/configure.html.jinja:2239
+msgid "Le diaporama est\n                                arrêté."
+msgstr ""
+
+#: templates/configure.html.jinja:2281
+msgid "Voici toutes vos photos marquées comme favorites. Vous pouvez les\n                    gérer ici."
+msgstr ""
+
+#: templates/configure.html.jinja:2402
+msgid "Vous n'avez aucune\n                    photo en favori pour le moment."
+msgstr ""
