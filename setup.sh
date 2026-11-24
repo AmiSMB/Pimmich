@@ -203,7 +203,9 @@ fi
 # Detect the Raspberry Pi model.
 PI_MODEL=""
 if [ -f /proc/device-tree/model ]; then
-    MODEL_STR=$(cat /proc/device-tree/model)
+    # The device-tree value is NUL-terminated; read it directly instead of
+    # placing its embedded NUL byte in a command substitution.
+    IFS= read -r -d '' MODEL_STR < /proc/device-tree/model || true
     if [[ "$MODEL_STR" =~ "Raspberry Pi 4" ]]; then
         PI_MODEL="4"
     elif [[ "$MODEL_STR" =~ "Raspberry Pi 5" ]]; then
