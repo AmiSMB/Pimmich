@@ -1083,6 +1083,7 @@ def configure():
         current_photo_preparation_settings = {
             key: config.get(key) for key in photo_preparation_keys
         }
+        current_photo_preparation_settings['photo_fit_version'] = 2
         photo_settings_path = BASE_DIR / "cache" / "photo_preparation_settings.json"
         try:
             with open(photo_settings_path, 'r', encoding='utf-8') as settings_file:

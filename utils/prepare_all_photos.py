@@ -190,10 +190,6 @@ def prepare_photo(source_path, dest_path, output_width, output_height, source_ty
         if img.mode in ('RGBA', 'LA', 'P'):
             img = img.convert('RGB')
         
-        # Determine if the image is portrait-like
-        img_aspect_ratio = img.width / img.height
-        display_area_aspect_ratio = output_width / effective_photo_height
-        
         pi_model = get_pi_model()
         is_low_end = (pi_model in [1, 2, 3])
         resample_filter = Image.Resampling.BILINEAR if is_low_end else Image.Resampling.LANCZOS
@@ -240,30 +236,22 @@ def prepare_photo(source_path, dest_path, output_width, output_height, source_ty
             x_offset = (output_width - fitted_width) // 2
             y_offset = (output_height - fitted_height) // 2
             final_img.paste(img_content, (x_offset, y_offset))
-        elif img_aspect_ratio < display_area_aspect_ratio:
-            # Portrait photo - add blurred background
-            img_content = img.copy()
-            scale = effective_photo_height / img.height
-            new_width = int(img.width * scale)
-            img_content = img_content.resize((new_width, effective_photo_height), resample_filter)
+        else:
+            # Fill mode scales to the photo's long dimension: landscape photos
+            # match the screen width; portrait photos match the usable height.
+            if img.width >= img.height:
+                scale = output_width / img.width
+            else:
+                scale = effective_photo_height / img.height
+            content_width = max(1, int(img.width * scale))
+            content_height = max(1, int(img.height * scale))
+            img_content = img.resize((content_width, content_height), resample_filter)
 
             if solid_background:
                 final_img = Image.new('RGB', (output_width, output_height), background_rgb)
             else:
                 final_img = create_blurred_background()
-            
-            x_offset = (output_width - img_content.width) // 2
-            y_offset = (output_height - img_content.height) // 2
-            final_img.paste(img_content, (x_offset, y_offset))
-        else:
-            # Landscape or square photo
-            img_content = img.copy()
-            scale = effective_photo_height / img.height
-            new_width = int(img.width * scale)
-            img_content = img_content.resize((new_width, effective_photo_height), resample_filter)
-            
-            canvas_color = background_rgb if solid_background else (0, 0, 0)
-            final_img = Image.new('RGB', (output_width, output_height), canvas_color)
+
             x_offset = (output_width - img_content.width) // 2
             y_offset = (output_height - img_content.height) // 2
             final_img.paste(img_content, (x_offset, y_offset))
