@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Usage : ./start_pimmich.sh [fr|en]
-# Usage: ./start_pimmich.sh [fr|en]
-APP_LANGUAGE="${1:-fr}"
+# Usage : ./start_pimmich.sh [fr|en|es|de|ja]
+# Usage: ./start_pimmich.sh [fr|en|es|de|ja]
+APP_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+APP_LANGUAGE="${1:-$(python3 -c 'import json, pathlib, sys; p=pathlib.Path(sys.argv[1]); c=json.loads(p.read_text()) if p.exists() else {}; print(c.get("ui_language", "fr"))' "$APP_DIR/config/config.json" 2>/dev/null)}"
 case "$APP_LANGUAGE" in
-    fr|en) ;;
+    fr|en|es|de|ja) ;;
     *) APP_LANGUAGE="fr" ;;
 esac
 
@@ -41,7 +42,7 @@ echo $$ > "$LOCK_FILE"
 
 # Se placer dans le répertoire du script pour que les chemins relatifs fonctionnent
 # Change to the script directory so relative paths work.
-cd "$(dirname "$0")" || exit 1
+cd "$APP_DIR" || exit 1
 
 # S'assurer que le dossier de logs existe
 # Ensure the log directory exists.

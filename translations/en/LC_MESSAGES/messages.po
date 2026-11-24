@@ -22,93 +22,87 @@ msgstr ""
 msgid ""
 "SWAYSOCK non trouvé, utilisation de la résolution de secours depuis la "
 "config."
-msgstr ""
+msgstr "SWAYSOCK not found; using the fallback resolution from the configuration."
 
 #: app.py:290
 #, python-format
 msgid ""
 "Résolution détectée sur la sortie '%(value_0)s': %(value_1)sx%(value_2)s "
 "(Active: %(value_3)s)"
-msgstr ""
+msgstr "Resolution detected on output '%(value_0)s': %(value_1)sx%(value_2)s (Active: %(value_3)s)"
 
 #: app.py:293
 msgid ""
 "😒 Aucune sortie avec un mode configuré trouvée (écran en veille ?), "
 "utilisation de la résolution de secours depuis la config."
-msgstr ""
+msgstr "😒 No configured output mode found (is the screen asleep?); using the fallback resolution from the configuration."
 
 #: app.py:296
 #, python-format
 msgid ""
 "😒 Erreur lors de la détection de la résolution de l'écran : %(value_0)s. "
 "Utilisation de la résolution de secours depuis la config."
-msgstr ""
+msgstr "😒 Error detecting screen resolution: %(value_0)s. Using the fallback resolution from the configuration."
 
 #: app.py:299
 #, python-format
 msgid ""
 "😒 Erreur inattendue lors de la détection de la résolution : %(value_0)s. "
 "Utilisation de la résolution de secours depuis la config."
-msgstr ""
+msgstr "😒 Unexpected error detecting resolution: %(value_0)s. Using the fallback resolution from the configuration."
 
 #: app.py:346
-#, fuzzy, python-format
 msgid "Erreur lors de la sauvegarde des états de filtre : %(value_0)s"
-msgstr "Error saving the preference."
+msgstr "Error saving filter states: %(value_0)s"
 
 #: app.py:364
-#, fuzzy, python-format
 msgid "😒 Erreur lors de la sauvegarde des favoris : %(value_0)s"
-msgstr "Error saving the preference."
+msgstr "😒 Error saving favorites: %(value_0)s"
 
 #: app.py:382
-#, fuzzy, python-format
 msgid "😒 Erreur lors de la sauvegarde des textes polaroid : %(value_0)s"
-msgstr "Error saving the preference."
+msgstr "😒 Error saving Polaroid texts: %(value_0)s"
 
 #: app.py:400
-#, fuzzy, python-format
 msgid "😒 Erreur lors de la sauvegarde des états de texte : %(value_0)s"
-msgstr "Error saving the preference."
+msgstr "😒 Error saving text states: %(value_0)s"
 
 #: app.py:418
-#, fuzzy, python-format
 msgid "😒 Erreur lors de la sauvegarde des invités Telegram : %(value_0)s"
-msgstr "Error saving the preference."
+msgstr "😒 Error saving Telegram guests: %(value_0)s"
 
 #: app.py:442
-#, fuzzy, python-format
 msgid "😒 Erreur lors de la sauvegarde des invitations : %(value_0)s"
-msgstr "Restore error: %(error)s"
+msgstr "😒 Error saving invitations: %(value_0)s"
 
 #: app.py:510
 #, python-format
 msgid ""
 "Erreur lors de la lecture de la date pour l'icône anniversaire: %(value_0)s"
-msgstr ""
+msgstr "Error reading the date for the anniversary icon: %(value_0)s"
 
 #: app.py:541
 #, python-format
 msgid "[Telegram] Traitement de la nouvelle photo : %(value_0)s"
-msgstr ""
+msgstr "[Telegram] Processing new photo: %(value_0)s"
 
 #: app.py:590
 #, python-format
 msgid ""
 "[Telegram] Fichier de notification sonore créé avec le chemin : %(value_0)s"
-msgstr ""
+msgstr "[Telegram] Sound notification file created at: %(value_0)s"
 
 #: app.py:592
 #, python-format
 msgid ""
 "[Telegram] ERREUR lors de la création du fichier de notification : "
 "%(value_0)s"
-msgstr ""
+msgstr "[Telegram] ERROR creating notification file: %(value_0)s"
 
 #: app.py:594
 #, python-format
 msgid "[Telegram] Photo %(value_0)s.jpg traitée avec succès."
-msgstr ""
+msgstr "[Telegram] Photo %(value_0)s.jpg processed successfully."
 
 #: app.py:610
 msgid "Code d'invitation invalide."
@@ -134,9 +128,8 @@ msgid ""
 msgstr "Congratulations, %(name)s! You can now send postcards to the frame."
 
 #: app.py:643 app.py:3608
-#, fuzzy
 msgid "Invitation non trouvée."
-msgstr "Active invitations"
+msgstr "Invitation not found."
 
 #: app.py:663
 #, python-format
@@ -145,26 +138,23 @@ msgstr " the invitation for '%(name)s' has been revoked."
 
 #: app.py:664
 msgid "Accès révoqué."
-msgstr ""
+msgstr "Access revoked."
 
 #: app.py:674
-#, fuzzy
 msgid "Le token du bot Telegram n'est pas configuré."
-msgstr "Telegram Bot Token:"
+msgstr "The Telegram bot token is not configured."
 
 #: app.py:687
 msgid "Le bot n'a pas de nom d'utilisateur ou le token est incorrect."
-msgstr ""
+msgstr "The bot has no username or the token is incorrect."
 
 #: app.py:690
-#, fuzzy, python-format
 msgid "Échec de la récupération des infos du bot : %(value_0)s"
-msgstr "Error retrieving system information:"
+msgstr "Failed to retrieve bot information: %(value_0)s"
 
 #: app.py:692
-#, fuzzy, python-format
 msgid "Erreur de connexion à l'API Telegram : %(value_0)s"
-msgstr "Error connecting to the logs API."
+msgstr "Connection error to the Telegram API: %(value_0)s"
 
 #: app.py:706 app.py:711 app.py:2426 app.py:2430
 msgid "Aucun fichier sélectionné."
@@ -173,7 +163,7 @@ msgstr "No files selected."
 #: app.py:726
 #, python-format
 msgid "[Upload] Nouveau fichier reçu de l'invité et en attente : %(value_0)s"
-msgstr ""
+msgstr "[Upload] New file received from guest and awaiting review: %(value_0)s"
 
 #: app.py:729
 #, python-format
@@ -183,32 +173,30 @@ msgstr "%(count)s photo(s) sent for validation successfully!"
 #: app.py:741
 #, python-format
 msgid "Listing pending photos in: %(value_0)s"
-msgstr ""
+msgstr "Listing pending photos in: %(value_0)s"
 
 #: app.py:750
 #, python-format
 msgid "Error reading file %(value_0)s: %(value_1)s"
-msgstr ""
+msgstr "Error reading file %(value_0)s: %(value_1)s"
 
 #: app.py:756
 #, python-format
 msgid "Found %(value_0)s pending photos."
-msgstr ""
+msgstr "Found %(value_0)s pending photos."
 
 #: app.py:765
 #, python-format
 msgid "[ERROR] get_pending_photos failed: %(value_0)s"
-msgstr ""
+msgstr "[ERROR] get_pending_photos failed: %(value_0)s"
 
 #: app.py:778 app.py:3061
-#, fuzzy
 msgid "Données invalides."
-msgstr "Datas received from the server are invalid."
+msgstr "Invalid data."
 
 #: app.py:783
-#, fuzzy
 msgid "Fichier non trouvé."
-msgstr "Not found"
+msgstr "File not found."
 
 #: app.py:788
 msgid "Photo rejetée."
@@ -217,7 +205,7 @@ msgstr "Photo rejected."
 #: app.py:790
 #, python-format
 msgid "Erreur: %(value_0)s"
-msgstr ""
+msgstr "Error: %(value_0)s"
 
 #: app.py:831
 msgid "Photo approuvée et préparée. Le diaporama a été mis à jour."
@@ -228,9 +216,8 @@ msgid "La préparation de la photo a échoué. La photo reste en attente."
 msgstr "Photo preparation failed. The photo is still pending."
 
 #: app.py:835
-#, fuzzy, python-format
 msgid "Erreur lors de la préparation: %(value_0)s"
-msgstr "Restore error: %(error)s"
+msgstr "Error preparing photo: %(value_0)s"
 
 #: app.py:837
 msgid "Action inconnue."
@@ -252,17 +239,17 @@ msgstr "Successful disconnection"
 #, python-format
 msgid ""
 "🔳 %(value_0)s photo(s) des invités en attente dans %(value_1)s: %(value_2)s"
-msgstr ""
+msgstr "🔳 %(value_0)s guest photo(s) pending in %(value_1)s: %(value_2)s"
 
 #: app.py:883
 #, python-format
 msgid "🔳️ Le dossier %(value_0)s n'existe pas encore."
-msgstr ""
+msgstr "🔳️ Directory %(value_0)s does not exist yet."
 
 #: app.py:885
 #, python-format
 msgid "🔳️ Erreur lors du listage des fichiers en attente : %(value_0)s"
-msgstr ""
+msgstr "🔳️ Error listing pending files: %(value_0)s"
 
 #: app.py:919
 msgid ""
@@ -275,31 +262,30 @@ msgstr ""
 #: app.py:981
 #, python-format
 msgid "📅 Fuseau horaire système mis à jour : %(value_0)s"
-msgstr ""
+msgstr "📅 System time zone updated: %(value_0)s"
 
 #: app.py:983
-#, fuzzy, python-format
 msgid "❌ Erreur lors du réglage du fuseau horaire : %(value_0)s"
-msgstr "Error changing password:%(error)s"
+msgstr "❌ Error setting the time zone: %(value_0)s"
 
 #: app.py:1029
 #, python-format
 msgid ""
 "Orientation Portrait forcée : dimensions inversées à %(value_0)sx%(value_1)s"
-msgstr ""
+msgstr "Portrait orientation forced: dimensions swapped to %(value_0)sx%(value_1)s"
 
 #: app.py:1034
 #, python-format
 msgid ""
 "Orientation Paysage forcée : dimensions inversées à %(value_0)sx%(value_1)s"
-msgstr ""
+msgstr "Landscape orientation forced: dimensions swapped to %(value_0)sx%(value_1)s"
 
 #: app.py:1036
 #, python-format
 msgid ""
 "Résolution d'écran configurée : %(value_0)sx%(value_1)s. Sauvegarde dans la "
 "configuration."
-msgstr ""
+msgstr "Screen resolution configured: %(value_0)sx%(value_1)s. Saving to configuration."
 
 #: app.py:1078
 msgid ""
@@ -311,115 +297,109 @@ msgstr ""
 #: app.py:1265
 #, python-format
 msgid "[Import Smartphone] Erreur : %(value_0)s"
-msgstr ""
+msgstr "[Smartphone Import] Error: %(value_0)s"
 
 #: app.py:1283
 msgid "Le serveur et le nom du partage sont requis."
-msgstr ""
+msgstr "The server and share name are required."
 
 #: app.py:1300
 #, python-format
 msgid "Connexion réussie ! %(value_0)s élément(s) trouvé(s) dans le dossier."
-msgstr ""
+msgstr "Connection successful! Found %(value_0)s item(s) in the folder."
 
 #: app.py:1305
 msgid ""
 "Échec de l'authentification. Vérifiez l'utilisateur et le mot de passe."
-msgstr ""
+msgstr "Authentication failed. Check the username and password."
 
 #: app.py:1307
 #, python-format
 msgid "Le nom du partage '%(value_0)s' est introuvable sur le serveur."
-msgstr ""
+msgstr "Share '%(value_0)s' was not found on the server."
 
 #: app.py:1310
 #, python-format
 msgid "Le chemin '%(value_0)s' est introuvable dans le partage."
-msgstr ""
+msgstr "Path '%(value_0)s' was not found in the share."
 
 #: app.py:1312
 #, python-format
 msgid ""
 "Impossible de joindre le serveur '%(value_0)s'. Vérifiez l'adresse et le "
 "pare-feu."
-msgstr ""
+msgstr "Could not reach server '%(value_0)s'. Check the address and firewall."
 
 #: app.py:1313
 #, python-format
 msgid "Erreur Samba : %(value_0)s"
-msgstr ""
+msgstr "Samba error: %(value_0)s"
 
 #: app.py:1315 app.py:3671
-#, fuzzy, python-format
 msgid "Erreur inattendue : %(value_0)s"
-msgstr "Internal server error: %(error)s"
+msgstr "Unexpected error: %(value_0)s"
 
 #: app.py:1357
 #, python-format
 msgid ""
 "[App] Avertissement: Impossible de charger le cache de description Immich: "
 "%(value_0)s"
-msgstr ""
+msgstr "[App] Warning: Could not load Immich description cache: %(value_0)s"
 
 #: app.py:1413
-#, fuzzy
 msgid "La clé API et la ville sont requises."
-msgstr "Test API key and city"
+msgstr "The API key and city are required."
 
 #: app.py:1421
 msgid "Clé API et ville valides !"
-msgstr ""
+msgstr "API key and city are valid!"
 
 #: app.py:1424
 msgid "Clé API invalide ou non activée."
-msgstr ""
+msgstr "Invalid or inactive API key."
 
 #: app.py:1427
-#, fuzzy
 msgid "Ville non trouvée."
-msgstr "Not found"
+msgstr "City not found."
 
 #: app.py:1429
 #, python-format
 msgid "Erreur de l'API: %(value_0)s - %(value_1)s"
-msgstr ""
+msgstr "API error: %(value_0)s - %(value_1)s"
 
 #: app.py:1432
-#, fuzzy, python-format
 msgid "Erreur de connexion : %(value_0)s"
-msgstr "Connection error: %(error)s"
+msgstr "Connection error: %(value_0)s"
 
 #: app.py:1444
 msgid "La clé API, la latitude et la longitude sont requises."
-msgstr ""
+msgstr "The API key, latitude, and longitude are required."
 
 #: app.py:1457
-#, fuzzy
 msgid "Connexion à StormGlass réussie !"
-msgstr "Successful connection"
+msgstr "Connected to StormGlass successfully!"
 
 #: app.py:1459
-#, fuzzy
 msgid "Clé API invalide."
-msgstr "Api Key :"
+msgstr "Invalid API key."
 
 #: app.py:1461
 msgid "Crédits API épuisés ou plan inadapté."
-msgstr ""
+msgstr "API credits exhausted or plan not suitable."
 
 #: app.py:1463
 msgid "Trop de requêtes. Veuillez réessayer plus tard."
-msgstr ""
+msgstr "Too many requests. Please try again later."
 
 #: app.py:1467
 #, python-format
 msgid "Erreur de l'API (%(status)s) : %(details)s"
-msgstr ""
+msgstr "API error (%(status)s): %(details)s"
 
 #: app.py:1469
 #, python-format
 msgid "Erreur de l'API (%(status)s)"
-msgstr ""
+msgstr "API error (%(status)s)"
 
 #: app.py:1472 app.py:1519
 #, python-format
@@ -427,29 +407,27 @@ msgid "Erreur de connexion : %(error)s"
 msgstr "Connection error: %(error)s"
 
 #: app.py:1482
-#, fuzzy
 msgid "L'URL est requise."
-msgstr "the token of the bot is required"
+msgstr "URL is required."
 
 #: app.py:1488
 #, python-format
 msgid "Succès ! La prise a répondu avec le code %(value_0)s."
-msgstr ""
+msgstr "Success! The plug responded with code %(value_0)s."
 
 #: app.py:1490
 #, python-format
 msgid "Échec. La prise a répondu avec une erreur : %(value_0)s."
-msgstr ""
+msgstr "Failed. The plug responded with an error: %(value_0)s."
 
 #: app.py:1492
 msgid ""
 "Échec. La requête a expiré (timeout). Vérifiez l'adresse IP de la prise."
-msgstr ""
+msgstr "Failed. The request timed out. Check the plug's IP address."
 
 #: app.py:1494
-#, fuzzy, python-format
 msgid "Échec. Erreur de connexion : %(value_0)s"
-msgstr "Connection error: %(error)s"
+msgstr "Failed. Connection error: %(value_0)s"
 
 #: app.py:1504
 msgid "Le token du bot est requis."
@@ -467,112 +445,108 @@ msgstr "Echec of sending: %(error)s"
 
 #: app.py:1532
 msgid "Configuration StormGlass incomplète."
-msgstr ""
+msgstr "StormGlass configuration is incomplete."
 
 #: app.py:1550
-#, fuzzy
 msgid "Aucune marée future trouvée par l'API."
-msgstr "No resolution found."
+msgstr "No future tides found by the API."
 
 #: app.py:1559
 msgid "Données de marée mises à jour avec succès !"
-msgstr ""
+msgstr "Tide data updated successfully!"
 
 #: app.py:1568
-#, fuzzy
 msgid "Quota API StormGlass dépassé."
-msgstr "Api Key StormGlass :"
+msgstr "StormGlass API quota exceeded."
 
 #: app.py:1569
 #, python-format
 msgid "Erreur API (%(status)s)."
-msgstr ""
+msgstr "API error (%(status)s)."
 
 #: app.py:1571
-#, fuzzy, python-format
 msgid "Erreur inattendue : %(error)s"
-msgstr "Internal server error: %(error)s"
+msgstr "Unexpected error: %(error)s"
 
 #: app.py:1625
 msgid "Photos téléchargées avec succès."
-msgstr ""
+msgstr "Photos downloaded successfully."
 
 #: app.py:1642
 msgid "📅️🔄 Démarrage du worker de planification du diaporama"
-msgstr ""
+msgstr "📅️🔄 Starting slideshow schedule worker"
 
 #: app.py:1647
 msgid "📅 Séquence de démarrage initiale."
-msgstr ""
+msgstr "📅 Initial startup sequence."
 
 #: app.py:1655
 #, python-format
 msgid ""
 "📅 Forçage de la résolution %(value_0)sx%(value_1)s sur l'écran '%(value_2)s'"
 " au démarrage."
-msgstr ""
+msgstr "📅 Forcing resolution %(value_0)sx%(value_1)s on display '%(value_2)s' at startup."
 
 #: app.py:1665
 #, python-format
 msgid ""
 "📅 Résolution %(value_0)sx%(value_1)s appliquée avec succès sur %(value_2)s"
-msgstr ""
+msgstr "📅 Resolution %(value_0)sx%(value_1)s successfully applied to %(value_2)s"
 
 #: app.py:1667
 #, python-format
 msgid "❌ Échec du forçage de la résolution au démarrage : %(value_0)s"
-msgstr ""
+msgstr "❌ Failed to force resolution at startup: %(value_0)s"
 
 #: app.py:1687
 #, python-format
 msgid ""
 "📅 Entre %(value_0)s et %(value_1)s = Heures actives au démarrage, lancement "
 "du diaporama."
-msgstr ""
+msgstr "📅 Between %(value_0)s and %(value_1)s = active hours at startup; starting slideshow."
 
 #: app.py:1690
 #, python-format
 msgid "❌ Erreur critique dans la séquence de démarrage : %(value_0)s"
-msgstr ""
+msgstr "❌ Critical error in startup sequence: %(value_0)s"
 
 #: app.py:1718
 msgid ""
 "📅 Changement de planning détecté, réinitialisation de l'override manuel."
-msgstr ""
+msgstr "📅 Schedule change detected; resetting manual override."
 
 #: app.py:1728
 msgid "📅 Heure inactive détectée et diaporama en cours. Arrêt..."
-msgstr ""
+msgstr "📅 Inactive hours detected while slideshow is running. Stopping..."
 
 #: app.py:1732
 msgid "📅 Heure active mais le diaporama est arrêté. Séquence de démarrage..."
-msgstr ""
+msgstr "📅 Active hours, but slideshow is stopped. Starting..."
 
 #: app.py:1743
 #, python-format
 msgid ""
 "📅 Forçage de la résolution %(value_0)sx%(value_1)s sur l'écran '%(value_2)s'"
 " au réveil."
-msgstr ""
+msgstr "📅 Forcing resolution %(value_0)sx%(value_1)s on display '%(value_2)s' after wake."
 
 #: app.py:1751
 #, python-format
 msgid "❌ Échec du forçage de la résolution au réveil : %(value_0)s"
-msgstr ""
+msgstr "❌ Failed to force resolution after wake: %(value_0)s"
 
 #: app.py:1757
 #, python-format
 msgid "📅❌ Erreur dans le worker de planification : %(value_0)s"
-msgstr ""
+msgstr "📅❌ Error in schedule worker: %(value_0)s"
 
 #: app.py:1766
-#, fuzzy
 msgid "🖼️🔄 Démarrage du worker de mise à jour automatique Immich"
-msgstr "Automatic update (Immich)"
+msgstr "🖼️🔄 Starting the Immich automatic update worker"
 
 #: app.py:1775
 msgid "🖼️🔄 Import initial skipped as per configuration."
-msgstr ""
+msgstr "🖼️🔄 Import initially skipped as configured."
 
 #: app.py:1777 app.py:1885
 msgid "Import initial ignoré."
@@ -586,30 +560,27 @@ msgstr "Automatic updates enabled. Interval: every %(hours)sh."
 #: app.py:1791 app.py:1805
 #, python-format
 msgid "🖼️🔄  %(value_0)s"
-msgstr ""
+msgstr "🖼️🔄 %(value_0)s"
 
 #: app.py:1796
 msgid "Lancement du téléchargement..."
 msgstr "Starting download..."
 
 #: app.py:1797
-#, fuzzy
 msgid "🖼️🔄 Lancement du téléchargement et de la préparation..."
-msgstr "Starting download..."
+msgstr "🖼️🔄 Starting download and preparation..."
 
 #: app.py:1808
-#, fuzzy, python-format
 msgid "🖼️🔄❌ Erreur lors du téléchargement : %(value_0)s"
-msgstr "Error loading playlists."
+msgstr "🖼️🔄❌ Download error: %(value_0)s"
 
 #: app.py:1828 app.py:1918
 msgid "Préparation des photos..."
 msgstr "Preparing photos..."
 
 #: app.py:1835
-#, fuzzy, python-format
 msgid "🖼️🔄❌ Erreur lors de la préparation : %(value_0)s"
-msgstr "Restore error: %(error)s"
+msgstr "🖼️🔄❌ Preparation error: %(value_0)s"
 
 #: app.py:1843 app.py:1941
 msgid "Mise à jour terminée. Redémarrage du diaporama..."
@@ -626,7 +597,7 @@ msgstr "Update completed with warnings or errors."
 #: app.py:1854
 #, python-format
 msgid "🖼️🔄❌ Erreur critique dans le worker : %(value_0)s"
-msgstr ""
+msgstr "🖼️🔄❌ Critical error in worker: %(value_0)s"
 
 #: app.py:1858
 msgid "Mise à jour automatique désactivée."
@@ -635,12 +606,12 @@ msgstr "Automatic update disabled."
 #: app.py:1859
 #, python-format
 msgid "🖼️🔄❌ %(value_0)s"
-msgstr ""
+msgstr "🖼️🔄❌ %(value_0)s"
 
 #: app.py:1899
 #, python-format
 msgid "[Auto-Update Samba] %(value_0)s"
-msgstr ""
+msgstr "[Auto-Update Samba] %(value_0)s"
 
 #: app.py:1904
 msgid "Lancement de l'import..."
@@ -649,12 +620,12 @@ msgstr "Starting import..."
 #: app.py:1910
 #, python-format
 msgid "[Auto-Update Samba] Erreur lors de l'import : %(value_0)s"
-msgstr ""
+msgstr "[Auto-Update Samba] Import error: %(value_0)s"
 
 #: app.py:1951
 #, python-format
 msgid "[Auto-Update Samba] Erreur critique dans le worker : %(value_0)s"
-msgstr ""
+msgstr "[Auto-Update Samba] Critical error in worker: %(value_0)s"
 
 #: app.py:1955
 msgid "Mise à jour automatique Samba désactivée."
@@ -663,44 +634,39 @@ msgstr "Automatic Samba update disabled."
 #: app.py:1998
 #, python-format
 msgid "[Telegram Worker] %(value_0)s"
-msgstr ""
+msgstr "[Telegram Worker] %(value_0)s"
 
 #: app.py:2099
-#, fuzzy
 msgid "Nom de source invalide."
-msgstr "Invalid invitation code."
+msgstr "Invalid source name."
 
 #: app.py:2107
 #, python-format
 msgid "Dossier préparé supprimé : %(value_0)s"
-msgstr ""
+msgstr "Prepared folder deleted: %(value_0)s"
 
 #: app.py:2111
 #, python-format
 msgid "Dossier de sauvegarde supprimé : %(value_0)s"
-msgstr ""
+msgstr "Backup folder deleted: %(value_0)s"
 
 #: app.py:2120
-#, fuzzy
 msgid "Photos supprimées."
-msgstr "Delete All"
+msgstr "Photos deleted."
 
 #: app.py:2122
-#, fuzzy, python-format
 msgid ""
 "Erreur lors de la suppression des photos de la source %(value_0)s: "
 "%(value_1)s"
-msgstr "Error deleting photo."
+msgstr "Error deleting photos from source %(value_0)s: %(value_1)s"
 
 #: app.py:2123
-#, fuzzy, python-format
 msgid "Erreur serveur : %(value_0)s"
-msgstr "Internal server error: %(error)s"
+msgstr "Server error: %(value_0)s"
 
 #: app.py:2182
-#, fuzzy
 msgid "Redémarrage initié"
-msgstr "Reboot..."
+msgstr "Restart initiated"
 
 #: app.py:2233
 msgid ""
@@ -712,46 +678,41 @@ msgstr ""
 
 #: app.py:2243
 msgid "Commande de redémarrage envoyée."
-msgstr ""
+msgstr "Restart command sent."
 
 #: app.py:2253
 msgid "Signal d'annulation envoyé."
-msgstr ""
+msgstr "Cancellation signal sent."
 
 #: app.py:2261 app.py:2318 app.py:2613 app.py:2622 app.py:2646 app.py:2680
 #: app.py:2722 app.py:2775
-#, fuzzy
 msgid "Accès non autorisé."
-msgstr "Not used"
+msgstr "Unauthorized access."
 
 #: app.py:2266
 msgid "ID de playlist manquant."
-msgstr ""
+msgstr "Playlist ID is missing."
 
 #: app.py:2273 app.py:2384 app.py:2488 app.py:2500 app.py:2533
-#, fuzzy
 msgid "Playlist non trouvée."
-msgstr "Not found"
+msgstr "Playlist not found."
 
 #: app.py:2276
-#, fuzzy
 msgid "La playlist est vide."
-msgstr "This playlist is empty."
+msgstr "The playlist is empty."
 
 #: app.py:2292
 #, python-format
 msgid "Lancement du diaporama pour la playlist '%(value_0)s'."
-msgstr ""
+msgstr "Starting slideshow for playlist '%(value_0)s'."
 
 #: app.py:2294
-#, fuzzy, python-format
 msgid "Erreur lors du lancement de la playlist : %(value_0)s"
-msgstr "Error loading playlists."
+msgstr "Error starting the playlist: %(value_0)s"
 
 #: app.py:2295 app.py:2541
-#, fuzzy, python-format
 msgid "Erreur interne du serveur."
-msgstr "Internal server error: %(error)s"
+msgstr "Internal server error."
 
 #: app.py:2307
 msgid "Diaporama standard relancé."
@@ -760,243 +721,228 @@ msgstr "Standard slideshow restarted."
 #: app.py:2309
 #, python-format
 msgid "Erreur lors du redémarrage du diaporama standard : %(value_0)s"
-msgstr ""
+msgstr "Error restarting the standard slideshow: %(value_0)s"
 
 #: app.py:2317
 #, python-format
 msgid "Tentative d'accès non autorisé à toggle_sleep depuis %(value_0)s"
-msgstr ""
+msgstr "Unauthorized attempt to access toggle_sleep from %(value_0)s"
 
 #: app.py:2322
-#, fuzzy
 msgid "API toggle_sleep: Diaporama en cours -> Arrêt."
-msgstr "The slideshow is stopped."
+msgstr "toggle_sleep API: slideshow running -> stopping."
 
 #: app.py:2326
 msgid "API toggle_sleep: Diaporama arrêté -> Démarrage."
-msgstr ""
+msgstr "toggle_sleep API: slideshow stopped -> starting."
 
 #: app.py:2331
-#, fuzzy, python-format
 msgid "Erreur lors du basculement de la veille via API : %(value_0)s"
-msgstr "Error changing password:%(error)s"
+msgstr "Error toggling sleep via API: %(value_0)s"
 
 #: app.py:2350
-#, fuzzy
 msgid "Le nom de la playlist est requis."
-msgstr "the token of the bot is required"
+msgstr "Playlist name is required."
 
 #: app.py:2356
 msgid "Une playlist avec ce nom existe déjà."
-msgstr ""
+msgstr "A playlist with this name already exists."
 
 #: app.py:2387
-#, fuzzy
 msgid "Musique de la playlist mise à jour."
-msgstr "Update failed"
+msgstr "Playlist music updated."
 
 #: app.py:2413
 #, python-format
 msgid "🎵 Musique supprimée : %(value_0)s"
-msgstr ""
+msgstr "🎵 Music deleted: %(value_0)s"
 
 #: app.py:2414
 #, python-format
 msgid "Fichier '%(value_0)s' supprimé avec succès."
-msgstr ""
+msgstr "File '%(value_0)s' deleted successfully."
 
 #: app.py:2416
-#, fuzzy, python-format
 msgid "Erreur lors de la suppression : %(value_0)s"
-msgstr "Error deleting the item:"
+msgstr "Error deleting: %(value_0)s"
 
 #: app.py:2418
 #, python-format
 msgid "❌ Tentative de suppression de fichier introuvable: %(value_0)s"
-msgstr ""
+msgstr "❌ Attempted to delete a file that does not exist: %(value_0)s"
 
 #: app.py:2419
 msgid "Fichier introuvable."
-msgstr ""
+msgstr "File not found."
 
 #: app.py:2437
 #, python-format
 msgid "🎵 Nouvelle musique importée : %(value_0)s"
-msgstr ""
+msgstr "🎵 New music imported: %(value_0)s"
 
 #: app.py:2438
 #, python-format
 msgid "Fichier '%(value_0)s' téléchargé avec succès."
-msgstr ""
+msgstr "File '%(value_0)s' downloaded successfully."
 
 #: app.py:2440
 msgid "Format de fichier non supporté. MP3 ou WAV uniquement."
-msgstr ""
+msgstr "Unsupported file format. MP3 or WAV only."
 
 #: app.py:2456
 msgid "Le nouveau nom ne peut pas être vide."
-msgstr ""
+msgstr "The new name cannot be empty."
 
 #: app.py:2461
 msgid "Une autre playlist avec ce nom existe déjà."
-msgstr ""
+msgstr "Another playlist with this name already exists."
 
 #: app.py:2471
 msgid "Playlist renommée."
-msgstr ""
+msgstr "Playlist renamed."
 
 #: app.py:2479 app.py:3483 app.py:3506 app.py:3542
 msgid "Chemin de la photo manquant."
-msgstr ""
+msgstr "Photo path is missing."
 
 #: app.py:2510 app.py:3462
 msgid "Données manquantes."
-msgstr ""
+msgstr "Missing data."
 
 #: app.py:2526
 msgid "Incohérence dans la liste des photos."
-msgstr ""
+msgstr "Photo list mismatch."
 
 #: app.py:2537
-#, fuzzy
 msgid "Ordre de la playlist sauvegardé."
-msgstr "Order safeguarded!"
+msgstr "Playlist order saved."
 
 #: app.py:2540
-#, fuzzy, python-format
 msgid "Erreur lors de la réorganisation de la playlist : %(value_0)s"
-msgstr "Restore error: %(error)s"
+msgstr "Error reordering playlist: %(value_0)s"
 
 #: app.py:2561
 #, python-format
 msgid "[ERROR] in get_audio_devices: %(value_0)s"
-msgstr ""
+msgstr "[ERROR] in get_audio_devices: %(value_0)s"
 
 #: app.py:2569
 msgid "Le service est arrêté."
 msgstr "The service is stopped."
 
 #: app.py:2576
-#, fuzzy, python-format
 msgid "Erreur lecture statut: %(value_0)s"
-msgstr "Restore error: %(error)s"
+msgstr "Error reading status: %(value_0)s"
 
 #: app.py:2578
 msgid "Démarrage du service..."
 msgstr "Starting the service..."
 
 #: app.py:2616
-#, fuzzy
 msgid "Arrêt en cours."
-msgstr "Import in progress..."
+msgstr "Stopping..."
 
 #: app.py:2628
 msgid "État invalide. Utilisez 'on' ou 'off'."
-msgstr ""
+msgstr "Invalid state. Use 'on' or 'off'."
 
 #: app.py:2650
 #, python-format
 msgid "La source '%(value_0)s' n'existe pas."
-msgstr ""
+msgstr "Source '%(value_0)s' does not exist."
 
 #: app.py:2658
 #, python-format
 msgid "La source '%(value_0)s' est vide."
-msgstr ""
+msgstr "Source '%(value_0)s' is empty."
 
 #: app.py:2670
 #, python-format
 msgid "Lancement du diaporama pour la source '%(value_0)s'."
-msgstr ""
+msgstr "Starting slideshow for source '%(value_0)s'."
 
 #: app.py:2672
-#, fuzzy, python-format
 msgid "Erreur lors du lancement de la playlist source: %(value_0)s"
-msgstr "Error loading playlists."
+msgstr "Error starting source playlist: %(value_0)s"
 
 #: app.py:2677
 #, python-format
 msgid "API /api/sources/toggle reçue de %(value_0)s"
-msgstr ""
+msgstr "API /api/sources/toggle request received from %(value_0)s"
 
 #: app.py:2679
 #, python-format
 msgid "Accès non autorisé à /api/sources/toggle de %(value_0)s"
-msgstr ""
+msgstr "Unauthorized access to /api/sources/toggle from %(value_0)s"
 
 #: app.py:2685
 #, python-format
 msgid "Action demandée : '%(value_0)s' pour la source '%(value_1)s'"
-msgstr ""
+msgstr "Requested action: '%(value_0)s' for source '%(value_1)s'"
 
 #: app.py:2688
 #, python-format
 msgid "Paramètres invalides reçus : source='%(value_0)s', state='%(value_1)s'"
-msgstr ""
+msgstr "Invalid parameters received: source='%(value_0)s', state='%(value_1)s'"
 
 #: app.py:2689
 msgid "Paramètres 'source' ou 'state' invalides."
-msgstr ""
+msgstr "Invalid 'source' or 'state' parameters."
 
 #: app.py:2694
 #, python-format
 msgid "Sources avant modification : %(value_0)s"
-msgstr ""
+msgstr "Sources before change: %(value_0)s"
 
 #: app.py:2706
 #, python-format
 msgid "Sources après modification (avant sauvegarde) : %(value_0)s"
-msgstr ""
+msgstr "Sources after change (before saving): %(value_0)s"
 
 #: app.py:2708
 msgid "Configuration sauvegardée avec succès dans config.json."
-msgstr ""
+msgstr "Configuration saved successfully to config.json."
 
 #: app.py:2712
 #, python-format
 msgid ""
 "Source '%(value_0)s' %(value_1)s. Le changement sera appliqué sur le "
 "diaporama."
-msgstr ""
+msgstr "Source '%(value_0)s' %(value_1)s. The change will be applied to the slideshow."
 
 #: app.py:2714
 #, python-format
 msgid "Erreur dans la fonction toggle_source : %(value_0)s"
-msgstr ""
+msgstr "Error in toggle_source function: %(value_0)s"
 
 #: app.py:2715
-#, fuzzy, python-format
 msgid "Erreur lors de la modification de la source : %(value_0)s"
-msgstr "Error applying Wi-Fi settings: %(error)s"
+msgstr "Error changing source: %(value_0)s"
 
 #: app.py:2728
 msgid "Durée invalide. Un entier positif est requis."
-msgstr ""
+msgstr "Invalid duration. A positive integer is required."
 
 #: app.py:2742
-#, fuzzy, python-format
 msgid "Durée d'affichage réglée à %(value_0)s secondes."
-msgstr "Display's duration :"
+msgstr "Display duration set to %(value_0)s seconds."
 
 #: app.py:2744
-#, fuzzy, python-format
 msgid "Erreur lors du changement de la durée d'affichage : %(value_0)s"
-msgstr "Error changing password:%(error)s"
+msgstr "Error changing display duration: %(value_0)s"
 
 #: app.py:2745 app.py:3451 app.py:3531 app.py:3564
-#, fuzzy, python-format
 msgid "Erreur interne du serveur : %(value_0)s"
-msgstr "Internal server error: %(error)s"
+msgstr "Internal server error: %(value_0)s"
 
 #: app.py:2750
-#, fuzzy
 msgid "Le diaporama n'est pas en cours."
-msgstr "The slideshow is stopped."
+msgstr "The slideshow is not running."
 
 #: app.py:2757
 #, python-format
 msgid "Impossible de communiquer avec le diaporama : %(value_0)s"
-msgstr ""
+msgstr "Could not communicate with the slideshow: %(value_0)s"
 
 #: app.py:2809
 msgid "Aucune sortie d'affichage principale trouvée."
@@ -1004,21 +950,19 @@ msgstr "No primary display output found."
 
 #: app.py:2828
 msgid "Aucun mode trouvé pour la sortie principale."
-msgstr ""
+msgstr "No mode found for the primary display."
 
 #: app.py:2831
-#, fuzzy, python-format
 msgid "Erreur lors de la récupération des résolutions : %(value_0)s"
-msgstr "Error retrieving system information:"
+msgstr "Error retrieving resolutions: %(value_0)s"
 
 #: app.py:2844
 msgid "Largeur et hauteur requises."
-msgstr ""
+msgstr "Width and height are required."
 
 #: app.py:2849
-#, fuzzy
 msgid "Aucune sortie d'affichage à configurer."
-msgstr "No photos to display."
+msgstr "No display output to configure."
 
 #: app.py:2864
 #, python-format
@@ -1036,48 +980,42 @@ msgstr ""
 "Resolution applied: %(width)sx%(height)s. The slideshow was not running."
 
 #: app.py:2870
-#, fuzzy, python-format
 msgid "Erreur lors de l'application de la résolution : %(value_0)s"
-msgstr "Error applying Wi-Fi settings: %(error)s"
+msgstr "Error applying resolution: %(value_0)s"
 
 #: app.py:2880
-#, fuzzy
 msgid "Le statut de la prise n'est pas configuré."
-msgstr "Plug status: Unknown"
+msgstr "The plug status URL is not configured."
 
 #: app.py:2897
-#, fuzzy, python-format
 msgid "État de la prise : %(value_0)s"
-msgstr "Outlet Status: On"
+msgstr "Plug status: %(value_0)s"
 
 #: app.py:2900
-#, fuzzy
 msgid "Timeout lors de la connexion à la prise."
-msgstr "Error connecting to the logs API."
+msgstr "Connection to the plug timed out."
 
 #: app.py:2904
 msgid "Erreur 401: Non autorisé. Vérifiez votre token d'accès Home Assistant."
-msgstr ""
+msgstr "401 error: Unauthorized. Check your Home Assistant access token."
 
 #: app.py:2905
 #, python-format
 msgid "Erreur HTTP: %(value_0)s"
-msgstr ""
+msgstr "HTTP error: %(value_0)s"
 
 #: app.py:2908
-#, fuzzy, python-format
 msgid "Erreur de connexion: %(value_0)s"
-msgstr "Connection error: %(error)s"
+msgstr "Connection error: %(value_0)s"
 
 #: app.py:2922
-#, fuzzy
 msgid "Impossible de détecter la résolution. L'écran est-il branché ?"
-msgstr "Detect active screen resolution"
+msgstr "Could not detect the resolution. Is the display connected?"
 
 #: app.py:2939
 #, python-format
 msgid "Erreur lecture fichier photo actuelle : %(value_0)s"
-msgstr ""
+msgstr "Error reading current photo file: %(value_0)s"
 
 #: app.py:2951
 msgid "Le SSID et le pays Wi-Fi sont obligatoires."
@@ -1097,9 +1035,8 @@ msgid "Erreur lors de l'application des paramètres Wi-Fi : %(error)s"
 msgstr "Error applying Wi-Fi settings: %(error)s"
 
 #: app.py:3004
-#, fuzzy, python-format
 msgid "Erreur lors de la récupération du statut Wi-Fi : %(value_0)s"
-msgstr "Error applying Wi-Fi settings: %(error)s"
+msgstr "Error retrieving Wi-Fi status: %(value_0)s"
 
 #: app.py:3022
 msgid "Les deux champs de mot de passe sont requis."
@@ -1126,14 +1063,13 @@ msgid "Erreur lors du changement de mot de passe : %(error)s"
 msgstr "Error changing password:%(error)s"
 
 #: app.py:3047 app.py:3064
-#, fuzzy
 msgid "Nom d'interface invalide."
-msgstr "Invalid invitation code."
+msgstr "Invalid interface name."
 
 #: app.py:3068
 #, python-format
 msgid "L'interface %(value_0)s a été passée à l'état '%(value_1)s'."
-msgstr ""
+msgstr "Interface %(value_0)s was set to state '%(value_1)s'."
 
 #: app.py:3081
 msgid "Le fichier de configuration n'a pas été trouvé."
@@ -1168,103 +1104,96 @@ msgstr "name_key"
 
 #: app.py:3220 app.py:3246
 msgid "Type de log invalide."
-msgstr ""
+msgstr "Invalid log type."
 
 #: app.py:3253
 #, python-format
 msgid "Le log '%(value_0)s' a été effacé."
-msgstr ""
+msgstr "Log '%(value_0)s' was cleared."
 
 #: app.py:3255
 #, python-format
 msgid "Fichier de log '%(value_0)s' non trouvé."
-msgstr ""
+msgstr "Log file '%(value_0)s' not found."
 
 #: app.py:3384
 msgid ""
 "Cache des marées non trouvé. Le diaporama doit tourner au moins une fois."
-msgstr ""
+msgstr "Tide cache not found. The slideshow must run at least once."
 
 #: app.py:3399
 #, python-format
 msgid ""
 "En cooldown (quota API probablement atteint). Prochaine tentative après "
 "%(time)s."
-msgstr ""
+msgstr "Cooling down (API quota may have been reached). Next attempt after %(time)s."
 
 #: app.py:3405
 msgid "Aucune donnée de marée valide dans le cache. Forcez une mise à jour."
-msgstr ""
+msgstr "No valid tide data in the cache. Force an update."
 
 #: app.py:3407
 msgid "Ancien format de cache détecté. Forcez une mise à jour."
-msgstr ""
+msgstr "Legacy cache format detected. Force an update."
 
 #: app.py:3423
-#, fuzzy, python-format
 msgid "Erreur lecture du cache : %(error)s"
-msgstr "Internal server error: %(error)s"
+msgstr "Error reading cache: %(error)s"
 
 #: app.py:3434
 msgid "Chemin de la photo ou nom du filtre manquant."
-msgstr ""
+msgstr "Photo path or filter name is missing."
 
 #: app.py:3440 app.py:3549
 #, python-format
 msgid "Photo non trouvée : %(value_0)s"
-msgstr ""
+msgstr "Photo not found: %(value_0)s"
 
 #: app.py:3446
 msgid "Filtre appliqué !"
-msgstr ""
+msgstr "Filter applied!"
 
 #: app.py:3450
-#, fuzzy, python-format
 msgid "Erreur lors de l'application du filtre : %(value_0)s"
-msgstr "Error applying Wi-Fi settings: %(error)s"
+msgstr "Error applying filter: %(value_0)s"
 
 #: app.py:3473
 msgid "Préférence de filtre enregistrée."
-msgstr ""
+msgstr "Filter preference saved."
 
 #: app.py:3516
 msgid "La version Polaroid de cette photo n'existe pas."
-msgstr ""
+msgstr "The Polaroid version of this photo does not exist."
 
 #: app.py:3529 app.py:3562
-#, fuzzy
 msgid "Texte mis à jour."
-msgstr "Last updated:"
+msgstr "Text updated."
 
 #: app.py:3584
-#, fuzzy
 msgid "Le nom de l'invité est requis."
-msgstr "the token of the bot is required"
+msgstr "Guest name is required."
 
 #: app.py:3597
-#, fuzzy
 msgid "Invitation créée."
-msgstr "Active invitations"
+msgstr "Invitation created."
 
 #: app.py:3606
-#, fuzzy
 msgid "Invitation supprimée."
-msgstr "Active invitations"
+msgstr "Invitation deleted."
 
 #: app.py:3665
 msgid ""
 "La commande 'nmcli' est introuvable. NetworkManager est-il installé et actif"
 " ?"
-msgstr ""
+msgstr "The 'nmcli' command was not found. Is NetworkManager installed and running?"
 
 #: app.py:3667
-#, fuzzy, python-format
 msgid "Erreur lors du scan Wi-Fi : %(value_0)s"
-msgstr "Error applying Wi-Fi settings: %(error)s"
+msgstr "Error scanning for Wi-Fi networks: %(value_0)s"
 
 #: app.py:3669
 msgid "Le scan Wi-Fi a pris trop de temps (timeout)."
-msgstr ""
+msgstr "Wi-Fi scan timed out."
 
 #: app.py:3681
 msgid "Paramètre 'enabled' manquant."
@@ -1279,9 +1208,8 @@ msgid "Service de contrôle vocal désactivé."
 msgstr "Disabled voice control service."
 
 #: app.py:3699
-#, fuzzy, python-format
 msgid "Erreur lors du basculement du contrôle vocal : %(value_0)s"
-msgstr "Error changing password:%(error)s"
+msgstr "Error toggling voice control: %(value_0)s"
 
 #: app.py:3700
 #, python-format
@@ -1292,263 +1220,256 @@ msgstr "Internal server error: %(error)s"
 #, python-format
 msgid ""
 "[Migration] Déplacement des photos de '%(value_0)s' vers '%(value_1)s'..."
-msgstr ""
+msgstr "[Migration] Moving photos from '%(value_0)s' to '%(value_1)s'..."
 
 #: app.py:3731
 #, python-format
 msgid ""
 "[Migration] Déplacement des fichiers préparés de '%(value_0)s' vers "
 "'%(value_1)s'..."
-msgstr ""
+msgstr "[Migration] Moving prepared files from '%(value_0)s' to '%(value_1)s'..."
 
 #: app.py:3755
 #, python-format
 msgid ""
 "[Migration] Configuration mise à jour : sources %(value_0)s -> %(value_1)s"
-msgstr ""
+msgstr "[Migration] Configuration updated: sources %(value_0)s -> %(value_1)s"
 
 #: local_slideshow.py:114
 #, python-format
 msgid "Bouton physique pressé (GPIO %(value_0)s). Basculement de la veille..."
-msgstr ""
+msgstr "Physical button pressed (GPIO %(value_0)s). Toggling sleep..."
 
 #: local_slideshow.py:119
 #, python-format
 msgid "Impossible de contacter l'API pour la mise en veille: %(value_0)s"
-msgstr ""
+msgstr "Could not contact the sleep API: %(value_0)s"
 
 #: local_slideshow.py:123
 msgid "----------------Initialisation local_Slideshow  ----------------"
-msgstr ""
+msgstr "---------------- Initializing local_Slideshow ----------------"
 
 #: local_slideshow.py:137
 msgid "⚠️  country_codes.json manquant dans config/"
-msgstr ""
+msgstr "⚠️ country_codes.json is missing from config/"
 
 #: local_slideshow.py:140
 #, python-format
 msgid "❌ Erreur chargement country_codes.json: %(value_0)s"
-msgstr ""
+msgstr "❌ Error loading country_codes.json: %(value_0)s"
 
 #: local_slideshow.py:152
 #, python-format
 msgid "Erreur écriture fichier statut : %(value_0)s"
-msgstr ""
+msgstr "Error writing status file: %(value_0)s"
 
 #: local_slideshow.py:181
 msgid "📸 Zone gauche de l'écran touchée -> Photo précédente"
-msgstr ""
+msgstr "📸 Left side touched -> Previous photo"
 
 #: local_slideshow.py:184
 msgid "📸 Zone droite de l'écran touchée -> Photo suivante"
-msgstr ""
+msgstr "📸 Right side touched -> Next photo"
 
 #: local_slideshow.py:187
 msgid "📸 Zone centrale de l'écran touchée -> Pause/Reprise"
-msgstr ""
+msgstr "📸 Center touched -> Pause/Resume"
 
 #: local_slideshow.py:200
 #, python-format
 msgid "🎵 Musique de fond lancée : %(value_0)s"
-msgstr ""
+msgstr "🎵 Background music started: %(value_0)s"
 
 #: local_slideshow.py:202
-#, fuzzy, python-format
 msgid "❌ Erreur lors de la lecture de la musique : %(value_0)s"
-msgstr "Restore error: %(error)s"
+msgstr "❌ Error playing music: %(value_0)s"
 
 #: local_slideshow.py:208
-#, fuzzy
 msgid "📸 Réinitialisation complète de Pygame..."
-msgstr "Initializing the slideshow..."
+msgstr "📸 Full Pygame reset..."
 
 #: local_slideshow.py:215
 msgid "📸 Cache des icônes météo vidé."
-msgstr ""
+msgstr "📸 Weather icon cache cleared."
 
 #: local_slideshow.py:221
 #, python-format
 msgid "📸 Pygame entièrement réinitialisé à %(value_0)sx%(value_1)s."
-msgstr ""
+msgstr "📸 Pygame fully reset to %(value_0)sx%(value_1)s."
 
 #: local_slideshow.py:232
 #, python-format
 msgid ""
 "Avertissement: Impossible de lire le fichier d'état des filtres "
 "'%(value_0)s'."
-msgstr ""
+msgstr "Warning: Could not read filter state file '%(value_0)s'."
 
 #: local_slideshow.py:246
 #, python-format
 msgid ""
 "Avertissement: Le fichier des favoris '%(value_0)s' ne contient pas une "
 "liste. Il sera ignoré."
-msgstr ""
+msgstr "Warning: Favorites file '%(value_0)s' does not contain a list. It will be ignored."
 
 #: local_slideshow.py:249
 #, python-format
 msgid ""
 "Avertissement: Impossible de lire le fichier des favoris '%(value_0)s'."
-msgstr ""
+msgstr "Warning: Could not read favorites file '%(value_0)s'."
 
 #: local_slideshow.py:301
 #, python-format
 msgid "[Pi Detect] Erreur lors de la détection du modèle de Pi : %(value_0)s"
-msgstr ""
+msgstr "[Pi Detect] Error detecting the Pi model: %(value_0)s"
 
 #: local_slideshow.py:333
 #, python-format
 msgid ""
 "[Transition] ERREUR: Impossible de charger l'image '%(value_0)s': "
 "%(value_1)s"
-msgstr ""
+msgstr "[Transition] ERROR: Could not load image '%(value_0)s': %(value_1)s"
 
 #: local_slideshow.py:433
 #, python-format
 msgid "Erreur format horaire : %(value_0)s"
-msgstr ""
+msgstr "Time format error: %(value_0)s"
 
 #: local_slideshow.py:471
 msgid "[Weather] Clé API ou ville manquante. La météo est désactivée."
-msgstr ""
+msgstr "[Weather] API key or city is missing. Weather is disabled."
 
 #: local_slideshow.py:479
 msgid "[Weather] Récupération des prévisions météo..."
-msgstr ""
+msgstr "[Weather] Fetching forecast..."
 
 #: local_slideshow.py:537
 #, python-format
 msgid "[Weather] Météo et prévisions mises à jour pour %(value_0)s."
-msgstr ""
+msgstr "[Weather] Weather and forecast updated for %(value_0)s."
 
 #: local_slideshow.py:541
-#, fuzzy, python-format
 msgid ""
 "[Weather] Erreur réseau lors de la récupération des prévisions : %(value_0)s"
-msgstr "Error retrieving system information:"
+msgstr "[Weather] Network error while retrieving the forecast: %(value_0)s"
 
 #: local_slideshow.py:544
-#, fuzzy, python-format
 msgid ""
 "[Weather] Erreur générale lors de la récupération des prévisions : "
 "%(value_0)s"
-msgstr "Error retrieving system information:"
+msgstr "[Weather] General error while retrieving the forecast: %(value_0)s"
 
 #: local_slideshow.py:564
 msgid ""
 "[Tides] Clé API StormGlass, latitude ou longitude manquante. Les marées sont"
 " désactivées."
-msgstr ""
+msgstr "[Tides] StormGlass API key, latitude, or longitude is missing. Tides are disabled."
 
 #: local_slideshow.py:585
 msgid "[Tides] Cooldown API actif depuis le cache fichier."
-msgstr ""
+msgstr "[Tides] API cooldown is active from the file cache."
 
 #: local_slideshow.py:594
 msgid ""
 "[Tides] Données de marée valides (format liste) trouvées dans le cache "
 "fichier."
-msgstr ""
+msgstr "[Tides] Valid tide data (list format) found in the file cache."
 
 #: local_slideshow.py:599
 msgid ""
 "[Tides] Ancien format de cache détecté (dictionnaire). Le cache sera "
 "invalidé et recréé."
-msgstr ""
+msgstr "[Tides] Legacy cache format detected (dictionary). The cache will be invalidated and recreated."
 
 #: local_slideshow.py:602
 #, python-format
 msgid ""
 "[Tides] Erreur lecture du cache fichier, récupération depuis l'API. Erreur: "
 "%(value_0)s"
-msgstr ""
+msgstr "[Tides] Error reading cache; fetching from API. Error: %(value_0)s"
 
 #: local_slideshow.py:605
 msgid "[Tides] Récupération des données de marée depuis l'API StormGlass..."
-msgstr ""
+msgstr "[Tides] Fetching tide data from the StormGlass API..."
 
 #: local_slideshow.py:624
 msgid ""
 "[Tides] Aucune marée future trouvée dans les données de l'API pour les "
 "prochaines 24h."
-msgstr ""
+msgstr "[Tides] No future tides found in API data for the next 24 hours."
 
 #: local_slideshow.py:633
 msgid "[Tides] Données de marée mises à jour et cache sauvegardé."
-msgstr ""
+msgstr "[Tides] Tide data updated and cache saved."
 
 #: local_slideshow.py:639
 msgid ""
 "[Tides] ERREUR: Quota API StormGlass dépassé. Prochaine tentative dans 12h."
-msgstr ""
+msgstr "[Tides] ERROR: StormGlass API quota exceeded. Next attempt in 12 hours."
 
 #: local_slideshow.py:645
 msgid "[Tides] Timestamp de cooldown écrit dans le cache fichier."
-msgstr ""
+msgstr "[Tides] Cooldown timestamp written to the cache file."
 
 #: local_slideshow.py:647
 #, python-format
 msgid ""
 "[Tides] Impossible d'écrire le cooldown dans le cache fichier: %(value_0)s"
-msgstr ""
+msgstr "[Tides] Could not write cooldown to the cache file: %(value_0)s"
 
 #: local_slideshow.py:649
-#, fuzzy, python-format
 msgid "[Tides] Erreur HTTP lors de la récupération des marées : %(value_0)s"
-msgstr "Error retrieving diagnostics."
+msgstr "[Tides] HTTP error while retrieving tides: %(value_0)s"
 
 #: local_slideshow.py:653
-#, fuzzy, python-format
 msgid ""
 "[Tides] Erreur générale lors de la récupération des marées : %(value_0)s"
-msgstr "Error retrieving diagnostics."
+msgstr "[Tides] General error while retrieving tides: %(value_0)s"
 
 #: local_slideshow.py:664
 #, python-format
 msgid ""
 "[Display] AVERTISSEMENT: Taille d'icône invalide (%(value_0)spx) pour "
 "'%(value_1)s'."
-msgstr ""
+msgstr "[Display] WARNING: Invalid icon size (%(value_0)spx) for '%(value_1)s'."
 
 #: local_slideshow.py:685
 #, python-format
 msgid "[Display] Erreur chargement icône '%(value_0)s': %(value_1)s"
-msgstr ""
+msgstr "[Display] Error loading icon '%(value_0)s': %(value_1)s"
 
 #: local_slideshow.py:690
 #, python-format
 msgid "[Display] AVERTISSEMENT: Fichier icône non trouvé : %(value_0)s"
-msgstr ""
+msgstr "[Display] WARNING: Icon file not found: %(value_0)s"
 
 #: local_slideshow.py:829
 #, python-format
 msgid "📸 Boost anniversaire pour %(value_0)s (prise le %(value_1)s)"
-msgstr ""
+msgstr "📸 Anniversary boost for %(value_0)s (taken on %(value_1)s)"
 
 #: local_slideshow.py:832
 #, python-format
 msgid ""
 "Erreur lors de la lecture de la date pour le boost anniversaire: %(value_0)s"
-msgstr ""
+msgstr "Error reading date for anniversary boost: %(value_0)s"
 
 #: local_slideshow.py:840
 msgid "RPi.GPIO non disponible. Le contrôle du ventilateur est désactivé."
-msgstr ""
+msgstr "RPi.GPIO is unavailable. Fan control is disabled."
 
 #: local_slideshow.py:859
-#, fuzzy, python-format
 msgid "Erreur lors de la manipulation du GPIO %(value_0)s: %(value_1)s"
-msgstr "Restore error: %(error)s"
+msgstr "Error handling GPIO %(value_0)s: %(value_1)s"
 
 #: local_slideshow.py:912
 #, python-format
 msgid "[Display] Erreur préparation météo actuelle: %(value_0)s"
-msgstr ""
+msgstr "[Display] Error preparing current weather: %(value_0)s"
 
 #: local_slideshow.py:933
 #, python-format
 msgid "[Display] Erreur préparation météo pour un jour: %(value_0)s"
-msgstr ""
+msgstr "[Display] Error preparing weather for a day: %(value_0)s"
 
 #: local_slideshow.py:1033
 msgid "Données de marée non disponibles"
@@ -1557,17 +1478,17 @@ msgstr "Tide data unavailable"
 #: local_slideshow.py:1040
 #, python-format
 msgid "[Display] Erreur chargement police pour message marée: %(value_0)s"
-msgstr ""
+msgstr "[Display] Error loading font for tide message: %(value_0)s"
 
 #: local_slideshow.py:1095
 #, python-format
 msgid "[Display] Erreur chargement police métadonnées : %(value_0)s."
-msgstr ""
+msgstr "[Display] Error loading metadata font: %(value_0)s."
 
 #: local_slideshow.py:1120
 #, python-format
 msgid "[Display] Erreur formatage date : %(value_0)s"
-msgstr ""
+msgstr "[Display] Date formatting error: %(value_0)s"
 
 #: local_slideshow.py:1130
 #, python-format
@@ -1581,322 +1502,319 @@ msgstr "(Anniversary) %(num)d years ago"
 
 #: local_slideshow.py:1278
 msgid "[Display] pip install requests pillow"
-msgstr ""
+msgstr "[Display] pip install requests pillow"
 
 #: local_slideshow.py:1285
 #, python-format
 msgid "📸 Affichage de l'écran titre : '%(value_0)s'"
-msgstr ""
+msgstr "📸 Displaying title slide: '%(value_0)s'"
 
 #: local_slideshow.py:1300
 msgid ""
 "[Title Slide] Avertissement: Aucune image de punaise (thumbtack_*.png) "
 "trouvée dans static/icons/."
-msgstr ""
+msgstr "[Title Slide] Warning: No thumbtack images (thumbtack_*.png) found in static/icons/."
 
 #: local_slideshow.py:1302
 #, python-format
 msgid ""
 "[Title Slide] Avertissement: Impossible de charger les punaises: %(value_0)s"
-msgstr ""
+msgstr "[Title Slide] Warning: Could not load thumbtacks: %(value_0)s"
 
 #: local_slideshow.py:1348
 #, python-format
 msgid ""
 "[Title Slide] Avertissement: Image de fond non trouvée à %(value_0)s. "
 "Utilisation d'une couleur unie."
-msgstr ""
+msgstr "[Title Slide] Warning: Background image not found at %(value_0)s. Using a solid color."
 
 #: local_slideshow.py:1351
 #, python-format
 msgid ""
 "[Title Slide] Erreur lors du chargement du fond : %(value_0)s. Utilisation "
 "d'une couleur unie."
-msgstr ""
+msgstr "[Title Slide] Error loading background: %(value_0)s. Using a solid color."
 
 #: local_slideshow.py:1396
 #, python-format
 msgid ""
 "[Title Slide] Erreur lors de la préparation de l'image %(value_0)s: "
 "%(value_1)s"
-msgstr ""
+msgstr "[Title Slide] Error preparing image %(value_0)s: %(value_1)s"
 
 #: local_slideshow.py:1399
 #, python-format
 msgid "[Title Slide] DEBUG: Nombre de surfaces photos préparées : %(value_0)s"
-msgstr ""
+msgstr "[Title Slide] DEBUG: Number of prepared photo surfaces: %(value_0)s"
 
 #: local_slideshow.py:1427
 #, python-format
 msgid "Erreur chargement police pour l'écran titre: %(value_0)s"
-msgstr ""
+msgstr "Error loading font for title slide: %(value_0)s"
 
 #: local_slideshow.py:1484
 #, python-format
 msgid "⏳ Pause de %(value_0)s secondes."
-msgstr ""
+msgstr "⏳ Pausing for %(value_0)s seconds."
 
 #: local_slideshow.py:1630
 #, python-format
 msgid "Erreur affichage photo avec pan/zoom : %(value_0)s"
-msgstr ""
+msgstr "Error displaying photo with pan/zoom: %(value_0)s"
 
 #: local_slideshow.py:1660
 #, python-format
 msgid "Erreur lors du dessin du bandeau : %(value_0)s"
-msgstr ""
+msgstr "Error drawing banner: %(value_0)s"
 
 #: local_slideshow.py:1683
 #, python-format
 msgid ""
 "📸 [Pi %(value_0)s] Closing Pygame to release graphics overlay context for "
 "mpv."
-msgstr ""
+msgstr "📸 [Pi %(value_0)s] Closing Pygame to release the graphics overlay context for mpv."
 
 #: local_slideshow.py:1694
 #, python-format
 msgid "📸 Lancement de la vidéo avec mpv : %(value_0)s"
-msgstr ""
+msgstr "📸 Starting video with mpv: %(value_0)s"
 
 #: local_slideshow.py:1716
 #, python-format
 msgid ""
 "[Video Playback] Raspberry Pi %(value_0)s détecté. Mode DMABUF Haute "
 "Performance."
-msgstr ""
+msgstr "[Video Playback] Raspberry Pi %(value_0)s detected. High-performance DMABUF mode."
 
 #: local_slideshow.py:1720
 msgid ""
 "[Video Playback] Modèle de Pi non spécifique détecté. Utilisation de '--"
 "hwdec=auto'."
-msgstr ""
+msgstr "[Video Playback] No specific Pi model detected. Using '--hwdec=auto'."
 
 #: local_slideshow.py:1725
 msgid ""
 "[Video Playback] Décodage matériel désactivé. Utilisation du mode logiciel."
-msgstr ""
+msgstr "[Video Playback] Hardware decoding disabled. Using software mode."
 
 #: local_slideshow.py:1738
 #, python-format
 msgid "[Audio] Volume système réglé à %(value_0)s%% via amixer."
-msgstr ""
+msgstr "[Audio] System volume set to %(value_0)s%% via amixer."
 
 #: local_slideshow.py:1740
 msgid ""
 "[Audio] AVERTISSEMENT: 'amixer' non trouvé. Le volume ne peut pas être "
 "réglé."
-msgstr ""
+msgstr "[Audio] WARNING: 'amixer' not found. Volume cannot be set."
 
 #: local_slideshow.py:1790
 #, python-format
 msgid "📸 Executing mpv command (try %(value_0)s/%(value_1)s): %(value_2)s"
-msgstr ""
+msgstr "📸 Executing mpv command (attempt %(value_0)s/%(value_1)s): %(value_2)s"
 
 #: local_slideshow.py:1807
 #, python-format
 msgid ""
 "⏱️ Le lecteur vidéo mpv a dépassé la limite de temps de sécurité "
 "(%(value_0)ss). Processus tué."
-msgstr ""
+msgstr "⏱️ The mpv player exceeded the safety time limit (%(value_0)ss). Process killed."
 
 #: local_slideshow.py:1811
 #, python-format
 msgid ""
 "⚠️ Échec du mode d'affichage de l'essai %(value_0)s. Tentative suivante..."
-msgstr ""
+msgstr "⚠️ Display mode attempt %(value_0)s failed. Trying the next one..."
 
 #: local_slideshow.py:1814
 #, python-format
 msgid ""
 "Erreur lors de l'exécution de mpv pour la vidéo %(value_0)s. mpv a retourné "
 "un code d'erreur."
-msgstr ""
+msgstr "Error running mpv for video %(value_0)s. mpv returned an error code."
 
 #: local_slideshow.py:1827
 #, python-format
 msgid ""
 "Détails de l'erreur mpv :\n"
 "%(value_0)s"
-msgstr ""
+msgstr "mpv error details:\n%(value_0)s"
 
 #: local_slideshow.py:1829
 #, python-format
 msgid ""
 "Erreur inattendue lors de la lecture de la vidéo %(value_0)s: %(value_1)s"
-msgstr ""
+msgstr "Unexpected error playing video %(value_0)s: %(value_1)s"
 
 #: local_slideshow.py:1835
 msgid "📸 Re-initializing pygame.mixer."
-msgstr ""
+msgstr "📸 Re-initializing pygame.mixer."
 
 #: local_slideshow.py:1839
 #, python-format
 msgid "AVERTISSEMENT: Impossible de réinitialiser pygame.mixer: %(value_0)s"
-msgstr ""
+msgstr "WARNING: Could not reinitialize pygame.mixer: %(value_0)s"
 
 #: local_slideshow.py:1851
 msgid "📸 Starting slideshow initialization."
-msgstr ""
+msgstr "📸 Starting slideshow initialization."
 
 #: local_slideshow.py:1853
 #, python-format
 msgid "📸 Config loaded. show_clock: %(value_0)s, show_weather: %(value_1)s"
-msgstr ""
+msgstr "📸 Config loaded. show_clock: %(value_0)s, show_weather: %(value_1)s"
 
 #: local_slideshow.py:1858
-#, fuzzy
 msgid "📸 Attente de 2s pour stabilisation "
-msgstr "Photos awaiting validation"
+msgstr "📸 Waiting 2 seconds for stabilization "
 
 #: local_slideshow.py:1863
 msgid "📸 Pygame display and font modules initialized."
-msgstr ""
+msgstr "📸 Pygame display and font modules initialized."
 
 #: local_slideshow.py:1867
 msgid "📸 pygame.display.init() appelé explicitement"
-msgstr ""
+msgstr "📸 pygame.display.init() called explicitly"
 
 #: local_slideshow.py:1870
 msgid "📸 Environment check:"
-msgstr ""
+msgstr "📸 Environment check:"
 
 #: local_slideshow.py:1871
 #, python-format
 msgid "   DISPLAY=%(value_0)s"
-msgstr ""
+msgstr "   DISPLAY=%(value_0)s"
 
 #: local_slideshow.py:1872
 #, python-format
 msgid "   WAYLAND_DISPLAY=%(value_0)s"
-msgstr ""
+msgstr "   WAYLAND_DISPLAY=%(value_0)s"
 
 #: local_slideshow.py:1873
 #, python-format
 msgid "   XDG_RUNTIME_DIR=%(value_0)s"
-msgstr ""
+msgstr "   XDG_RUNTIME_DIR=%(value_0)s"
 
 #: local_slideshow.py:1874
 #, python-format
 msgid "   SDL_VIDEODRIVER=%(value_0)s"
-msgstr ""
+msgstr "   SDL_VIDEODRIVER=%(value_0)s"
 
 #: local_slideshow.py:1879
 #, python-format
 msgid "📸 Driver vidéo détecté: %(value_0)s"
-msgstr ""
+msgstr "📸 Detected video driver: %(value_0)s"
 
 #: local_slideshow.py:1881
 #, python-format
 msgid "❌ Impossible de détecter le driver: %(value_0)s"
-msgstr ""
+msgstr "❌ Could not detect video driver: %(value_0)s"
 
 #: local_slideshow.py:1885
 #, python-format
 msgid "📸 Screen resolution detected: %(value_0)sx%(value_1)s"
-msgstr ""
+msgstr "📸 Screen resolution detected: %(value_0)sx%(value_1)s"
 
 #: local_slideshow.py:1889
 msgid ""
 "❌ Résolution invalide détectée (0x0), utilisation de 1920x1080 par défaut"
-msgstr ""
+msgstr "❌ Invalid resolution detected (0x0); using the default 1920x1080"
 
 #: local_slideshow.py:1893
 #, python-format
 msgid "📸 Tentative de création de l'écran %(value_0)sx%(value_1)s..."
-msgstr ""
+msgstr "📸 Attempting to create screen %(value_0)sx%(value_1)s..."
 
 #: local_slideshow.py:1895
 #, python-format
 msgid "✅ Écran créé avec succès : %(value_0)s"
-msgstr ""
+msgstr "✅ Screen created successfully: %(value_0)s"
 
 #: local_slideshow.py:1898
 msgid "📸 Mouse cursor hidden."
-msgstr ""
+msgstr "📸 Mouse cursor hidden."
 
 #: local_slideshow.py:1905
 msgid "📸 Signal handlers registered."
-msgstr ""
+msgstr "📸 Signal handlers registered."
 
 #: local_slideshow.py:1913
 msgid "📸 Locale set to fr_FR.UTF-8."
-msgstr ""
+msgstr "📸 Locale set to fr_FR.UTF-8."
 
 #: local_slideshow.py:1915
 msgid ""
 "Avertissement: locale fr_FR.UTF-8 non disponible. Les dates seront en "
 "anglais."
-msgstr ""
+msgstr "Warning: locale fr_FR.UTF-8 is unavailable. Dates will be displayed in English."
 
 #: local_slideshow.py:1932
 #, python-format
 msgid "✅ Bouton physique activé sur le pin GPIO %(value_0)s."
-msgstr ""
+msgstr "✅ Physical button enabled on GPIO pin %(value_0)s."
 
 #: local_slideshow.py:1934
 #, python-format
 msgid ""
 "❌ Erreur lors de l'initialisation du bouton GPIO %(value_0)s: %(value_1)s"
-msgstr ""
+msgstr "❌ Error initializing GPIO button %(value_0)s: %(value_1)s"
 
 #: local_slideshow.py:1937
 msgid "📸 Entering main slideshow loop."
-msgstr ""
+msgstr "📸 Entering main slideshow loop."
 
 #: local_slideshow.py:1966
 #, python-format
 msgid ""
 "📸 Playlist personnalisée '%(value_0)s' chargée avec %(value_1)s photos."
-msgstr ""
+msgstr "📸 Custom playlist '%(value_0)s' loaded with %(value_1)s photos."
 
 #: local_slideshow.py:1971
 #, python-format
 msgid ""
 "📸 Erreur chargement playlist personnalisée: %(value_0)s. Utilisation de la "
 "playlist par défaut."
-msgstr ""
+msgstr "📸 Error loading custom playlist: %(value_0)s. Using the default playlist."
 
 #: local_slideshow.py:1991
 msgid "📸 Nouvelle carte postale détectée."
-msgstr ""
+msgstr "📸 New postcard detected."
 
 #: local_slideshow.py:2025
 #, python-format
 msgid "📸 Affichage immédiat de la nouvelle carte postale : %(value_0)s"
-msgstr ""
+msgstr "📸 Immediately displaying new postcard: %(value_0)s"
 
 #: local_slideshow.py:2043
 #, python-format
 msgid ""
 "📸 Erreur: le chemin '%(value_0)s' dans le fichier drapeau n'existe pas."
-msgstr ""
+msgstr "📸 Error: path '%(value_0)s' in flag file does not exist."
 
 #: local_slideshow.py:2046
-#, fuzzy, python-format
 msgid "📸 Erreur lors du traitement de la nouvelle carte postale: %(value_0)s"
-msgstr "Error changing password:%(error)s"
+msgstr "📸 Error processing new postcard: %(value_0)s"
 
 #: local_slideshow.py:2086
 #, python-format
 msgid ""
 "Erreur chargement police : %(value_0)s. Utilisation de la police système."
-msgstr ""
+msgstr "Error loading font: %(value_0)s. Using the system font."
 
 #: local_slideshow.py:2091
 msgid ""
 "Aucune photo trouvée dans les sources activées. Vérification dans 60 "
 "secondes."
-msgstr ""
+msgstr "No photos found in the enabled sources. Checking again in 60 seconds."
 
 #: local_slideshow.py:2123
-#, fuzzy, python-format
 msgid "Erreur chargement du logo : %(value_0)s"
-msgstr "Error changing password:%(error)s"
+msgstr "Error loading logo: %(value_0)s"
 
 #: local_slideshow.py:2134
 #, python-format
 msgid "Erreur génération QR code : %(value_0)s"
-msgstr ""
+msgstr "Error generating QR code: %(value_0)s"
 
 #: local_slideshow.py:2138
 msgid "Aucune photo trouvée."
@@ -1925,62 +1843,59 @@ msgid "Scannez pour configurer"
 msgstr "Scan to configure"
 
 #: local_slideshow.py:2194
-#, fuzzy, python-format
 msgid "🖼️ Affichage de la photo: %(value_0)s"
-msgstr "Date display"
+msgstr "🖼️ Displaying photo: %(value_0)s"
 
 #: local_slideshow.py:2202
 #, python-format
 msgid ""
 "Erreur lors de la lecture de la température ou du contrôle du ventilateur : "
 "%(value_0)s"
-msgstr ""
+msgstr "Error reading temperature or controlling fan: %(value_0)s"
 
 #: local_slideshow.py:2206
 #, python-format
 msgid ""
 "🖼️ Fichier non trouvé (probablement supprimé) : %(value_0)s. Passage au "
 "suivant."
-msgstr ""
+msgstr "🖼️ File not found (probably deleted): %(value_0)s. Skipping to the next one."
 
 #: local_slideshow.py:2227
 #, python-format
 msgid "Erreur écriture fichier photo actuelle : %(value_0)s"
-msgstr ""
+msgstr "Error writing current photo file: %(value_0)s"
 
 #: local_slideshow.py:2235
 msgid ""
 "📸 Attente de 0.8s de stabilisation avant réinitialisation d'affichage..."
-msgstr ""
+msgstr "📸 Waiting 0.8 seconds for stabilization before resetting the display..."
 
 #: local_slideshow.py:2278
 #, python-format
 msgid "🖼️ Error loading or transitioning to photo %(value_0)s: %(value_1)s"
-msgstr ""
+msgstr "🖼️ Error loading or transitioning to photo %(value_0)s: %(value_1)s"
 
 #: local_slideshow.py:2288
 #, python-format
 msgid "🖼️ Skipping photo %(value_0)s due to loading error."
-msgstr ""
+msgstr "🖼️ Skipping photo %(value_0)s due to loading error."
 
 #: local_slideshow.py:2304
-#, fuzzy
 msgid "🖼️ Playlist personnalisée terminée. Retour au diaporama standard."
-msgstr "Return to standard slideshow"
+msgstr "🖼️ Custom playlist finished. Returning to the standard slideshow."
 
 #: local_slideshow.py:2312
-#, fuzzy
 msgid "Arrêt manuel du diaporama."
-msgstr "Stop slideshow"
+msgstr "Manual slideshow stop."
 
 #: local_slideshow.py:2314
 #, python-format
 msgid "FATAL ERROR IN SLIDESHOW: %(value_0)s"
-msgstr ""
+msgstr "FATAL ERROR IN SLIDESHOW: %(value_0)s"
 
 #: local_slideshow.py:2331
 msgid "🖼️ Pygame exited cleanly."
-msgstr ""
+msgstr "🖼️ Pygame exited cleanly."
 
 #: templates/login.html.jinja:7
 msgid "Connexion"
@@ -2124,420 +2039,414 @@ msgstr ""
 
 #: utils/display_manager.py:67
 msgid "--------------------Lancement de Display_Manager----------------------"
-msgstr ""
+msgstr "---------------- Starting Display_Manager ----------------------"
 
 #: utils/display_manager.py:68
 #, python-format
 msgid "Le mode de log actif est : %(value_0)s"
-msgstr ""
+msgstr "Active log level: %(value_0)s"
 
 #: utils/display_manager.py:69
 msgid "🔍=Debug"
-msgstr ""
+msgstr "🔍=Debug"
 
 #: utils/display_manager.py:70
 msgid "ℹ️=Info"
-msgstr ""
+msgstr "ℹ️=Info"
 
 #: utils/display_manager.py:71
 msgid "😒=Warning"
-msgstr ""
+msgstr "😒=Warning"
 
 #: utils/display_manager.py:72
-#, fuzzy
 msgid "❌=Error"
-msgstr "Error"
+msgstr "❌=Error"
 
 #: utils/display_manager.py:73
 msgid "🟨=App"
-msgstr ""
+msgstr "🟨=App"
 
 #: utils/display_manager.py:74
 msgid "🟪=Slideshow_Manager"
-msgstr ""
+msgstr "🟪=Slideshow_Manager"
 
 #: utils/display_manager.py:75
 msgid "🟦=Local_Slideshow"
-msgstr ""
+msgstr "🟦=Local_Slideshow"
 
 #: utils/display_manager.py:76
 msgid "🟩=Display_Manager"
-msgstr ""
+msgstr "🟩=Display_Manager"
 
 #: utils/display_manager.py:88
 msgid "🖥 Test wlr-randr..."
-msgstr ""
+msgstr "🖥 Testing wlr-randr..."
 
 #: utils/display_manager.py:102
 #, python-format
 msgid "✅ Output détecté: %(value_0)s"
-msgstr ""
+msgstr "✅ Output detected: %(value_0)s"
 
 #: utils/display_manager.py:107
 msgid "🖥 Fallback sway..."
-msgstr ""
+msgstr "🖥 Sway fallback..."
 
 #: utils/display_manager.py:126
 #, python-format
 msgid "🖥 sway: %(value_0)s outputs"
-msgstr ""
+msgstr "🖥 sway: %(value_0)s outputs"
 
 #: utils/display_manager.py:131
 #, python-format
 msgid "sway: %(value_0)s active=%(value_1)s"
-msgstr ""
+msgstr "sway: %(value_0)s active=%(value_1)s"
 
 #: utils/display_manager.py:134
 #, python-format
 msgid "✅ SWAY HDMI: %(value_0)s"
-msgstr ""
+msgstr "✅ SWAY HDMI: %(value_0)s"
 
 #: utils/display_manager.py:137
 msgid "😒 0x0 - AUCUNE SORTIE"
-msgstr ""
+msgstr "😒 0x0 - NO OUTPUT"
 
 #: utils/display_manager.py:141
 #, python-format
 msgid "❌ ERREUR: %(value_0)s"
-msgstr ""
+msgstr "❌ ERROR: %(value_0)s"
 
 #: utils/display_manager.py:151
 #, python-format
 msgid "Envoi commande prise: %(value_0)s"
-msgstr ""
+msgstr "Sending plug command: %(value_0)s"
 
 #: utils/display_manager.py:153
 #, python-format
 msgid "Prise réponse: %(value_0)s"
-msgstr ""
+msgstr "Plug response: %(value_0)s"
 
 #: utils/display_manager.py:157
 msgid "✅ Commande prise OK"
-msgstr ""
+msgstr "✅ Plug command OK"
 
 #: utils/display_manager.py:160
 #, python-format
 msgid "😒 Erreur HTTP: %(value_0)s"
-msgstr ""
+msgstr "😒 HTTP error: %(value_0)s"
 
 #: utils/display_manager.py:164
 #, python-format
 msgid "❌ Exception requête: %(value_0)s"
-msgstr ""
+msgstr "❌ Request exception: %(value_0)s"
 
 #: utils/display_manager.py:170
 #, python-format
 msgid "⏻ set_display_power(%(value_0)s)"
-msgstr ""
+msgstr "⏻ set_display_power(%(value_0)s)"
 
 #: utils/display_manager.py:180
 #, python-format
 msgid "❌ Échec prise: %(value_0)s"
-msgstr ""
+msgstr "❌ Plug failed: %(value_0)s"
 
 #: utils/display_manager.py:184
 #, python-format
 msgid "⏳ Attente %(value_0)ss pour init écran..."
-msgstr ""
+msgstr "⏳ Waiting %(value_0)ss for display initialization..."
 
 #: utils/display_manager.py:191
 msgid "✅ ⏻ Reboot pour résolution HDMI..."
-msgstr ""
+msgstr "✅ ⏻ Rebooting for HDMI resolution..."
 
 #: utils/display_manager.py:196
 msgid "⏻ Extinction DPMS puis prise"
-msgstr ""
+msgstr "⏻ Turning off DPMS, then the plug"
 
 #: utils/display_manager.py:204
-#, fuzzy
 msgid "✅ Prise éteinte OK"
-msgstr "Outlet Status: Off"
+msgstr "✅ Plug turned off successfully"
 
 #: utils/display_manager.py:206
 #, python-format
 msgid "😒 Échec extinction prise: %(value_0)s"
-msgstr ""
+msgstr "😒 Failed to turn off the plug: %(value_0)s"
 
 #: utils/display_manager.py:210
 msgid "⏻ Pas de prise, DPMS uniquement."
-msgstr ""
+msgstr "⏻ No plug; using DPMS only."
 
 #: utils/display_manager.py:220
 msgid "🖥😒 Pas de HDMI."
-msgstr ""
+msgstr "🖥😒 No HDMI."
 
 #: utils/display_manager.py:228
 #, python-format
 msgid "🖥️ Commande: %(value_0)s"
-msgstr ""
+msgstr "🖥️ Command: %(value_0)s"
 
 #: utils/display_manager.py:237
 #, python-format
 msgid "🖥️ wlr DPMS: RC=%(value_0)s STDOUT=%(value_1)s ERR=%(value_2)s"
-msgstr ""
+msgstr "🖥️ wlr DPMS: RC=%(value_0)s STDOUT=%(value_1)s ERR=%(value_2)s"
 
 #: utils/display_manager.py:240
 #, python-format
 msgid "🖥️✅ Écran %(value_0)s -> %(value_1)s via wlr-randr."
-msgstr ""
+msgstr "🖥️✅ Display %(value_0)s -> %(value_1)s via wlr-randr."
 
 #: utils/display_manager.py:244
 msgid "🖥️Fallback swaymsg DPMS..."
-msgstr ""
+msgstr "🖥️ Falling back to swaymsg DPMS..."
 
 #: utils/display_manager.py:251
 #, python-format
 msgid "🖥️sway DPMS: RC=%(value_0)s"
-msgstr ""
+msgstr "🖥️ sway DPMS: RC=%(value_0)s"
 
 #: utils/display_manager.py:254
 #, python-format
 msgid "🖥️✅ Écran %(value_0)s -> %(value_1)s via swaymsg."
-msgstr ""
+msgstr "🖥️✅ Display %(value_0)s -> %(value_1)s via swaymsg."
 
 #: utils/display_manager.py:257
 #, python-format
 msgid "🖥️😒 Échec swaymsg DPMS: RC=%(value_0)s"
-msgstr ""
+msgstr "🖥️😒 swaymsg DPMS failed: RC=%(value_0)s"
 
 #: utils/display_manager.py:262
 #, python-format
 msgid "❌ %(value_0)s"
-msgstr ""
+msgstr "❌ %(value_0)s"
 
 #: utils/download_album.py:77
 msgid "----------------Initialisation Download Album----------------"
-msgstr ""
+msgstr "---------------- Initializing Download Album ----------------"
 
 #: utils/download_album.py:140
 #, python-format
 msgid "Erreur API Immich (%(value_0)s): %(value_1)s"
-msgstr ""
+msgstr "Immich API error (%(value_0)s): %(value_1)s"
 
 #: utils/download_album.py:150
-#, fuzzy
 msgid "Timeout lors du téléchargement de l'archive Immich."
-msgstr "Error loading playlists."
+msgstr "Immich archive download timed out."
 
 #: utils/download_album.py:153
 #, python-format
 msgid "Exception lors du téléchargement: %(value_0)s"
-msgstr ""
+msgstr "Download exception: %(value_0)s"
 
 #: utils/download_album.py:442
 #, python-format
 msgid "[Sync] Erreur lors de la lecture de l'archive ZIP : %(value_0)s"
-msgstr ""
+msgstr "[Sync] Error reading ZIP archive: %(value_0)s"
 
 #: utils/download_album.py:462
 #, python-format
 msgid ""
 "[Sync] Impossible de supprimer le fichier obsolète %(value_0)s : %(value_1)s"
-msgstr ""
+msgstr "[Sync] Could not delete obsolete file %(value_0)s: %(value_1)s"
 
 #: utils/download_album.py:464
 #, python-format
 msgid ""
 "[Sync] %(value_0)s photo(s) obsolète(s) supprimée(s) du dossier source."
-msgstr ""
+msgstr "[Sync] Deleted %(value_0)s obsolete photo(s) from the source folder."
 
 #: utils/metadata_utils.py:37
 #, python-format
 msgid "[Metadata] Erreur chargement cache : %(value_0)s"
-msgstr ""
+msgstr "[Metadata] Error loading cache: %(value_0)s"
 
 #: utils/metadata_utils.py:61
 #, python-format
 msgid "[Metadata] Erreur extraction métadonnées pour %(value_0)s: %(value_1)s"
-msgstr ""
+msgstr "[Metadata] Error extracting metadata for %(value_0)s: %(value_1)s"
 
 #: utils/prepare_all_photos.py:93
 msgid "----------------Initialisation Prepare All Photos----------------"
-msgstr ""
+msgstr "---------------- Initializing Prepare All Photos ----------------"
 
 #: utils/prepare_all_photos.py:168
 #, python-format
 msgid ""
 "Support HEIF désactivé (pillow-heif non installé). Impossible de traiter "
 "%(value_0)s"
-msgstr ""
+msgstr "HEIF support is disabled (pillow-heif is not installed). Cannot process %(value_0)s"
 
 #: utils/slideshow_manager.py:69
 msgid "----------------Initialisation Slideshow Manager----------------"
-msgstr ""
+msgstr "---------------- Initializing Slideshow Manager ----------------"
 
 #: utils/slideshow_manager.py:89
 #, python-format
 msgid "PID %(value_0)s n'existe plus"
-msgstr ""
+msgstr "PID %(value_0)s no longer exists"
 
 #: utils/slideshow_manager.py:94
 #, python-format
 msgid "Slideshow tourne ? %(value_0)s (PID: %(value_1)s)"
-msgstr ""
+msgstr "Is slideshow running? %(value_0)s (PID: %(value_1)s)"
 
 #: utils/slideshow_manager.py:97
 #, python-format
 msgid "Erreur vérification slideshow: %(value_0)s"
-msgstr ""
+msgstr "Error checking slideshow: %(value_0)s"
 
 #: utils/slideshow_manager.py:102
 msgid "📟 ✅ Start Slideshow"
-msgstr ""
+msgstr "📟 ✅ Start Slideshow"
 
 #: utils/slideshow_manager.py:105
 msgid "📟 Nettoyage préventif des zombies local_slideshow.py"
-msgstr ""
+msgstr "📟 Proactively cleaning up orphaned local_slideshow.py processes"
 
 #: utils/slideshow_manager.py:112
 #, python-format
 msgid "📟 Zombie trouvé : PID %(value_0)s, nettoyage..."
-msgstr ""
+msgstr "📟 Zombie process found: PID %(value_0)s; cleaning up..."
 
 #: utils/slideshow_manager.py:126
 #, python-format
 msgid "📟 Ancien PID file %(value_0)s nettoyé"
-msgstr ""
+msgstr "📟 Cleaned up old PID file %(value_0)s"
 
 #: utils/slideshow_manager.py:132
 #, python-format
 msgid "📟 Slideshow déjà en cours (PID %(value_0)s), pas de démarrage"
-msgstr ""
+msgstr "📟 Slideshow already running (PID %(value_0)s); not starting another"
 
 #: utils/slideshow_manager.py:137
 #, python-format
 msgid "📟 Erreur nettoyage PID: %(value_0)s"
-msgstr ""
+msgstr "📟 Error cleaning up PID: %(value_0)s"
 
 #: utils/slideshow_manager.py:145
 msgid "📟 Slideshow déjà en cours, pas de démarrage"
-msgstr ""
+msgstr "📟 Slideshow already running; not starting another"
 
 #: utils/slideshow_manager.py:162
 #, python-format
 msgid "📟 ✅ Diaporama démarré avec PID %(value_0)s"
-msgstr ""
+msgstr "📟 ✅ Slideshow started with PID %(value_0)s"
 
 #: utils/slideshow_manager.py:164
 #, python-format
 msgid "📟 ❌ Échec démarrage diaporama: %(value_0)s"
-msgstr ""
+msgstr "📟 ❌ Failed to start slideshow: %(value_0)s"
 
 #: utils/slideshow_manager.py:169
 #, python-format
 msgid "📟 Arrêt du processus de diaporama %(value_0)s..."
-msgstr ""
+msgstr "📟 Stopping slideshow process %(value_0)s..."
 
 #: utils/slideshow_manager.py:174
 #, python-format
 msgid "📟 Processus %(value_0)s arrêté proprement"
-msgstr ""
+msgstr "📟 Process %(value_0)s stopped cleanly"
 
 #: utils/slideshow_manager.py:176
 #, python-format
 msgid "📟 Le processus %(value_0)s n'a pas répondu, forçage de l'arrêt"
-msgstr ""
+msgstr "📟 Process %(value_0)s did not respond; forcing it to stop"
 
 #: utils/slideshow_manager.py:178
 #, python-format
 msgid "📟 Processus %(value_0)s tué de force"
-msgstr ""
+msgstr "📟 Process %(value_0)s killed forcefully"
 
 #: utils/slideshow_manager.py:185
-#, fuzzy
 msgid "📟 Arrêt du diaporama demandé"
-msgstr "Stop slideshow"
+msgstr "📟 Slideshow stop requested"
 
 #: utils/slideshow_manager.py:193
 #, python-format
 msgid "📟 Avertissement lors de l'arrêt du diaporama : %(value_0)s"
-msgstr ""
+msgstr "📟 Warning while stopping slideshow: %(value_0)s"
 
 #: utils/slideshow_manager.py:198
 msgid "📟 Fichier PID supprimé"
-msgstr ""
+msgstr "📟 PID file deleted"
 
 #: utils/slideshow_manager.py:204
 #, python-format
 msgid ""
 "📟 Nettoyage d'un processus de diaporama zombie trouvé (PID: %(value_0)s)"
-msgstr ""
+msgstr "📟 Cleaning up an orphaned slideshow process (PID: %(value_0)s)"
 
 #: utils/slideshow_manager.py:210
-#, fuzzy
 msgid "📟 Extinction de l'écran"
-msgstr "Screen resolution"
+msgstr "📟 Turning off the display"
 
 #: utils/slideshow_manager.py:218
 msgid "📟 Redémarrage du diaporama pour mise à jour de contenu"
-msgstr ""
+msgstr "📟 Restarting slideshow to update content"
 
 #: utils/slideshow_manager.py:229
 #, python-format
 msgid "📟 Avertissement lors de l'arrêt pour mise à jour : %(value_0)s"
-msgstr ""
+msgstr "📟 Warning while stopping slideshow for update: %(value_0)s"
 
 #: utils/slideshow_manager.py:233
 msgid "📟 Diaporama redémarré pour mise à jour"
-msgstr ""
+msgstr "📟 Slideshow restarted for update"
 
 #: utils/slideshow_manager.py:240
 msgid "📟 Redémarrage du processus de diaporama demandé"
-msgstr ""
+msgstr "📟 Slideshow process restart requested"
 
 #: utils/slideshow_manager.py:249
-#, fuzzy, python-format
 msgid "📟 Erreur lors de l'arrêt: %(value_0)s"
-msgstr "Restore error: %(error)s"
+msgstr "📟 Error stopping slideshow: %(value_0)s"
 
 #: utils/slideshow_manager.py:255
 #, python-format
 msgid "📟 Impossible de supprimer le fichier PID : %(value_0)s"
-msgstr ""
+msgstr "📟 Could not delete PID file: %(value_0)s"
 
 #: utils/slideshow_manager.py:272
 msgid "📟 Message de redémarrage affiché"
-msgstr ""
+msgstr "📟 Restart message displayed"
 
 #: utils/slideshow_manager.py:274
 #, python-format
 msgid "📟 Impossible d'afficher le message de redémarrage : %(value_0)s"
-msgstr ""
+msgstr "📟 Could not display restart message: %(value_0)s"
 
 #: utils/slideshow_manager.py:278
 msgid "📟 ✅ Processus de diaporama redémarré"
-msgstr ""
+msgstr "📟 ✅ Slideshow process restarted"
 
 #: utils/telegram_bot.py:28
 msgid "Could not parse telegram_authorized_users. No admin will be set."
-msgstr ""
+msgstr "Could not parse telegram_authorized_users. No admin will be set."
 
 #: utils/telegram_bot.py:59
 #, python-format
 msgid ""
 "User %(value_0)s (%(value_1)s) is attempting to use invitation code: "
 "%(value_2)s"
-msgstr ""
+msgstr "User %(value_0)s (%(value_1)s) is attempting to use invitation code: %(value_2)s"
 
 #: utils/telegram_bot.py:90
 #, python-format
 msgid "Unauthorized user %(value_0)s (%(value_1)s) tried to use the bot."
-msgstr ""
+msgstr "Unauthorized user %(value_0)s (%(value_1)s) tried to use the bot."
 
 #: utils/telegram_bot.py:103
 #, python-format
 msgid "Unauthorized user %(value_0)s (%(value_1)s) tried to send a photo."
-msgstr ""
+msgstr "Unauthorized user %(value_0)s (%(value_1)s) tried to send a photo."
 
 #: utils/telegram_bot.py:120
 #, python-format
 msgid "Photo from %(value_0)s (%(value_1)s) downloaded to %(value_2)s"
-msgstr ""
+msgstr "Photo from %(value_0)s (%(value_1)s) downloaded to %(value_2)s"
 
 #: utils/telegram_bot.py:128
 #, python-format
 msgid "Error processing photo from %(value_0)s: %(value_1)s"
-msgstr ""
+msgstr "Error processing photo from %(value_0)s: %(value_1)s"
 
 #~ msgid ""
 #~ "Voici toutes vos photos marquées comme favorites. Vous pouvez les gérer ici."

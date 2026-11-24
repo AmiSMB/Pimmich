@@ -1,10 +1,12 @@
 #!/bin/bash
 
-# Usage : ./setup.sh [fr|en] (français par défaut)
-# Usage: ./setup.sh [fr|en] (French by default).
-APP_LANGUAGE="${1:-fr}"
+# Usage : ./setup.sh [fr|en|es|de|ja] (conserve la langue configurée, sinon français)
+# Usage: ./setup.sh [fr|en|es|de|ja] (keeps the configured language, otherwise French).
+INSTALL_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$INSTALL_DIR" || exit 1
+APP_LANGUAGE="${1:-$(python3 -c 'import json, pathlib, sys; p=pathlib.Path(sys.argv[1]); c=json.loads(p.read_text()) if p.exists() else {}; print(c.get("ui_language", "fr"))' "$INSTALL_DIR/config/config.json" 2>/dev/null)}"
 case "$APP_LANGUAGE" in
-    fr|en) ;;
+    fr|en|es|de|ja) ;;
     *) APP_LANGUAGE="fr" ;;
 esac
 
@@ -332,7 +334,7 @@ mkdir -p static/photos
 mkdir -p static/prepared
 mkdir -p static/pending_uploads
 mkdir -p config
-"$VENV_PYTHON" -c 'import sys; from utils.config_manager import load_config, save_config; config = load_config(); config["ui_language"] = sys.argv[1]; config["voice_control_language"] = sys.argv[1]; save_config(config)' "$APP_LANGUAGE"
+"$VENV_PYTHON" -c 'import sys; from utils.config_manager import load_config, save_config; config = load_config(); config["ui_language"] = sys.argv[1]; save_config(config)' "$APP_LANGUAGE"
 say "Langue de l'application Pimmich réglée sur : $APP_LANGUAGE" "Pimmich application language set to: $APP_LANGUAGE"
 say "✅ Arborescence des dossiers créée." "✅ Directory structure created."
 
@@ -390,7 +392,6 @@ mkdir -p "$SWAY_CONFIG_DIR"
 
 # Chemin absolu vers le script de démarrage
 # Absolute path to the startup script.
-INSTALL_DIR=$(pwd)
 START_SCRIPT="$INSTALL_DIR/start_pimmich.sh"
 
 # Rendre exécutable
@@ -403,7 +404,7 @@ if ! grep -q 'start_pimmich.sh' "$SWAY_CONFIG_FILE" 2>/dev/null; then
     echo "exec_always --no-startup-id $START_SCRIPT $APP_LANGUAGE" >> "$SWAY_CONFIG_FILE"
     say "Ajout de start_pimmich.sh dans la configuration Sway (langue : $APP_LANGUAGE)." "Added start_pimmich.sh to the Sway configuration (language: $APP_LANGUAGE)."
 else
-    sed -i -E "/start_pimmich\\.sh/s#(start_pimmich\\.sh)([[:space:]]+(fr|en))?[[:space:]]*\$#\\1 $APP_LANGUAGE#" "$SWAY_CONFIG_FILE"
+    sed -i -E "/start_pimmich\\.sh/s#(start_pimmich\\.sh)([[:space:]]+(fr|en|es|de|ja))?[[:space:]]*\$#\\1 $APP_LANGUAGE#" "$SWAY_CONFIG_FILE"
     say "✅ Langue de démarrage de Pimmich mise à jour dans la configuration Sway : $APP_LANGUAGE." "✅ Updated Pimmich startup language in the Sway configuration: $APP_LANGUAGE."
 fi
 
