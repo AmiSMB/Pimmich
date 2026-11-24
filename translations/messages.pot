@@ -2502,6 +2502,26 @@ msgstr ""
 msgid "Hauteur utile de l'écran (%% affiché) :"
 msgstr ""
 
+#: templates/configure.html.jinja
+msgid "Mode d'affichage des photos"
+msgstr ""
+
+#: templates/configure.html.jinja
+msgid "Couleur de fond (RGB)"
+msgstr ""
+
+#: templates/configure.html.jinja
+msgid "Remplir l'écran (recadrer les bords)"
+msgstr ""
+
+#: templates/configure.html.jinja
+msgid "Zoomer pour ajuster (afficher la photo entière)"
+msgstr ""
+
+#: templates/configure.html.jinja
+msgid "Préparez à nouveau les photos pour appliquer ce réglage aux images déjà importées."
+msgstr ""
+
 #: local_slideshow.py:1674
 msgid "⌛ Chargement de la vidéo..."
 msgstr ""

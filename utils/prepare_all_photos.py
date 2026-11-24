@@ -197,8 +197,22 @@ def prepare_photo(source_path, dest_path, output_width, output_height, source_ty
         pi_model = get_pi_model()
         is_low_end = (pi_model in [1, 2, 3])
         resample_filter = Image.Resampling.BILINEAR if is_low_end else Image.Resampling.LANCZOS
-        
-        if img_aspect_ratio < display_area_aspect_ratio:
+
+        if config.get("image_display_mode", "fill") == "fit":
+            # Preserve the whole photo and center it on the configured canvas color.
+            scale = min(output_width / img.width, effective_photo_height / img.height)
+            fitted_width = max(1, int(img.width * scale))
+            fitted_height = max(1, int(img.height * scale))
+            img_content = img.resize((fitted_width, fitted_height), resample_filter)
+            background_hex = config.get("image_background_color", "#000000")
+            if not isinstance(background_hex, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", background_hex):
+                background_hex = "#000000"
+            background_rgb = tuple(int(background_hex[i:i + 2], 16) for i in (1, 3, 5))
+            final_img = Image.new('RGB', (output_width, output_height), background_rgb)
+            x_offset = (output_width - fitted_width) // 2
+            y_offset = (output_height - fitted_height) // 2
+            final_img.paste(img_content, (x_offset, y_offset))
+        elif img_aspect_ratio < display_area_aspect_ratio:
             # Portrait photo - add blurred background
             img_content = img.copy()
             scale = effective_photo_height / img.height

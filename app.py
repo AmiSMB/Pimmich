@@ -925,6 +925,8 @@ def configure():
             'active_start_weekday', 'active_end_weekday',
             'active_start_weekend', 'active_end_weekend',
             'screen_height_percent', 'clock_font_size', 'clock_color',
+            'image_display_mode',
+            'image_background_color',
             'clock_format', 'clock_offset_x', 'clock_offset_y',
             'clock_background_color',
             'clock_outline_color', 'clock_font_path', 'clock_position',

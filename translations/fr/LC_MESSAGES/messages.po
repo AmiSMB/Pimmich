@@ -996,6 +996,26 @@ msgstr "Activer le contrôle par prise connectée"
 msgid "Hauteur utile de l'écran (%% affiché) :"
 msgstr "Hauteur utile de l'écran (%% affiché) :"
 
+#: templates/configure.html.jinja
+msgid "Mode d'affichage des photos"
+msgstr "Mode d'affichage des photos"
+
+#: templates/configure.html.jinja
+msgid "Couleur de fond (RGB)"
+msgstr "Couleur de fond (RGB)"
+
+#: templates/configure.html.jinja
+msgid "Remplir l'écran (recadrer les bords)"
+msgstr "Remplir l'écran (recadrer les bords)"
+
+#: templates/configure.html.jinja
+msgid "Zoomer pour ajuster (afficher la photo entière)"
+msgstr "Zoomer pour ajuster (afficher la photo entière)"
+
+#: templates/configure.html.jinja
+msgid "Préparez à nouveau les photos pour appliquer ce réglage aux images déjà importées."
+msgstr "Préparez à nouveau les photos pour appliquer ce réglage aux images déjà importées."
+
 #: local_slideshow.py:1674
 msgid "⌛ Chargement de la vidéo..."
 msgstr "⌛ Chargement de la vidéo..."

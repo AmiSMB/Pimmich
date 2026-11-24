@@ -397,6 +397,19 @@
                     <input type="number" id="screen_height_percent" name="screen_height_percent" min="10" max="100"
                         value="{{ config.screen_height_percent }}">
 
+                    <div class="mt-3">
+                        <label for="image_display_mode" class="block text-sm font-medium text-gray-700">{{ _("Mode d'affichage des photos") }}</label>
+                        <select id="image_display_mode" name="image_display_mode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                            <option value="fill" {% if config.get('image_display_mode', 'fill') == 'fill' %}selected{% endif %}>{{ _("Remplir l'écran (recadrer les bords)") }}</option>
+                            <option value="fit" {% if config.get('image_display_mode', 'fill') == 'fit' %}selected{% endif %}>{{ _("Zoomer pour ajuster (afficher la photo entière)") }}</option>
+                        </select>
+                        <div class="flex items-center gap-2 mt-2">
+                            <label for="image_background_color" class="text-sm text-gray-700">{{ _("Couleur de fond (RGB)") }}</label>
+                            <input type="color" id="image_background_color" name="image_background_color" value="{{ config.get('image_background_color', '#000000') }}" class="h-9 w-14 rounded border border-gray-300">
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">{{ _("Préparez à nouveau les photos pour appliquer ce réglage aux images déjà importées.") }}</p>
+                    </div>
+
                     <div class="flex items-center mt-2">
                         <div class="flex-grow">
                             <label for="display_width">{{ _("Largeur d'affichage cible (px) :") }}</label>

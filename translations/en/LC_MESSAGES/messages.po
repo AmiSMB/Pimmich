@@ -2973,6 +2973,26 @@ msgstr "Enable smart plug control"
 msgid "Hauteur utile de l'écran (%% affiché) :"
 msgstr "Usable screen height (%% displayed):"
 
+#: templates/configure.html.jinja
+msgid "Mode d'affichage des photos"
+msgstr "Photo display mode"
+
+#: templates/configure.html.jinja
+msgid "Couleur de fond (RGB)"
+msgstr "Background color (RGB)"
+
+#: templates/configure.html.jinja
+msgid "Remplir l'écran (recadrer les bords)"
+msgstr "Fill screen (crop edges)"
+
+#: templates/configure.html.jinja
+msgid "Zoomer pour ajuster (afficher la photo entière)"
+msgstr "Zoom to fit (show the whole photo)"
+
+#: templates/configure.html.jinja
+msgid "Préparez à nouveau les photos pour appliquer ce réglage aux images déjà importées."
+msgstr "Reprepare photos to apply this setting to images already imported."
+
 #: local_slideshow.py:1674
 msgid "⌛ Chargement de la vidéo..."
 msgstr "⌛ Loading video..."
