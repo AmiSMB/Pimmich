@@ -978,6 +978,36 @@
                 </fieldset>
 
                 <fieldset class="mt-4">
+                    <legend><h3>{{ _("Configuration de Google Photos") }}</h3></legend>
+                    <p class="text-sm text-gray-600 mb-3">{{ _("Connectez votre compte Google, recherchez un album dans Google Photos et sélectionnez les éléments à ajouter au diaporama.") }}</p>
+                    <p class="text-xs text-gray-500 mb-3">{{ _("Enregistrez ces paramètres avant de connecter votre compte Google.") }}</p>
+                    <label for="google_photos_client_id">{{ _("Identifiant client OAuth Google :") }}</label>
+                    <input type="text" id="google_photos_client_id" name="google_photos_client_id"
+                           value="{{ config.get('google_photos_client_id', '') }}" autocomplete="off">
+                    <label for="google_photos_client_secret">{{ _("Secret client OAuth Google :") }}</label>
+                    <input type="password" id="google_photos_client_secret" name="google_photos_client_secret"
+                           value="{{ config.get('google_photos_client_secret', '') }}" autocomplete="new-password">
+                    <label for="google_photos_redirect_uri">{{ _("URI de redirection OAuth (HTTPS) :") }}</label>
+                    <input type="url" id="google_photos_redirect_uri" name="google_photos_redirect_uri"
+                           value="{{ config.get('google_photos_redirect_uri', '') }}"
+                           placeholder="https://photos.example.com/google-photos/oauth/callback">
+                    <p class="text-xs text-gray-500 mt-1">{{ _("Enregistrez cette URI complète comme URI de redirection dans Google Cloud Console. Google exige HTTPS, sauf pour localhost ; une adresse IP locale ne sera pas acceptée.") }}</p>
+                    <div class="flex flex-wrap items-center gap-3 mt-4">
+                        <a href="{{ url_for('google_photos_oauth_start') }}"
+                           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded px-4 py-2">
+                            {{ _("Connecter Google Photos") }}
+                        </a>
+                        {% if config.get('google_photos_refresh_token') %}
+                        <span class="text-sm text-green-700">{{ _("Compte Google autorisé") }}</span>
+                        <a href="{{ url_for('google_photos_picker_start') }}"
+                           class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold rounded px-4 py-2">
+                            {{ _("Choisir des photos ou un album") }}
+                        </a>
+                        {% endif %}
+                    </div>
+                </fieldset>
+
+                <fieldset class="mt-4">
                     <legend>
                         <h3>{{ _("Sources à afficher dans le diaporama") }}</h3>
                     </legend>
@@ -987,6 +1017,14 @@
                     <div class="form-check form-switch my-2">
                         <input class="form-check-input" type="checkbox" id="display_source_immich" name="display_sources" value="immich" {% if 'immich' in config.display_sources %}checked{% endif %}>
                         <label class="form-check-label ml-2" for="display_source_immich">{{ _("Photos Immich") }}</label>
+                    </div>
+                    <div class="form-check form-switch my-2">
+                        <input class="form-check-input" type="checkbox" id="display_source_uploaded_albums" name="display_sources" value="uploaded_albums" {% if 'uploaded_albums' in config.display_sources %}checked{% endif %}>
+                        <label class="form-check-label ml-2" for="display_source_uploaded_albums">{{ _("Albums importés") }}</label>
+                    </div>
+                    <div class="form-check form-switch my-2">
+                        <input class="form-check-input" type="checkbox" id="display_source_google_photos" name="display_sources" value="google_photos" {% if 'google_photos' in config.display_sources %}checked{% endif %}>
+                        <label class="form-check-label ml-2" for="display_source_google_photos">{{ _("Photos Google Photos") }}</label>
                     </div>
                     <div class="form-check form-switch my-2">
                         <input class="form-check-input" type="checkbox" id="display_source_usb" name="display_sources" value="usb" {% if 'usb' in config.display_sources %}checked{% endif %}>
@@ -1656,6 +1694,30 @@
                         <div id="smartphone-progress-bar" class="progress-bar"></div>
                     </div>
                     <div id="smartphone-import-status" class="status-messages"></div>
+
+                    <form id="album-zip-upload-form" action="{{ url_for('upload_album_zip') }}" method="post"
+                          enctype="multipart/form-data" class="mt-4 pt-4 border-t border-gray-200">
+                        <h5 class="text-lg font-semibold mb-2 flex items-center gap-2"><i class="fas fa-file-archive"></i>
+                            {{ _("Importer un album depuis un fichier ZIP") }}</h5>
+                        <p class="text-sm text-gray-600 mb-3">{{ _("Les photos et vidéos seront extraites localement, préparées et ajoutées à la source Albums importés. Taille maximale : 1 Go, jusqu'à 4 Go extraits.") }}</p>
+                        <label for="album-zip-name" class="block text-sm font-medium text-gray-700">{{ _("Nom de l'album (facultatif)") }}</label>
+                        <input id="album-zip-name" name="album_name" type="text" maxlength="48"
+                               class="block w-full rounded-md border-gray-300 shadow-sm mb-3"
+                               placeholder="{{ _('Par exemple : Vacances 2025') }}">
+                        <label for="album-zip-playlist" class="block text-sm font-medium text-gray-700">{{ _("Ajouter à une playlist (facultatif)") }}</label>
+                        <select id="album-zip-playlist" name="playlist_action"
+                                class="block w-full rounded-md border-gray-300 shadow-sm mb-3">
+                            <option value="">{{ _("Ne pas ajouter à une playlist") }}</option>
+                            <option value="__create__">{{ _("Créer une playlist avec le nom de l'album") }}</option>
+                        </select>
+                        <input type="file" name="album_zip" accept=".zip,application/zip" required
+                               class="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer mb-3">
+                        <button id="album-zip-upload-button" type="submit"
+                                class="import-button bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-upload"></i> {{ _("Importer l'album ZIP") }}
+                        </button>
+                        <div id="album-zip-upload-status" class="status-messages mt-2" aria-live="polite"></div>
+                    </form>
 
                     <hr class="my-6">
                     <h5 class="text-lg font-semibold mb-2 flex items-center gap-2"><i class="fas fa-file-audio"></i> {{ _("Importation de musique") }}</h5>
@@ -4355,6 +4417,94 @@
                             btn.innerHTML = '<i class="fas fa-upload"></i> {{ _("Envoyer les photos") }}';
                         });
                 });
+
+                // ----- IMPORT ALBUM ZIP -----
+                const albumZipForm = document.getElementById('album-zip-upload-form');
+                if (albumZipForm) {
+                    const albumZipButton = document.getElementById('album-zip-upload-button');
+                    const albumZipStatus = document.getElementById('album-zip-upload-status');
+                    const albumZipPlaylist = document.getElementById('album-zip-playlist');
+                    fetch('/api/playlists')
+                        .then(response => response.ok ? response.json() : Promise.reject(new Error('Could not load playlists')))
+                        .then(playlists => {
+                            playlists.forEach(playlist => {
+                                const option = document.createElement('option');
+                                option.value = playlist.id;
+                                option.textContent = `{{ _('Ajouter à une playlist existante :') }} ${playlist.name}`;
+                                albumZipPlaylist.appendChild(option);
+                            });
+                        })
+                        .catch(() => {
+                            const option = document.createElement('option');
+                            option.disabled = true;
+                            option.textContent = "{{ _('Impossible de charger les playlists existantes.') }}";
+                            albumZipPlaylist.appendChild(option);
+                        });
+                    albumZipForm.addEventListener('submit', (event) => {
+                        event.preventDefault();
+                        albumZipStatus.textContent = '';
+                        albumZipButton.disabled = true;
+                        albumZipButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ _("Importation en cours...") }}';
+
+                        let responseOffset = 0;
+                        let eventBuffer = '';
+                        let completed = false;
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('POST', albumZipForm.action);
+                        xhr.upload.onprogress = (uploadEvent) => {
+                            if (uploadEvent.lengthComputable) {
+                                const percent = Math.round((uploadEvent.loaded / uploadEvent.total) * 100);
+                                albumZipStatus.textContent = `{{ _('Envoi du fichier ZIP :') }} ${percent}%`;
+                            }
+                        };
+
+                        const addAlbumZipMessage = (message, type = 'info') => {
+                            const row = document.createElement('div');
+                            row.className = 'p-2 mb-1 rounded border';
+                            row.classList.add(type === 'error' ? 'text-red-700' : (type === 'complete' ? 'text-green-700' : 'text-gray-700'));
+                            row.textContent = message;
+                            albumZipStatus.appendChild(row);
+                        };
+
+                        const readEvents = () => {
+                            const newText = xhr.responseText.slice(responseOffset);
+                            responseOffset = xhr.responseText.length;
+                            eventBuffer += newText;
+                            const events = eventBuffer.split('\n\n');
+                            eventBuffer = events.pop();
+                            for (const rawEvent of events) {
+                                const dataLine = rawEvent.split('\n').find((line) => line.startsWith('data: '));
+                                if (!dataLine) continue;
+                                try {
+                                    const update = JSON.parse(dataLine.slice(6));
+                                    if (update.message) addAlbumZipMessage(update.message, update.type);
+                                    if (update.type === 'complete') completed = true;
+                                } catch (_) {
+                                    addAlbumZipMessage("{{ _('Données invalides reçues du serveur.') }}", 'error');
+                                }
+                            }
+                        };
+
+                        xhr.onprogress = readEvents;
+                        xhr.onload = () => {
+                            readEvents();
+                            if (xhr.status < 200 || xhr.status >= 300) {
+                                addAlbumZipMessage(`{{ _('Erreur HTTP :') }} ${xhr.status}`, 'error');
+                            } else if (completed) {
+                                albumZipForm.reset();
+                                setTimeout(() => location.reload(), 1800);
+                            }
+                            albumZipButton.disabled = false;
+                            albumZipButton.innerHTML = '<i class="fas fa-upload"></i> {{ _("Importer l\'album ZIP") }}';
+                        };
+                        xhr.onerror = () => {
+                            addAlbumZipMessage("{{ _('Erreur de communication avec le serveur.') }}", 'error');
+                            albumZipButton.disabled = false;
+                            albumZipButton.innerHTML = '<i class="fas fa-upload"></i> {{ _("Importer l\'album ZIP") }}';
+                        };
+                        xhr.send(new FormData(albumZipForm));
+                    });
+                }
 
                 // --- GESTION DE L'UPLOAD DE MUSIQUE ---
                 const musicUploadInput = document.getElementById('music-upload-input');

@@ -33,6 +33,207 @@ msgstr ""
 msgid "Impossible d'enregistrer la signature des paramètres de préparation des photos."
 msgstr ""
 
+msgid "Configuration de Google Photos"
+msgstr ""
+
+msgid "Connectez votre compte Google, recherchez un album dans Google Photos et sélectionnez les éléments à ajouter au diaporama."
+msgstr ""
+
+msgid "Enregistrez ces paramètres avant de connecter votre compte Google."
+msgstr ""
+
+msgid "Identifiant client OAuth Google :"
+msgstr ""
+
+msgid "Secret client OAuth Google :"
+msgstr ""
+
+msgid "URI de redirection OAuth (HTTPS) :"
+msgstr ""
+
+msgid "Enregistrez cette URI complète comme URI de redirection dans Google Cloud Console. Google exige HTTPS, sauf pour localhost ; une adresse IP locale ne sera pas acceptée."
+msgstr ""
+
+msgid "Connecter Google Photos"
+msgstr ""
+
+msgid "Compte Google autorisé"
+msgstr ""
+
+msgid "Choisir des photos ou un album"
+msgstr ""
+
+msgid "Photos Google Photos"
+msgstr ""
+
+msgid "Choisir des photos Google Photos"
+msgstr ""
+
+msgid "Ajouter des photos Google Photos"
+msgstr ""
+
+msgid "Ouvrez Google Photos et recherchez le nom de l'album à partager."
+msgstr ""
+
+msgid "Sélectionnez les photos ou vidéos souhaitées, puis validez votre sélection."
+msgstr ""
+
+msgid "Revenez sur cette page et importez les éléments sélectionnés dans Pimmich."
+msgstr ""
+
+msgid "Ouvrir Google Photos"
+msgstr ""
+
+msgid "Importer ma sélection"
+msgstr ""
+
+msgid "Retour à la configuration"
+msgstr ""
+
+msgid "Enregistrez d'abord l'identifiant et le secret OAuth Google."
+msgstr ""
+
+msgid "Google OAuth exige une URI de redirection HTTPS avec un nom de domaine, ou une adresse localhost. Configurez-la dans Google Cloud Console."
+msgstr ""
+
+msgid "Impossible de supprimer la session Google Photos Picker terminée."
+msgstr ""
+
+msgid "L'autorisation Google Photos a échoué : état OAuth invalide."
+msgstr ""
+
+msgid "L'autorisation Google Photos a été refusée ou annulée."
+msgstr ""
+
+msgid "Google Photos est connecté. Vous pouvez maintenant choisir des photos."
+msgstr ""
+
+msgid "Impossible de connecter Google Photos. Vérifiez les identifiants OAuth et l'URI de redirection."
+msgstr ""
+
+msgid "Impossible de démarrer Google Photos Picker. Vérifiez la connexion Google."
+msgstr ""
+
+msgid "La sélection Google Photos n'est pas terminée. Terminez la sélection puis réessayez."
+msgstr ""
+
+msgid "Aucune photo ni vidéo n'a été sélectionnée."
+msgstr ""
+
+msgid "Téléchargement de %(value_0)s (%(value_1)s/%(value_2)s)."
+msgstr ""
+
+msgid "Un élément sélectionné n'a pas pu être téléchargé : %(value_0)s"
+msgstr ""
+
+msgid "Aucun élément Google Photos sélectionné n'a pu être téléchargé."
+msgstr ""
+
+msgid "Préparation des photos sélectionnées pour le diaporama..."
+msgstr ""
+
+msgid "La préparation de certaines photos sélectionnées a échoué."
+msgstr ""
+
+msgid "La sélection Google Photos a été importée et ajoutée au diaporama."
+msgstr ""
+
+msgid "Échec de l'importation Google Photos : %(value_0)s"
+msgstr ""
+
+msgid "Importer un album depuis un fichier ZIP"
+msgstr ""
+
+msgid "Les photos et vidéos seront extraites localement, préparées et ajoutées à la source Albums importés. Taille maximale : 1 Go, jusqu'à 4 Go extraits."
+msgstr ""
+
+msgid "Nom de l'album (facultatif)"
+msgstr ""
+
+msgid "Ajouter à une playlist (facultatif)"
+msgstr ""
+
+msgid "Ne pas ajouter à une playlist"
+msgstr ""
+
+msgid "Créer une playlist avec le nom de l'album"
+msgstr ""
+
+msgid "Ajouter à une playlist existante :"
+msgstr ""
+
+msgid "Impossible de charger les playlists existantes."
+msgstr ""
+
+msgid "La playlist sélectionnée n'existe plus."
+msgstr ""
+
+msgid "L'album a été importé et ajouté à la playlist %(value_0)s."
+msgstr ""
+
+msgid "Par exemple : Vacances 2025"
+msgstr ""
+
+msgid "Importer l'album ZIP"
+msgstr ""
+
+msgid "Albums importés"
+msgstr ""
+
+msgid "Importation en cours..."
+msgstr ""
+
+msgid "Envoi du fichier ZIP :"
+msgstr ""
+
+msgid "Erreur HTTP :"
+msgstr ""
+
+msgid "Sélectionnez un fichier ZIP d'album."
+msgstr ""
+
+msgid "%(value_0)s fichiers média extraits. Préparation pour le diaporama..."
+msgstr ""
+
+msgid "Aucun média de l'archive n'a pu être préparé."
+msgstr ""
+
+msgid "L'album a été importé et ajouté au diaporama."
+msgstr ""
+
+msgid "Échec de l'importation de l'archive photo : %(value_0)s"
+msgstr ""
+
+msgid "Choisissez une archive ZIP."
+msgstr ""
+
+msgid "Le fichier ZIP dépasse la limite d'envoi de 1 Go."
+msgstr ""
+
+msgid "Un élément de l'archive est trop volumineux : %(value_0)s"
+msgstr ""
+
+msgid "Le contenu de l'archive dépasse la limite d'extraction de 4 Go."
+msgstr ""
+
+msgid "L'archive contient plus de 10 000 fichiers média pris en charge."
+msgstr ""
+
+msgid "L'archive ZIP ne contient aucune photo ou vidéo prise en charge."
+msgstr ""
+
+msgid "Un élément de l'archive dépasse la taille déclarée : %(value_0)s"
+msgstr ""
+
+msgid "La taille d'un élément de l'archive ne correspond pas : %(value_0)s"
+msgstr ""
+
+msgid "Impossible de lire l'archive ZIP : %(value_0)s"
+msgstr ""
+
+msgid "Les archives ZIP protégées par mot de passe ne sont pas prises en charge."
+msgstr ""
+
 #: app.py:275
 msgid ""
 "SWAYSOCK non trouvé, utilisation de la résolution de secours depuis la "

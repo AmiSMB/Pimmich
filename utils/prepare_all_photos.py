@@ -393,7 +393,7 @@ def prepare_all_photos_with_progress(screen_width=None, screen_height=None, sour
     PREPARED_SOURCE_DIR.mkdir(parents=True, exist_ok=True)
     
     # Smart synchronization logic
-    source_files = {f: os.path.splitext(f)[0] for f in os.listdir(SOURCE_DIR_FOR_PREP) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.heic', '.heif') + VIDEO_EXTENSIONS)}
+    source_files = {f: os.path.splitext(f)[0] for f in os.listdir(SOURCE_DIR_FOR_PREP) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif') + VIDEO_EXTENSIONS)}
     source_basenames = set(source_files.values())
     
     # Détecter les basenames déjà préparés de manière robuste (non vide et plus récent que la source)

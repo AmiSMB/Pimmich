@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="{{ get_locale() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ _("Choisir des photos Google Photos") }} - Pimmich</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen p-6">
+    <main class="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
+        <h1 class="text-2xl font-bold mb-4">{{ _("Ajouter des photos Google Photos") }}</h1>
+        <ol class="list-decimal pl-6 space-y-2 mb-6">
+            <li>{{ _("Ouvrez Google Photos et recherchez le nom de l'album à partager.") }}</li>
+            <li>{{ _("Sélectionnez les photos ou vidéos souhaitées, puis validez votre sélection.") }}</li>
+            <li>{{ _("Revenez sur cette page et importez les éléments sélectionnés dans Pimmich.") }}</li>
+        </ol>
+        <a href="{{ picker_uri }}/autoclose" target="_blank" rel="noopener noreferrer"
+           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded px-4 py-2 mb-6">
+            {{ _("Ouvrir Google Photos") }}
+        </a>
+        <form id="google-photos-import-form" method="post" action="{{ url_for('google_photos_picker_import') }}">
+            <input type="hidden" name="session_id" value="{{ picker_session_id }}">
+            <button id="google-photos-import-button" type="submit"
+                    class="bg-green-600 hover:bg-green-700 text-white font-semibold rounded px-4 py-2">
+                {{ _("Importer ma sélection") }}
+            </button>
+        </form>
+        <div id="google-photos-import-status" class="hidden mt-5 rounded bg-gray-50 p-4 whitespace-pre-wrap" aria-live="polite"></div>
+        <a id="google-photos-config-link" href="{{ url_for('configure') }}" class="hidden mt-5 text-blue-700 underline">
+            {{ _("Retour à la configuration") }}
+        </a>
+    </main>
+    <script>
+        const importForm = document.getElementById('google-photos-import-form');
+        const importButton = document.getElementById('google-photos-import-button');
+        const statusBox = document.getElementById('google-photos-import-status');
+        const configLink = document.getElementById('google-photos-config-link');
+
+        importForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            importButton.disabled = true;
+            statusBox.classList.remove('hidden');
+            statusBox.textContent = '';
+            try {
+                const response = await fetch(importForm.action, {
+                    method: 'POST',
+                    body: new FormData(importForm),
+                    headers: { 'Accept': 'text/event-stream' }
+                });
+                if (!response.ok || !response.body) {
+                    throw new Error(`Import request failed (${response.status})`);
+                }
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    const events = buffer.split('\n\n');
+                    buffer = events.pop();
+                    for (const eventText of events) {
+                        const line = eventText.split('\n').find((part) => part.startsWith('data: '));
+                        if (!line) continue;
+                        const update = JSON.parse(line.slice(6));
+                        if (update.message) statusBox.textContent += `${update.message}\n`;
+                        if (update.type === 'complete') configLink.classList.remove('hidden');
+                        if (update.type === 'error') importButton.disabled = false;
+                    }
+                }
+            } catch (error) {
+                statusBox.textContent += `${error.message}\n`;
+                importButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

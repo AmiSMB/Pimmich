@@ -34,6 +34,207 @@ msgstr "Photo preparation failed for %(value_0)s: %(value_1)s"
 msgid "Impossible d'enregistrer la signature des paramètres de préparation des photos."
 msgstr "Could not save the photo preparation settings signature."
 
+msgid "Configuration de Google Photos"
+msgstr "Google Photos configuration"
+
+msgid "Connectez votre compte Google, recherchez un album dans Google Photos et sélectionnez les éléments à ajouter au diaporama."
+msgstr "Connect your Google account, search for an album in Google Photos, and select items to add to the slideshow."
+
+msgid "Enregistrez ces paramètres avant de connecter votre compte Google."
+msgstr "Save these settings before connecting your Google account."
+
+msgid "Identifiant client OAuth Google :"
+msgstr "Google OAuth client ID:"
+
+msgid "Secret client OAuth Google :"
+msgstr "Google OAuth client secret:"
+
+msgid "URI de redirection OAuth (HTTPS) :"
+msgstr "OAuth redirect URI (HTTPS):"
+
+msgid "Enregistrez cette URI complète comme URI de redirection dans Google Cloud Console. Google exige HTTPS, sauf pour localhost ; une adresse IP locale ne sera pas acceptée."
+msgstr "Register this full URI as a redirect URI in Google Cloud Console. Google requires HTTPS except for localhost; a local IP address will not be accepted."
+
+msgid "Connecter Google Photos"
+msgstr "Connect Google Photos"
+
+msgid "Compte Google autorisé"
+msgstr "Google account authorized"
+
+msgid "Choisir des photos ou un album"
+msgstr "Choose photos or an album"
+
+msgid "Photos Google Photos"
+msgstr "Google Photos"
+
+msgid "Choisir des photos Google Photos"
+msgstr "Choose Google Photos"
+
+msgid "Ajouter des photos Google Photos"
+msgstr "Add Google Photos"
+
+msgid "Ouvrez Google Photos et recherchez le nom de l'album à partager."
+msgstr "Open Google Photos and search for the album you want to share."
+
+msgid "Sélectionnez les photos ou vidéos souhaitées, puis validez votre sélection."
+msgstr "Select the photos or videos you want, then confirm your selection."
+
+msgid "Revenez sur cette page et importez les éléments sélectionnés dans Pimmich."
+msgstr "Return to this page and import the selected items into Pimmich."
+
+msgid "Ouvrir Google Photos"
+msgstr "Open Google Photos"
+
+msgid "Importer ma sélection"
+msgstr "Import my selection"
+
+msgid "Retour à la configuration"
+msgstr "Back to configuration"
+
+msgid "Enregistrez d'abord l'identifiant et le secret OAuth Google."
+msgstr "Save the Google OAuth client ID and secret first."
+
+msgid "Google OAuth exige une URI de redirection HTTPS avec un nom de domaine, ou une adresse localhost. Configurez-la dans Google Cloud Console."
+msgstr "Google OAuth requires an HTTPS redirect URI with a domain name, or a localhost URL. Configure it in Google Cloud Console."
+
+msgid "Impossible de supprimer la session Google Photos Picker terminée."
+msgstr "Could not delete the completed Google Photos Picker session."
+
+msgid "L'autorisation Google Photos a échoué : état OAuth invalide."
+msgstr "Google Photos authorization failed: invalid OAuth state."
+
+msgid "L'autorisation Google Photos a été refusée ou annulée."
+msgstr "Google Photos authorization was denied or cancelled."
+
+msgid "Google Photos est connecté. Vous pouvez maintenant choisir des photos."
+msgstr "Google Photos is connected. You can now choose photos."
+
+msgid "Impossible de connecter Google Photos. Vérifiez les identifiants OAuth et l'URI de redirection."
+msgstr "Could not connect Google Photos. Check the OAuth credentials and redirect URI."
+
+msgid "Impossible de démarrer Google Photos Picker. Vérifiez la connexion Google."
+msgstr "Could not start Google Photos Picker. Check the Google connection."
+
+msgid "La sélection Google Photos n'est pas terminée. Terminez la sélection puis réessayez."
+msgstr "Google Photos selection is not finished. Complete the selection and try again."
+
+msgid "Aucune photo ni vidéo n'a été sélectionnée."
+msgstr "No photos or videos were selected."
+
+msgid "Téléchargement de %(value_0)s (%(value_1)s/%(value_2)s)."
+msgstr "Downloading %(value_0)s (%(value_1)s/%(value_2)s)."
+
+msgid "Un élément sélectionné n'a pas pu être téléchargé : %(value_0)s"
+msgstr "Could not download one selected item: %(value_0)s"
+
+msgid "Aucun élément Google Photos sélectionné n'a pu être téléchargé."
+msgstr "None of the selected Google Photos items could be downloaded."
+
+msgid "Préparation des photos sélectionnées pour le diaporama..."
+msgstr "Preparing the selected photos for the slideshow..."
+
+msgid "La préparation de certaines photos sélectionnées a échoué."
+msgstr "Some selected photos could not be prepared."
+
+msgid "La sélection Google Photos a été importée et ajoutée au diaporama."
+msgstr "Google Photos selection imported and added to the slideshow."
+
+msgid "Échec de l'importation Google Photos : %(value_0)s"
+msgstr "Google Photos import failed: %(value_0)s"
+
+msgid "Importer un album depuis un fichier ZIP"
+msgstr "Import an album from a ZIP file"
+
+msgid "Les photos et vidéos seront extraites localement, préparées et ajoutées à la source Albums importés. Taille maximale : 1 Go, jusqu'à 4 Go extraits."
+msgstr "Photos and videos will be extracted locally, prepared, and added to the Imported albums source. Maximum upload: 1 GB, up to 4 GB extracted."
+
+msgid "Nom de l'album (facultatif)"
+msgstr "Album name (optional)"
+
+msgid "Ajouter à une playlist (facultatif)"
+msgstr "Add to a playlist (optional)"
+
+msgid "Ne pas ajouter à une playlist"
+msgstr "Do not add to a playlist"
+
+msgid "Créer une playlist avec le nom de l'album"
+msgstr "Create a playlist using the album name"
+
+msgid "Ajouter à une playlist existante :"
+msgstr "Add to existing playlist:"
+
+msgid "Impossible de charger les playlists existantes."
+msgstr "Could not load existing playlists."
+
+msgid "La playlist sélectionnée n'existe plus."
+msgstr "The selected playlist no longer exists."
+
+msgid "L'album a été importé et ajouté à la playlist %(value_0)s."
+msgstr "The album was imported and added to playlist %(value_0)s."
+
+msgid "Par exemple : Vacances 2025"
+msgstr "For example: Holiday 2025"
+
+msgid "Importer l'album ZIP"
+msgstr "Import ZIP album"
+
+msgid "Albums importés"
+msgstr "Imported albums"
+
+msgid "Importation en cours..."
+msgstr "Importing..."
+
+msgid "Envoi du fichier ZIP :"
+msgstr "Uploading ZIP file:"
+
+msgid "Erreur HTTP :"
+msgstr "HTTP error:"
+
+msgid "Sélectionnez un fichier ZIP d'album."
+msgstr "Select an album ZIP file."
+
+msgid "%(value_0)s fichiers média extraits. Préparation pour le diaporama..."
+msgstr "Extracted %(value_0)s media files. Preparing them for the slideshow..."
+
+msgid "Aucun média de l'archive n'a pu être préparé."
+msgstr "No media from the archive could be prepared."
+
+msgid "L'album a été importé et ajouté au diaporama."
+msgstr "The album was imported and added to the slideshow."
+
+msgid "Échec de l'importation de l'archive photo : %(value_0)s"
+msgstr "Photo archive import failed: %(value_0)s"
+
+msgid "Choisissez une archive ZIP."
+msgstr "Choose a ZIP archive."
+
+msgid "Le fichier ZIP dépasse la limite d'envoi de 1 Go."
+msgstr "The ZIP file exceeds the 1 GB upload limit."
+
+msgid "Un élément de l'archive est trop volumineux : %(value_0)s"
+msgstr "An archive item is too large: %(value_0)s"
+
+msgid "Le contenu de l'archive dépasse la limite d'extraction de 4 Go."
+msgstr "The archive contents exceed the 4 GB extraction limit."
+
+msgid "L'archive contient plus de 10 000 fichiers média pris en charge."
+msgstr "The archive contains more than 10,000 supported media files."
+
+msgid "L'archive ZIP ne contient aucune photo ou vidéo prise en charge."
+msgstr "The ZIP archive contains no supported photos or videos."
+
+msgid "Un élément de l'archive dépasse la taille déclarée : %(value_0)s"
+msgstr "An archive item exceeds its declared size: %(value_0)s"
+
+msgid "La taille d'un élément de l'archive ne correspond pas : %(value_0)s"
+msgstr "An archive item's size does not match its declared size: %(value_0)s"
+
+msgid "Impossible de lire l'archive ZIP : %(value_0)s"
+msgstr "Could not read the ZIP archive: %(value_0)s"
+
+msgid "Les archives ZIP protégées par mot de passe ne sont pas prises en charge."
+msgstr "Password-protected ZIP archives are not supported."
+
 #: app.py:275
 msgid ""
 "SWAYSOCK non trouvé, utilisation de la résolution de secours depuis la "

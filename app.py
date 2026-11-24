@@ -20,11 +20,14 @@ from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from pathlib import Path
 from werkzeug.security import check_password_hash
+from urllib.parse import urlencode, urlsplit
 import secrets
 import signal
 import traceback
+import ipaddress
 
 from utils.download_album import download_and_extract_album
+from utils.google_photos import GooglePhotosError, download_picked_media, exchange_authorization_code, get_access_token as get_google_photos_access_token, list_session_media, picker_request
 from utils.auth import login_required # type: ignore
 from utils.slideshow_manager import is_slideshow_running, start_slideshow, stop_slideshow, restart_slideshow_process, restart_slideshow_for_update
 from utils.config_manager import load_config, save_config
@@ -36,6 +39,7 @@ from utils.wifi_manager import set_wifi_config # Import the new utility
 from utils.display_manager import get_display_output_name, set_display_power
 from utils.prepare_all_photos import prepare_all_photos_with_progress
 from utils.import_usb_photos import import_usb_photos  # Déplacé dans utils
+from utils.album_archive import AlbumArchiveError, MAX_UPLOAD_BYTES as ALBUM_ZIP_MAX_UPLOAD_BYTES, extract_album_zip
 from utils.metadata_utils import get_photo_metadata # Import get_photo_metadata
 from utils.import_samba import import_samba_photos
 from utils.image_filters import apply_filter_to_image, add_text_to_polaroid, add_text_to_image, create_polaroid_effect
@@ -920,6 +924,7 @@ def configure():
 
         for key in [
             'immich_url', 'immich_token', 'album_name',
+            'google_photos_client_id', 'google_photos_client_secret', 'google_photos_redirect_uri',
             'ui_language',
             'display_duration', 
             'active_start_weekday', 'active_end_weekday',
@@ -1237,6 +1242,190 @@ def import_immich():
 
     return Response(generate(), mimetype='text/event-stream', headers={"Cache-Control": "no-cache", "Connection": "keep-alive"})
 
+def _google_photos_redirect_uri(config):
+    configured_uri = (config.get("google_photos_redirect_uri") or "").strip()
+    return configured_uri or url_for("google_photos_oauth_callback", _external=True)
+
+
+@app.route("/google-photos/oauth/start")
+@login_required
+def google_photos_oauth_start():
+    config = load_config()
+    client_id = (config.get("google_photos_client_id") or "").strip()
+    client_secret = (config.get("google_photos_client_secret") or "").strip()
+    if not client_id or not client_secret:
+        flash(_("Enregistrez d'abord l'identifiant et le secret OAuth Google."), "error")
+        return redirect(url_for("configure", lang=config.get("ui_language", "fr")))
+
+    oauth_state = secrets.token_urlsafe(32)
+    session["google_photos_oauth_state"] = oauth_state
+    redirect_uri = _google_photos_redirect_uri(config)
+    redirect_parts = urlsplit(redirect_uri)
+    redirect_host = (redirect_parts.hostname or "").lower()
+    try:
+        redirect_ip = ipaddress.ip_address(redirect_host)
+    except ValueError:
+        redirect_ip = None
+    is_loopback = redirect_host == "localhost" or (redirect_ip is not None and redirect_ip.is_loopback)
+    if not ((redirect_parts.scheme == "https" and redirect_host and redirect_ip is None) or (redirect_parts.scheme == "http" and is_loopback)):
+        session.pop("google_photos_oauth_state", None)
+        flash(_("Google OAuth exige une URI de redirection HTTPS avec un nom de domaine, ou une adresse localhost. Configurez-la dans Google Cloud Console."), "error")
+        return redirect(url_for("configure", lang=config.get("ui_language", "fr")))
+    authorization_url = "https://accounts.google.com/o/oauth2/v2/auth?" + urlencode({
+        "client_id": client_id,
+        "redirect_uri": redirect_uri,
+        "response_type": "code",
+        "scope": "https://www.googleapis.com/auth/photospicker.mediaitems.readonly",
+        "access_type": "offline",
+        "prompt": "consent",
+        "state": oauth_state,
+    })
+    return redirect(authorization_url)
+
+
+@app.route("/google-photos/oauth/callback")
+@login_required
+def google_photos_oauth_callback():
+    config = load_config()
+    expected_state = session.pop("google_photos_oauth_state", "")
+    returned_state = request.args.get("state", "")
+    if not expected_state or not secrets.compare_digest(expected_state, returned_state):
+        flash(_("L'autorisation Google Photos a échoué : état OAuth invalide."), "error")
+        return redirect(url_for("configure", lang=config.get("ui_language", "fr")))
+    if request.args.get("error"):
+        flash(_("L'autorisation Google Photos a été refusée ou annulée."), "error")
+        return redirect(url_for("configure", lang=config.get("ui_language", "fr")))
+
+    try:
+        token = exchange_authorization_code(
+            config.get("google_photos_client_id", ""),
+            config.get("google_photos_client_secret", ""),
+            request.args.get("code", ""),
+            _google_photos_redirect_uri(config),
+        )
+        refresh_token = token.get("refresh_token") or config.get("google_photos_refresh_token")
+        if not refresh_token:
+            raise GooglePhotosError("Google did not return a refresh token. Reconnect and grant offline access.")
+        config["google_photos_refresh_token"] = refresh_token
+        save_config(config)
+        flash(_("Google Photos est connecté. Vous pouvez maintenant choisir des photos."), "success")
+    except (GooglePhotosError, requests.RequestException) as e:
+        logger.warning(tr("Échec de l'autorisation Google Photos : %(value_0)s", value_0=e))
+        flash(_("Impossible de connecter Google Photos. Vérifiez les identifiants OAuth et l'URI de redirection."), "error")
+    return redirect(url_for("configure", lang=config.get("ui_language", "fr")))
+
+
+@app.route("/google-photos/picker/start")
+@login_required
+def google_photos_picker_start():
+    config = load_config()
+    try:
+        access_token = get_google_photos_access_token(config)
+        picker_session = picker_request(access_token, "POST", "sessions", json={})
+        picker_uri = picker_session.get("pickerUri")
+        picker_session_id = picker_session.get("id")
+        if not picker_uri or not picker_session_id:
+            raise GooglePhotosError("Google did not return a Picker link and session ID.")
+        return render_template(
+            "google_photos_picker.html.jinja",
+            picker_uri=picker_uri,
+            picker_session_id=picker_session_id,
+        )
+    except (GooglePhotosError, requests.RequestException) as e:
+        logger.warning(tr("Impossible de démarrer Google Photos Picker : %(value_0)s", value_0=e))
+        flash(_("Impossible de démarrer Google Photos Picker. Vérifiez la connexion Google."), "error")
+        return redirect(url_for("configure", lang=config.get("ui_language", "fr")))
+
+
+@app.route("/google-photos/picker/import", methods=["POST"])
+@login_required
+def google_photos_picker_import():
+    picker_session_id = (request.form.get("session_id") or "").strip()
+    if not picker_session_id:
+        return jsonify({"error": "Missing Google Photos Picker session."}), 400
+
+    @stream_with_context
+    def generate_import_events():
+        def stream_event(event):
+            return f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+        config = load_config()
+        access_token = None
+        session_completed = False
+        try:
+            access_token = get_google_photos_access_token(config)
+            picker_session = picker_request(access_token, "GET", f"sessions/{picker_session_id}")
+            if not picker_session.get("mediaItemsSet"):
+                yield stream_event({"type": "error", "message": tr("La sélection Google Photos n'est pas terminée. Terminez la sélection puis réessayez.")})
+                return
+
+            session_completed = True
+            media_items = list_session_media(access_token, picker_session_id)
+            if not media_items:
+                yield stream_event({"type": "error", "message": tr("Aucune photo ni vidéo n'a été sélectionnée.")})
+                return
+
+            source_dir = BASE_DIR / "static" / "photos" / "google_photos"
+            downloaded = 0
+            for index, item in enumerate(media_items, start=1):
+                try:
+                    destination = download_picked_media(access_token, item, source_dir)
+                    downloaded += 1
+                    yield stream_event({
+                        "type": "progress",
+                        "message": tr("Téléchargement de %(value_0)s (%(value_1)s/%(value_2)s).", value_0=destination.name, value_1=index, value_2=len(media_items)),
+                        "current": index,
+                        "total": len(media_items),
+                    })
+                except (GooglePhotosError, requests.RequestException, OSError) as e:
+                    logger.warning(tr("Impossible de télécharger un média Google Photos : %(value_0)s", value_0=e))
+                    yield stream_event({"type": "warning", "message": tr("Un élément sélectionné n'a pas pu être téléchargé : %(value_0)s", value_0=e)})
+
+            if downloaded == 0:
+                yield stream_event({"type": "error", "message": tr("Aucun élément Google Photos sélectionné n'a pu être téléchargé.")})
+                return
+
+            yield stream_event({"type": "status", "message": tr("Préparation des photos sélectionnées pour le diaporama...")})
+            preparation_failed = False
+            for update in prepare_all_photos_with_progress(
+                config["display_width"],
+                config["display_height"],
+                source_type="google_photos",
+                force_reprocess=False,
+            ):
+                if update.get("type") == "error":
+                    preparation_failed = True
+                yield stream_event(update)
+
+            if preparation_failed:
+                yield stream_event({"type": "error", "message": tr("La préparation de certaines photos sélectionnées a échoué.")})
+                return
+
+            display_sources = config.get("display_sources", [])
+            if "google_photos" not in display_sources:
+                display_sources.append("google_photos")
+            config["display_sources"] = display_sources
+            save_config(config)
+            if is_slideshow_running():
+                restart_slideshow_for_update()
+            yield stream_event({"type": "complete", "message": tr("La sélection Google Photos a été importée et ajoutée au diaporama.")})
+        except (GooglePhotosError, requests.RequestException, OSError, ValueError) as e:
+            logger.warning(tr("Échec de l'importation Google Photos : %(value_0)s", value_0=e))
+            yield stream_event({"type": "error", "message": tr("Échec de l'importation Google Photos : %(value_0)s", value_0=e)})
+        finally:
+            if session_completed and access_token:
+                try:
+                    picker_request(access_token, "DELETE", f"sessions/{picker_session_id}")
+                except (GooglePhotosError, requests.RequestException):
+                    logger.debug(tr("Impossible de supprimer la session Google Photos Picker terminée."))
+
+    return Response(
+        generate_import_events(),
+        mimetype="text/event-stream",
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
+    )
+
+
 @app.route("/import-samba")
 @login_required
 def import_samba():
@@ -1328,6 +1517,107 @@ def import_smartphone():
             yield stream_event({"type": "error", "message": f"Erreur critique lors de l'import : {str(e)}"})
 
     return Response(generate(), mimetype='text/event-stream', headers={"Cache-Control": "no-cache", "Connection": "keep-alive"})
+
+@app.route('/upload-album-zip', methods=['POST'])
+@login_required
+def upload_album_zip():
+    # Flask 3.1 supports a per-request upload limit, keeping other upload routes unchanged.
+    request.max_content_length = ALBUM_ZIP_MAX_UPLOAD_BYTES + 2 * 1024 * 1024
+    uploaded_zip = request.files.get("album_zip")
+    album_name = (request.form.get("album_name") or "").strip()
+
+    @stream_with_context
+    def generate_import_events():
+        def stream_event(event):
+            return f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+        if uploaded_zip is None or not uploaded_zip.filename:
+            yield stream_event({"type": "error", "message": tr("Sélectionnez un fichier ZIP d'album.")})
+            return
+
+        config = load_config().copy()
+        try:
+            playlist_action = (request.form.get("playlist_action") or "").strip()
+            playlists = load_playlists()
+            selected_playlist = None
+            if playlist_action and playlist_action != "__create__":
+                selected_playlist = next((playlist for playlist in playlists if playlist.get("id") == playlist_action), None)
+                if selected_playlist is None:
+                    raise AlbumArchiveError(tr("La playlist sélectionnée n'existe plus."))
+
+            source_dir = BASE_DIR / "static" / "photos" / "uploaded_albums"
+            extracted_paths = extract_album_zip(
+                uploaded_zip,
+                uploaded_zip.filename,
+                source_dir,
+                album_name=album_name,
+            )
+            yield stream_event({
+                "type": "status",
+                "message": tr("%(value_0)s fichiers média extraits. Préparation pour le diaporama...", value_0=len(extracted_paths)),
+            })
+
+            for update in prepare_all_photos_with_progress(
+                config["display_width"],
+                config["display_height"],
+                source_type="uploaded_albums",
+            ):
+                yield stream_event(update)
+
+            prepared_dir = BASE_DIR / "static" / "prepared" / "uploaded_albums"
+            video_extensions = (".mp4", ".mov", ".avi", ".mkv")
+            prepared_paths = [
+                prepared_dir / f"{path.stem}{'.mp4' if path.suffix.lower() in video_extensions else '.jpg'}"
+                for path in extracted_paths
+            ]
+            prepared_media_paths = [path for path in prepared_paths if path.is_file() and path.stat().st_size > 0]
+            if not prepared_media_paths:
+                yield stream_event({"type": "error", "message": tr("Aucun média de l'archive n'a pu être préparé.")})
+                return
+
+            if playlist_action == "__create__":
+                playlist_name = album_name[:48].strip() or Path(uploaded_zip.filename).stem[:48].strip() or "Album"
+                selected_playlist = next(
+                    (playlist for playlist in playlists if playlist.get("name", "").casefold() == playlist_name.casefold()),
+                    None,
+                )
+                if selected_playlist is None:
+                    selected_playlist = {"id": secrets.token_hex(8), "name": playlist_name, "photos": [], "music_file": None}
+                    playlists.append(selected_playlist)
+
+            if selected_playlist is not None:
+                playlist_photos = selected_playlist.setdefault("photos", [])
+                for prepared_path in prepared_media_paths:
+                    relative_path = f"uploaded_albums/{prepared_path.name}"
+                    if relative_path not in playlist_photos:
+                        playlist_photos.append(relative_path)
+                save_playlists(playlists)
+
+            current_config = load_config()
+            display_sources = current_config.get("display_sources", [])
+            if "uploaded_albums" not in display_sources:
+                display_sources.append("uploaded_albums")
+            current_config["display_sources"] = display_sources
+            save_config(current_config)
+            if is_slideshow_running():
+                restart_slideshow_for_update()
+            completion_message = tr("L'album a été importé et ajouté au diaporama.")
+            if selected_playlist is not None:
+                completion_message = tr("L'album a été importé et ajouté à la playlist %(value_0)s.", value_0=selected_playlist.get("name", ""))
+            yield stream_event({"type": "complete", "message": completion_message})
+        except AlbumArchiveError as e:
+            logger.warning(tr("Échec de l'importation de l'archive photo : %(value_0)s", value_0=e))
+            yield stream_event({"type": "error", "message": tr("Échec de l'importation de l'archive photo : %(value_0)s", value_0=e)})
+        except Exception as e:
+            logger.exception(tr("Échec de l'importation de l'archive photo : %(value_0)s", value_0=e))
+            yield stream_event({"type": "error", "message": tr("Échec de l'importation de l'archive photo : %(value_0)s", value_0=e)})
+
+    return Response(
+        generate_import_events(),
+        mimetype="text/event-stream",
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
+    )
+
 
 @app.route('/test-samba', methods=['POST'])
 @login_required
