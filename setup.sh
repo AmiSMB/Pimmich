@@ -25,6 +25,13 @@ run_as_real_user() {
     fi
 }
 
+# Remember whether this is an upgrade of a running Pimmich instance. The
+# application is normally supervised by start_pimmich.sh from the Sway session.
+APP_WAS_RUNNING=false
+if pgrep -f '[p]ython3 (-u )?app\.py' > /dev/null 2>&1; then
+    APP_WAS_RUNNING=true
+fi
+
 say() {
     local french_text="$1"
     local english_text="$2"
@@ -135,7 +142,8 @@ server {
     listen 80;
     server_name _;
 
-    client_max_body_size 200M;
+    # Allow the album ZIP limit plus multipart form overhead.
+    client_max_body_size 1100M;
 
     location / {
         proxy_pass http://127.0.0.1:5000;
@@ -418,4 +426,16 @@ if ! grep -q 'app_id="mpv"' "$SWAY_CONFIG_FILE" 2>/dev/null; then
 fi
 
 say "=== [12/12] Installation terminée ===" "=== [12/12] Installation complete ==="
-say "✅ Installation terminée. Redémarrez pour lancer automatiquement Sway et Pimmich." "✅ Installation complete. Restart to launch Sway and Pimmich automatically."
+if [ "$APP_WAS_RUNNING" = true ]; then
+    say "Redémarrage de Pimmich après la mise à jour..." "Restarting Pimmich after the update..."
+    # The running start_pimmich.sh supervisor will relaunch app.py when it exits.
+    pkill -TERM -f '[p]ython3 (-u )?app\.py' 2>/dev/null || true
+    sleep 2
+    if ! pgrep -f '[s]tart_pimmich\.sh' > /dev/null 2>&1; then
+        say "Aucun superviseur Pimmich détecté. Démarrage de start_pimmich.sh..." "No Pimmich supervisor found. Starting start_pimmich.sh..."
+        run_as_real_user nohup "$START_SCRIPT" "$APP_LANGUAGE" >> "$INSTALL_DIR/logs/pimmich.log" 2>&1 < /dev/null &
+    fi
+    say "✅ Pimmich redémarre avec la version mise à jour." "✅ Pimmich is restarting with the updated version."
+else
+    say "✅ Installation terminée. Redémarrez pour lancer automatiquement Sway et Pimmich." "✅ Installation complete. Restart to launch Sway and Pimmich automatically."
+fi

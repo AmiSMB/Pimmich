@@ -34,21 +34,26 @@ def _album_prefix(album_name, archive_name, archive_digest):
     return f"{label}_{archive_digest[:8]}"
 
 
-def extract_album_zip(uploaded_file, archive_name, destination_dir, album_name=""):
-    """Save supported ZIP media to a flat source directory and return filenames."""
-    if Path(archive_name or "").suffix.lower() != ".zip":
-        raise AlbumArchiveError(tr("Choisissez une archive ZIP."))
-
+def stage_album_zip_upload(uploaded_file):
+    """Persist the request upload before Flask closes its temporary stream."""
     temporary_archive = None
     try:
         with tempfile.NamedTemporaryFile(prefix="pimmich_album_", suffix=".zip", delete=False) as archive_file:
             temporary_archive = Path(archive_file.name)
             uploaded_file.save(archive_file)
+        return temporary_archive
     except Exception:
         if temporary_archive is not None:
             temporary_archive.unlink(missing_ok=True)
         raise
 
+
+def extract_album_zip(archive_path, archive_name, destination_dir, album_name=""):
+    """Extract supported ZIP media to a flat source directory and return filenames."""
+    if Path(archive_name or "").suffix.lower() != ".zip":
+        raise AlbumArchiveError(tr("Choisissez une archive ZIP."))
+
+    temporary_archive = Path(archive_path)
     staging_dir = None
     try:
         archive_size = temporary_archive.stat().st_size

@@ -39,7 +39,7 @@ from utils.wifi_manager import set_wifi_config # Import the new utility
 from utils.display_manager import get_display_output_name, set_display_power
 from utils.prepare_all_photos import prepare_all_photos_with_progress
 from utils.import_usb_photos import import_usb_photos  # Déplacé dans utils
-from utils.album_archive import AlbumArchiveError, MAX_UPLOAD_BYTES as ALBUM_ZIP_MAX_UPLOAD_BYTES, extract_album_zip
+from utils.album_archive import AlbumArchiveError, MAX_UPLOAD_BYTES as ALBUM_ZIP_MAX_UPLOAD_BYTES, extract_album_zip, stage_album_zip_upload
 from utils.metadata_utils import get_photo_metadata # Import get_photo_metadata
 from utils.import_samba import import_samba_photos
 from utils.image_filters import apply_filter_to_image, add_text_to_polaroid, add_text_to_image, create_polaroid_effect
@@ -1524,20 +1524,32 @@ def upload_album_zip():
     # Flask 3.1 supports a per-request upload limit, keeping other upload routes unchanged.
     request.max_content_length = ALBUM_ZIP_MAX_UPLOAD_BYTES + 2 * 1024 * 1024
     uploaded_zip = request.files.get("album_zip")
+    archive_name = uploaded_zip.filename if uploaded_zip is not None else ""
     album_name = (request.form.get("album_name") or "").strip()
+    playlist_action = (request.form.get("playlist_action") or "").strip()
+
+    def immediate_error_response(message):
+        event = {"type": "error", "message": message}
+        body = f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+        return Response(body, mimetype="text/event-stream", headers={"Cache-Control": "no-cache"})
+
+    if uploaded_zip is None or not archive_name:
+        return immediate_error_response(tr("Sélectionnez un fichier ZIP d'album."))
+    try:
+        # Flask closes FileStorage streams after the view returns. Persist the upload
+        # before returning the streamed response, then extract it in the generator.
+        staged_archive = stage_album_zip_upload(uploaded_zip)
+    except Exception as e:
+        logger.exception(tr("Échec de l'importation de l'archive photo : %(value_0)s", value_0=e))
+        return immediate_error_response(tr("Échec de l'importation de l'archive photo : %(value_0)s", value_0=e))
 
     @stream_with_context
     def generate_import_events():
         def stream_event(event):
             return f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
 
-        if uploaded_zip is None or not uploaded_zip.filename:
-            yield stream_event({"type": "error", "message": tr("Sélectionnez un fichier ZIP d'album.")})
-            return
-
         config = load_config().copy()
         try:
-            playlist_action = (request.form.get("playlist_action") or "").strip()
             playlists = load_playlists()
             selected_playlist = None
             if playlist_action and playlist_action != "__create__":
@@ -1547,8 +1559,8 @@ def upload_album_zip():
 
             source_dir = BASE_DIR / "static" / "photos" / "uploaded_albums"
             extracted_paths = extract_album_zip(
-                uploaded_zip,
-                uploaded_zip.filename,
+                staged_archive,
+                archive_name,
                 source_dir,
                 album_name=album_name,
             )
@@ -1576,7 +1588,7 @@ def upload_album_zip():
                 return
 
             if playlist_action == "__create__":
-                playlist_name = album_name[:48].strip() or Path(uploaded_zip.filename).stem[:48].strip() or "Album"
+                playlist_name = album_name[:48].strip() or Path(archive_name).stem[:48].strip() or "Album"
                 selected_playlist = next(
                     (playlist for playlist in playlists if playlist.get("name", "").casefold() == playlist_name.casefold()),
                     None,
@@ -1612,11 +1624,13 @@ def upload_album_zip():
             logger.exception(tr("Échec de l'importation de l'archive photo : %(value_0)s", value_0=e))
             yield stream_event({"type": "error", "message": tr("Échec de l'importation de l'archive photo : %(value_0)s", value_0=e)})
 
-    return Response(
+    response = Response(
         generate_import_events(),
         mimetype="text/event-stream",
         headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
     )
+    response.call_on_close(lambda: staged_archive.unlink(missing_ok=True))
+    return response
 
 
 @app.route('/test-samba', methods=['POST'])
