@@ -18,6 +18,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+#: app.py
+msgid "Configuration enregistrée. Les photos sont en cours de préparation en arrière-plan."
+msgstr "Configuration enregistrée. Les photos sont en cours de préparation en arrière-plan."
+
+#: app.py
+msgid "Configuration enregistrée. Aucun dossier de photos source à préparer."
+msgstr "Configuration enregistrée. Aucun dossier de photos source à préparer."
+
+#: app.py
+msgid "Échec de la préparation des photos pour %(value_0)s : %(value_1)s"
+msgstr "Échec de la préparation des photos pour %(value_0)s : %(value_1)s"
+
+#: app.py
+msgid "Impossible d'enregistrer la signature des paramètres de préparation des photos."
+msgstr "Impossible d'enregistrer la signature des paramètres de préparation des photos."
+
 #: app.py:275
 msgid ""
 "SWAYSOCK non trouvé, utilisation de la résolution de secours depuis la "
@@ -1003,6 +1019,18 @@ msgstr "Mode d'affichage des photos"
 #: templates/configure.html.jinja
 msgid "Couleur de fond (RGB)"
 msgstr "Couleur de fond (RGB)"
+
+#: templates/configure.html.jinja
+msgid "Style d'arrière-plan"
+msgstr "Style d'arrière-plan"
+
+#: templates/configure.html.jinja
+msgid "Arrière-plan flou généré à partir de la photo"
+msgstr "Arrière-plan flou généré à partir de la photo"
+
+#: templates/configure.html.jinja
+msgid "Couleur unie"
+msgstr "Couleur unie"
 
 #: templates/configure.html.jinja
 msgid "Remplir l'écran (recadrer les bords)"

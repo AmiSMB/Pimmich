@@ -76,6 +76,7 @@ def create_default_config():
         "info_display_duration": 5,
         "screen_height_percent": 100,
         "image_display_mode": "fill",
+        "image_background_mode": "blur",
         "image_background_color": "#000000",
         "favorite_boost_factor": 2,
         "video_hwdec_enabled": False,

@@ -926,6 +926,7 @@ def configure():
             'active_start_weekend', 'active_end_weekend',
             'screen_height_percent', 'clock_font_size', 'clock_color',
             'image_display_mode',
+            'image_background_mode',
             'image_background_color',
             'clock_format', 'clock_offset_x', 'clock_offset_y',
             'clock_background_color',
@@ -1075,9 +1076,67 @@ def configure():
         if 'voice_control_device_index' in request.form:
             config['voice_control_device_index'] = request.form['voice_control_device_index']
 
+        photo_preparation_keys = (
+            'image_display_mode', 'image_background_mode', 'image_background_color',
+            'display_width', 'display_height', 'screen_height_percent',
+        )
+        current_photo_preparation_settings = {
+            key: config.get(key) for key in photo_preparation_keys
+        }
+        photo_settings_path = BASE_DIR / "cache" / "photo_preparation_settings.json"
+        try:
+            with open(photo_settings_path, 'r', encoding='utf-8') as settings_file:
+                previously_prepared_settings = json.load(settings_file)
+        except (OSError, json.JSONDecodeError):
+            previously_prepared_settings = None
+        photo_preparation_needed = current_photo_preparation_settings != previously_prepared_settings
+        preparation_config = config.copy()
+
         save_config(config)
         restart_slideshow_process() # Redémarre uniquement le processus du diaporama
-        flash(_("Configuration enregistrée. Le diaporama a été relancé pour appliquer les changements."), "success")
+        if photo_preparation_needed:
+            photos_root = BASE_DIR / "static" / "photos"
+            source_types = sorted(path.name for path in photos_root.iterdir() if path.is_dir()) if photos_root.is_dir() else []
+            if source_types:
+                def reprepare_existing_sources():
+                    preparation_succeeded = True
+                    for source_type in source_types:
+                        try:
+                            description_map = {}
+                            if source_type == "immich":
+                                description_cache = BASE_DIR / "cache" / "immich_description_map.json"
+                                if description_cache.is_file():
+                                    with open(description_cache, 'r', encoding='utf-8') as cache_file:
+                                        description_map = json.load(cache_file)
+                            for update in prepare_all_photos_with_progress(
+                                preparation_config['display_width'],
+                                preparation_config['display_height'],
+                                source_type=source_type,
+                                description_map=description_map,
+                                force_reprocess=True,
+                            ):
+                                if update.get('type') == 'error':
+                                    preparation_succeeded = False
+                                    logger.error(tr('Échec de la préparation des photos pour %(value_0)s : %(value_1)s', value_0=source_type, value_1=update.get('message', 'unknown error')))
+                        except Exception as e:
+                            preparation_succeeded = False
+                            logger.exception(tr('Échec de la préparation des photos pour %(value_0)s : %(value_1)s', value_0=source_type, value_1=e))
+                    if preparation_succeeded:
+                        try:
+                            photo_settings_path.parent.mkdir(parents=True, exist_ok=True)
+                            with open(photo_settings_path, 'w', encoding='utf-8') as settings_file:
+                                json.dump(current_photo_preparation_settings, settings_file, indent=2)
+                        except OSError:
+                            logger.exception(tr("Impossible d'enregistrer la signature des paramètres de préparation des photos."))
+                        if is_slideshow_running():
+                            restart_slideshow_process()
+
+                threading.Thread(target=reprepare_existing_sources, daemon=True).start()
+                flash(_("Configuration enregistrée. Les photos sont en cours de préparation en arrière-plan."), "success")
+            else:
+                flash(_("Configuration enregistrée. Aucun dossier de photos source à préparer."), "success")
+        else:
+            flash(_("Configuration enregistrée. Le diaporama a été relancé pour appliquer les changements."), "success")
         return redirect(url_for('configure', lang=config.get('ui_language', 'fr')))
 
     slideshow_running = any(
