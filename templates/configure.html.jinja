@@ -435,9 +435,9 @@
                     </div>
                     <div style="margin-top: 8px;">
                         <label>
-                            <input type="checkbox" name="pan_zoom_gpu_enabled" {% if config.get('pan_zoom_gpu_enabled', False) %}checked{% endif %}> <span class="ml-2">{{ _("Demander l'accélération GPU SDL pour Pan/Zoom (expérimental)") }}</span>
+                            <input type="checkbox" name="pan_zoom_gpu_enabled" {% if config.get('pan_zoom_gpu_enabled', False) %}checked{% endif %}> <span class="ml-2">{{ _("Essayer le rendu pi3d pour Pan/Zoom (expérimental)") }}</span>
                         </label>
-                        <small class="block text-gray-600 ml-6">{{ _("Demande à SDL d'accélérer l'affichage. La prise en charge dépend du pilote ; sinon SDL utilise le rendu habituel.") }}</small>
+                        <small class="block text-gray-600 ml-6">{{ _("Utilise OpenGL ES et les textures GPU de pi3d pour le mouvement. Le rendu Pygame reste disponible si pi3d ne démarre pas.") }}</small>
                     </div>
                     <div style="display: flex; align-items: center; margin-top: 8px;">
                         <label for="pan_zoom_factor" style="min-width: 200px;">{{ _("Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :") }}</label>

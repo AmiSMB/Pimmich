@@ -5552,11 +5552,17 @@ msgstr "Error preparing %(value_0)s: %(value_1)s"
 msgid "Préparation des nouvelles photos terminée."
 msgstr "Preparation of new photos is complete."
 
-msgid "Demander l'accélération GPU SDL pour Pan/Zoom (expérimental)"
-msgstr "Request SDL GPU acceleration for pan/zoom (experimental)"
+msgid "Essayer le rendu pi3d pour Pan/Zoom (expérimental)"
+msgstr "Try pi3d rendering for pan/zoom (experimental)"
 
-msgid "Demande à SDL d'accélérer l'affichage. La prise en charge dépend du pilote ; sinon SDL utilise le rendu habituel."
-msgstr "Asks SDL to accelerate display output. Support depends on the driver; otherwise SDL uses its usual rendering path."
+msgid "Utilise OpenGL ES et les textures GPU de pi3d pour le mouvement. Le rendu Pygame reste disponible si pi3d ne démarre pas."
+msgstr "Uses pi3d OpenGL ES and GPU textures for motion. Pygame rendering remains available if pi3d cannot start."
 
-msgid "Accélération GPU de l'affichage demandée via SDL."
-msgstr "SDL GPU display acceleration requested."
+msgid "Rendu pi3d indisponible ; reprise avec Pygame : %(value_0)s"
+msgstr "pi3d rendering unavailable; falling back to Pygame: %(value_0)s"
+
+msgid "Erreur lors de la fermeture de pi3d : %(value_0)s"
+msgstr "Error closing pi3d: %(value_0)s"
+
+msgid "Impossible de restaurer l'affichage Pygame après pi3d : %(value_0)s"
+msgstr "Unable to restore the Pygame display after pi3d: %(value_0)s"

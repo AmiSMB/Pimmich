@@ -49,11 +49,11 @@ sudo apt update
 say "=== [2/12] Installation des dépendances ===" "=== [2/12] Installing dependencies ==="
 # Remplacement de libatlas-base-dev (obsolète sur Debian 12+) par libopenblas-dev pour la compilation de numpy.
 # Replace libatlas-base-dev (obsolete on Debian 12+) with libopenblas-dev to build NumPy.
-if ! sudo apt install -y sway xterm python3 python3-venv python3-pip libjpeg-dev libopenjp2-7-dev libtiff-dev libopenblas-dev ffmpeg git cifs-utils smbclient network-manager jq mpv gettext portaudio19-dev unzip libheif-dev; then
+if ! sudo apt install -y sway xterm python3 python3-venv python3-pip libjpeg-dev libopenjp2-7-dev libtiff-dev libopenblas-dev ffmpeg git cifs-utils smbclient network-manager jq mpv gettext portaudio19-dev unzip libheif-dev libsdl2-dev libgles2-mesa-dev libegl1-mesa-dev; then
     say "L'installation avec portaudio19-dev a échoué. Tentative avec libportaudio-dev..." "Installation with portaudio19-dev failed. Trying libportaudio-dev instead..."
     # Fallback pour les futures versions de Debian/Raspberry Pi OS où le paquet pourrait être renommé
     # Fallback for future Debian/Raspberry Pi OS versions where the package may be renamed.
-    sudo apt install -y sway xterm python3 python3-venv python3-pip libjpeg-dev libopenjp2-7-dev libtiff-dev libopenblas-dev ffmpeg git cifs-utils smbclient network-manager jq mpv gettext libportaudio-dev unzip libheif-dev
+    sudo apt install -y sway xterm python3 python3-venv python3-pip libjpeg-dev libopenjp2-7-dev libtiff-dev libopenblas-dev ffmpeg git cifs-utils smbclient network-manager jq mpv gettext libportaudio-dev unzip libheif-dev libsdl2-dev libgles2-mesa-dev libegl1-mesa-dev
 fi
 
 if [ "$APP_LANGUAGE" = "fr" ]; then

@@ -5009,14 +5009,12 @@ msgstr ""
 msgid "Préparation des nouvelles photos terminée."
 msgstr ""
 
-msgid "Demander l'accélération GPU SDL pour Pan/Zoom (expérimental)"
+msgid "Essayer le rendu pi3d pour Pan/Zoom (expérimental)"
 msgstr ""
 
-msgid "Demande à SDL d'accélérer l'affichage. La prise en charge dépend du pilote ; sinon SDL utilise le rendu habituel."
+msgid "Utilise OpenGL ES et les textures GPU de pi3d pour le mouvement. Le rendu Pygame reste disponible si pi3d ne démarre pas."
 msgstr ""
 
-msgid "Accélération GPU de l'affichage demandée via SDL."
-msgstr ""
 
 msgid "Playlists au démarrage"
 msgstr ""
@@ -5088,4 +5086,13 @@ msgid "Séquence effacée. Le diaporama habituel va reprendre."
 msgstr ""
 
 msgid "Séquence effacée. Le diaporama habituel reprendra au prochain démarrage."
+msgstr ""
+
+msgid "Rendu pi3d indisponible ; reprise avec Pygame : %(value_0)s"
+msgstr ""
+
+msgid "Erreur lors de la fermeture de pi3d : %(value_0)s"
+msgstr ""
+
+msgid "Impossible de restaurer l'affichage Pygame après pi3d : %(value_0)s"
 msgstr ""

@@ -1649,6 +1649,21 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
         pan_zoom_enabled = config.get("pan_zoom_enabled", False)
         display_duration = config.get("display_duration", 10)
         logger.info(tr('⏳ Pause de %(value_0)s secondes.', value_0=display_duration)) # Debug print
+
+        if pan_zoom_enabled and config.get("pan_zoom_gpu_enabled", False):
+            pi3d_screen, pi3d_succeeded = display_photo_with_pi3d_pan_zoom(
+                screen, pil_image, screen_width, screen_height, config, main_font,
+                photo_metadata, display_duration, ignore_postcard_flag,
+            )
+            if pi3d_succeeded:
+                return pi3d_screen
+            if pi3d_screen is not None:
+                software_config = dict(config)
+                software_config["pan_zoom_gpu_enabled"] = False
+                return display_photo_with_pan_zoom(
+                    pi3d_screen, pil_image, screen_width, screen_height,
+                    software_config, main_font, photo_path, ignore_postcard_flag,
+                )
         
         # Prepare the base surface for static display and pause redraws.
         pygame_image_base = pygame.image.fromstring(pil_image.tobytes(), pil_image.size, pil_image.mode)
@@ -1822,6 +1837,135 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
     except Exception as e:
         logger.info(tr('Erreur affichage photo avec pan/zoom : %(value_0)s', value_0=e))
         traceback.print_exc()
+
+
+def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_height, config, main_font, photo_metadata, display_duration, ignore_postcard_flag):
+    """Render one pan/zoom photo with a pi3d OpenGL ES texture, then restore Pygame."""
+    display = None
+    pygame_display_closed = False
+    succeeded = False
+    last_x = max(0, int(screen_width * max(1.0, float(config.get("pan_zoom_factor", 1.15)))) - screen_width) // 2
+    last_y = max(0, int(screen_height * max(1.0, float(config.get("pan_zoom_factor", 1.15)))) - screen_height) // 2
+    zoom_factor = max(1.0, float(config.get("pan_zoom_factor", 1.15)))
+    scaled_size = (max(screen_width, int(screen_width * zoom_factor)), max(screen_height, int(screen_height * zoom_factor)))
+    overlay_surface = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
+    restored_screen = screen
+
+    try:
+        import numpy as np
+        import pi3d
+
+        # Pygame's SDL window surface and pi3d's EGL/SDL2 context cannot own the
+        # display at the same time. Temporarily release it for this photo.
+        pygame.display.quit()
+        pygame_display_closed = True
+
+        fps_setting = str(config.get("transition_fps", "auto"))
+        target_fps = int(fps_setting) if fps_setting in ("30", "60") else 60
+        display_flags = getattr(pi3d, "DISPLAY_CONFIG_HIDE_CURSOR", 0) | getattr(pi3d, "DISPLAY_CONFIG_NO_FRAME", 0)
+        display = pi3d.Display.create(
+            x=0,
+            y=0,
+            w=screen_width,
+            h=screen_height,
+            frames_per_second=target_fps,
+            display_config=display_flags,
+            use_sdl2=True,
+        )
+        camera = pi3d.Camera(is_3d=False)
+        image_shader = pi3d.Shader("2d_flat")
+        overlay_shader = pi3d.Shader("2d_flat")
+
+        # Keep the uploaded texture at screen resolution. pi3d scales and moves
+        # its textured quad on the GPU for each frame.
+        texture_image = pil_image.resize((screen_width, screen_height), Image.Resampling.LANCZOS)
+        photo_texture = pi3d.Texture(texture_image, mipmap=False, free_after_load=True)
+        photo_sprite = pi3d.Sprite(camera=camera, w=screen_width, h=screen_height, z=5.0)
+        photo_sprite.set_shader(image_shader)
+        photo_sprite.set_draw_details(image_shader, [photo_texture])
+
+        overlay_surface.fill((0, 0, 0, 0))
+        draw_overlay(overlay_surface, screen_width, screen_height, config, main_font, photo_metadata)
+        overlay_image = Image.frombytes("RGBA", (screen_width, screen_height), pygame.image.tostring(overlay_surface, "RGBA"))
+        overlay_texture = pi3d.Texture(np.asarray(overlay_image).copy(), blend=True, mipmap=False, free_after_load=True)
+        overlay_sprite = pi3d.Sprite(camera=camera, w=screen_width, h=screen_height, z=4.0)
+        overlay_sprite.set_shader(overlay_shader)
+        overlay_sprite.set_draw_details(overlay_shader, [overlay_texture])
+
+        max_x_offset = scaled_size[0] - screen_width
+        max_y_offset = scaled_size[1] - screen_height
+        start_x, start_y = max_x_offset // 2, max_y_offset // 2
+        corners = list({
+            (0, 0),
+            (max_x_offset, 0),
+            (0, max_y_offset),
+            (max_x_offset, max_y_offset),
+        } - {(start_x, start_y)})
+        end_x, end_y = random.choice(corners) if corners else (start_x, start_y)
+
+        start_time = time.time()
+        overlay_key = None
+        while time.time() - start_time < display_duration:
+            if not ignore_postcard_flag and NEW_POSTCARD_FLAG.exists():
+                break
+            if next_photo_requested or previous_photo_requested:
+                break
+            if not display.loop_running():
+                break
+
+            elapsed = time.time() - start_time
+            progress = min(1.0, elapsed / max(0.001, display_duration))
+            eased = 0.5 * (1 - math.cos(progress * math.pi))
+            last_x = int(start_x + (end_x - start_x) * eased)
+            last_y = int(start_y + (end_y - start_y) * eased)
+            photo_sprite.set_2d_size(
+                w=scaled_size[0], h=scaled_size[1], x=-last_x, y=-last_y,
+            )
+            photo_sprite.draw()
+
+            ticks = pygame.time.get_ticks()
+            postcard_count = get_today_postcard_count() if config.get("display_telegram_notification_overlay", True) else 0
+            key = (int(time.time()), paused, (ticks // 500) % 2 if paused or postcard_count else 0, postcard_count)
+            if key != overlay_key:
+                overlay_surface.fill((0, 0, 0, 0))
+                draw_overlay(overlay_surface, screen_width, screen_height, config, main_font, photo_metadata)
+                if paused and (ticks // 500) % 2 == 0:
+                    draw_pause_icon(overlay_surface, screen_width, screen_height)
+                elif postcard_count and (ticks // 500) % 2 != 0:
+                    draw_postcard_notification_icon(overlay_surface, screen_width, screen_height, postcard_count, main_font)
+                overlay_image = Image.frombytes("RGBA", (screen_width, screen_height), pygame.image.tostring(overlay_surface, "RGBA"))
+                overlay_texture.update_ndarray(np.asarray(overlay_image).copy())
+                overlay_key = key
+            overlay_sprite.draw()
+
+            if paused:
+                time.sleep(0.1)
+                start_time += 0.1
+
+        succeeded = True
+    except Exception as e:
+        logger.warning(tr("Rendu pi3d indisponible ; reprise avec Pygame : %(value_0)s", value_0=e))
+    finally:
+        if display is not None:
+            try:
+                display.destroy()
+            except Exception as e:
+                logger.warning(tr("Erreur lors de la fermeture de pi3d : %(value_0)s", value_0=e))
+        if pygame_display_closed:
+            try:
+                pygame.display.init()
+                restored_screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+                pygame.mouse.set_visible(False)
+                final_scaled = pil_image.resize(scaled_size, Image.Resampling.LANCZOS)
+                final_crop = final_scaled.crop((last_x, last_y, last_x + screen_width, last_y + screen_height))
+                restored_screen.blit(pygame.image.fromstring(final_crop.tobytes(), final_crop.size, "RGB"), (0, 0))
+                restored_screen.blit(overlay_surface, (0, 0))
+                pygame.display.flip()
+            except Exception as restore_error:
+                logger.error(tr("Impossible de restaurer l'affichage Pygame après pi3d : %(value_0)s", value_0=restore_error))
+                restored_screen = None
+                succeeded = False
+    return restored_screen, succeeded
 
 def fade_to_black(screen, previous_surface, duration, clock):
     """Effectue un fondu au noir sur la surface donnée."""
@@ -2075,14 +2219,6 @@ def start_slideshow():
         config = load_config()
         logger.debug(tr('📸 Config loaded. show_clock: %(value_0)s, show_weather: %(value_1)s', value_0=config.get('show_clock'), value_1=config.get('show_weather')))
 
-        if config.get("pan_zoom_gpu_enabled", False):
-            # SDL can accelerate its display framebuffer using a streaming
-            # texture, without attaching a second renderer to Pygame's window.
-            os.environ["SDL_FRAMEBUFFER_ACCELERATION"] = "1"
-            logger.info(tr("Accélération GPU de l'affichage demandée via SDL."))
-        
-      
-        
         time.sleep(2)
         logger.debug(tr('📸 Attente de 2s pour stabilisation '))
         
@@ -2336,7 +2472,9 @@ def start_slideshow():
 
                         # Afficher avec pan/zoom pour la durée configurée
                         # Display with pan/zoom for the configured duration.
-                        display_photo_with_pan_zoom(screen, pil_image, SCREEN_WIDTH, SCREEN_HEIGHT, config, main_font_loaded, ignore_postcard_flag=True, photo_path=None)
+                        updated_screen = display_photo_with_pan_zoom(screen, pil_image, SCREEN_WIDTH, SCREEN_HEIGHT, config, main_font_loaded, ignore_postcard_flag=True, photo_path=None)
+                        if updated_screen is not None:
+                            screen = updated_screen
                         
                         # Mettre à jour la surface précédente pour la transition suivante
                         # Update the previous surface for the next transition.
@@ -2610,7 +2748,9 @@ def start_slideshow():
                         continue
 
                     if current_pil_image: # Only proceed if image was successfully loaded
-                        display_photo_with_pan_zoom(screen, current_pil_image, SCREEN_WIDTH, SCREEN_HEIGHT, config, main_font_loaded, photo_path)
+                        updated_screen = display_photo_with_pan_zoom(screen, current_pil_image, SCREEN_WIDTH, SCREEN_HEIGHT, config, main_font_loaded, photo_path)
+                        if updated_screen is not None:
+                            screen = updated_screen
                         previous_photo_surface = screen.copy()
                     else:
                         logger.info(tr('🖼️ Skipping photo %(value_0)s due to loading error.', value_0=photo_path))
