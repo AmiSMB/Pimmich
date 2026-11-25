@@ -1837,6 +1837,7 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
     except Exception as e:
         logger.info(tr('Erreur affichage photo avec pan/zoom : %(value_0)s', value_0=e))
         traceback.print_exc()
+    return screen
 
 
 def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_height, config, main_font, photo_metadata, display_duration, ignore_postcard_flag):
@@ -1880,7 +1881,9 @@ def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_hei
         # its textured quad on the GPU for each frame.
         texture_image = pil_image.resize((screen_width, screen_height), Image.Resampling.LANCZOS)
         photo_texture_array = np.asarray(texture_image.convert("RGB")).copy()
-        photo_texture = pi3d.Texture(photo_texture_array, mipmap=False, free_after_load=True)
+        # Keep the CPU copy: pi3d may need it again when restoring/reloading
+        # textures across frames or after a context transition.
+        photo_texture = pi3d.Texture(photo_texture_array, mipmap=False)
         photo_sprite = pi3d.Sprite(camera=camera, w=screen_width, h=screen_height, z=5.0)
         photo_sprite.set_shader(image_shader)
         photo_sprite.set_draw_details(image_shader, [photo_texture])
@@ -1888,7 +1891,7 @@ def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_hei
         overlay_surface.fill((0, 0, 0, 0))
         draw_overlay(overlay_surface, screen_width, screen_height, config, main_font, photo_metadata)
         overlay_image = Image.frombytes("RGBA", (screen_width, screen_height), pygame.image.tostring(overlay_surface, "RGBA"))
-        overlay_texture = pi3d.Texture(np.asarray(overlay_image).copy(), blend=True, mipmap=False, free_after_load=True)
+        overlay_texture = pi3d.Texture(np.asarray(overlay_image).copy(), blend=True, mipmap=False)
         overlay_sprite = pi3d.Sprite(camera=camera, w=screen_width, h=screen_height, z=4.0)
         overlay_sprite.set_shader(overlay_shader)
         overlay_sprite.set_draw_details(overlay_shader, [overlay_texture])
