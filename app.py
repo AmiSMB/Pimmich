@@ -210,6 +210,7 @@ INVITATIONS_PATH = 'config/invitations.json'
 TELEGRAM_GUEST_USERS_PATH = 'config/telegram_guest_users.json'
 NEW_POSTCARD_FLAG_PATH = 'cache/new_postcard.flag'
 CUSTOM_PLAYLIST_FILE = "/tmp/pimmich_custom_playlist.json"
+SKIP_STARTUP_PLAYLIST_FILE = Path("/tmp/pimmich_skip_startup_playlist.flag")
 CURRENT_PHOTO_FILE = "/tmp/pimmich_current_photo.txt"
 PREPARED_DIR = BASE_DIR / "static" / "prepared"
 
@@ -225,7 +226,7 @@ class WorkerStatus:
         self.lock = threading.Lock()
         self.last_run = None
         self.next_run = None
-        self.status_message = "Initialisation..."
+        self.status_message = tr("Initialisation...")
 
     def update_status(self, last_run=None, next_run=None, message=None):
         with self.lock:
@@ -1046,6 +1047,7 @@ def configure():
         # request.form.getlist() retourne une liste vide si aucune checkbox avec ce nom n'est cochée.
         config['display_sources'] = request.form.getlist('display_sources')
         config["pan_zoom_enabled"] = 'pan_zoom_enabled' in request.form # New checkbox handling
+        config["pan_zoom_gpu_enabled"] = 'pan_zoom_gpu_enabled' in request.form
         config["button_enabled"] = 'button_enabled' in request.form
         config["smart_plug_enabled"] = 'smart_plug_enabled' in request.form
         config["transition_enabled"] = 'transition_enabled' in request.form # New checkbox handling
@@ -2140,26 +2142,26 @@ def immich_update_worker():
         if not _immich_first_run_skipped and skip_initial:
             logger.debug(tr("🖼️🔄 Import initial skipped as per configuration."))
             with app.app_context():
-                immich_status_manager.update_status(message=_("Import initial ignoré."))
+                immich_status_manager.update_status(message=tr("Import initial ignoré."))
             _immich_first_run_skipped = True
             # Calculate next run and sleep, then continue to next iteration
             sleep_seconds = (interval_hours * 3600) if is_enabled else (15 * 60)
             next_run_time = datetime.now() + timedelta(seconds=sleep_seconds)
             immich_status_manager.update_status(next_run=next_run_time)
             if is_enabled:
-                immich_status_manager.update_status(message="En attente...")
+                immich_status_manager.update_status(message=tr("En attente..."))
             time.sleep(sleep_seconds)
             continue # Skip the rest of this iteration
         
         if is_enabled:
             with app.app_context():
-                status_msg = _("Mise à jour auto. activée. Intervalle : %(hours)sh.", hours=interval_hours)
+                status_msg = tr("Mise à jour auto. activée. Intervalle : %(hours)sh.", hours=interval_hours)
                 logger.info(tr('🖼️🔄  %(value_0)s', value_0=status_msg))
                 immich_status_manager.update_status(message=status_msg)
             
             try:
                 with app.app_context():
-                    immich_status_manager.update_status(message=_("Lancement du téléchargement..."))
+                    immich_status_manager.update_status(message=tr("Lancement du téléchargement..."))
                 logger.info(tr("🖼️🔄 Lancement du téléchargement et de la préparation..."))
                 
                 # Étape 1: Téléchargement
@@ -2172,7 +2174,7 @@ def immich_update_worker():
 
                     if update.get("type") == "error":
                         logger.error(tr('🖼️🔄❌ Erreur lors du téléchargement : %(value_0)s', value_0=update.get('message')))
-                        immich_status_manager.update_status(message=f"Erreur téléchargement: {update.get('message')}")
+                        immich_status_manager.update_status(message=tr("Erreur téléchargement : %(value_0)s", value_0=update.get('message')))
                     immich_status_manager.update_status(message=update.get('message', '')) # Update status with download message
                     if update.get("type") == "done":
                         download_success = True
@@ -2191,7 +2193,7 @@ def immich_update_worker():
                             final_description_map[filename] = caption
 
                     with app.app_context():
-                        immich_status_manager.update_status(message=_("Préparation des photos..."))
+                        immich_status_manager.update_status(message=tr("Préparation des photos..."))
                     screen_width = config.get("display_width", 1920) # Utiliser la résolution configurée
                     screen_height = config.get("display_height", 1080) # Utiliser la résolution configurée
                     prep_successful = False
@@ -2199,29 +2201,29 @@ def immich_update_worker():
                         immich_status_manager.update_status(message=update.get('message', '')) # Update status with preparation message
                         if update.get("type") == "error":
                             logger.error(tr('🖼️🔄❌ Erreur lors de la préparation : %(value_0)s', value_0=update.get('message')))
-                            immich_status_manager.update_status(message=f"Erreur préparation: {update.get('message')}")
+                            immich_status_manager.update_status(message=tr("Erreur préparation : %(value_0)s", value_0=update.get('message')))
                             break # Sortir de la boucle de préparation
                         if update.get("type") == "done":
                             prep_successful = True
                     
                     if prep_successful:
                         with app.app_context():
-                            immich_status_manager.update_status(message=_("Mise à jour terminée. Redémarrage du diaporama..."))
+                            immich_status_manager.update_status(message=tr("Mise à jour terminée. Redémarrage du diaporama..."))
                         print("🖼️🔄✅ Mise à jour terminée avec succès. Redémarrage du diaporama.")
                         if is_slideshow_running():
                             restart_slideshow_for_update()
                         with app.app_context():
-                            immich_status_manager.update_status(last_run=datetime.now(), message=_("Dernière mise à jour réussie."))
+                            immich_status_manager.update_status(last_run=datetime.now(), message=tr("Dernière mise à jour réussie."))
                     else:
                         with app.app_context():
-                            immich_status_manager.update_status(message=_("Mise à jour terminée avec avertissements/erreurs."))
+                            immich_status_manager.update_status(message=tr("Mise à jour terminée avec avertissements/erreurs."))
 
             except Exception as e:
                 logger.error(tr('🖼️🔄❌ Erreur critique dans le worker : %(value_0)s', value_0=e), exc_info=True)
-                immich_status_manager.update_status(message=f"Erreur critique : {e}")
+                immich_status_manager.update_status(message=tr("Erreur critique : %(value_0)s", value_0=e))
 
         else:
-            status_msg = _("Mise à jour automatique désactivée.")
+            status_msg = tr("Mise à jour automatique désactivée.")
             logger.info(tr('🖼️🔄❌ %(value_0)s', value_0=status_msg))
             immich_status_manager.update_status(message=status_msg)
         
@@ -2230,7 +2232,7 @@ def immich_update_worker():
         next_run_time = datetime.now() + timedelta(seconds=sleep_seconds)
         immich_status_manager.update_status(next_run=next_run_time) # Update next_run regardless of enabled state
         if is_enabled: # Only set message to "En attente..." if it's enabled
-            immich_status_manager.update_status(message="En attente...")
+            immich_status_manager.update_status(message=tr("En attente..."))
         time.sleep(sleep_seconds)
 
 def samba_update_worker():
@@ -2248,40 +2250,40 @@ def samba_update_worker():
         if not _samba_first_run_skipped and skip_initial:
             print("[Auto-Update Samba] Import initial skipped as per configuration.")
             with app.app_context():
-                samba_status_manager.update_status(message=_("Import initial ignoré."))
+                samba_status_manager.update_status(message=tr("Import initial ignoré."))
             _samba_first_run_skipped = True
             # Calculate next run and sleep, then continue to next iteration
             sleep_seconds = (interval_hours * 3600) if is_enabled else (15 * 60)
             next_run_time = datetime.now() + timedelta(seconds=sleep_seconds)
             samba_status_manager.update_status(next_run=next_run_time)
             if is_enabled:
-                samba_status_manager.update_status(message="En attente...")
+                samba_status_manager.update_status(message=tr("En attente..."))
             time.sleep(sleep_seconds)
             continue # Skip the rest of this iteration
         
         if is_enabled:
             with app.app_context():
-                status_msg = _("Mise à jour auto. activée. Intervalle : %(hours)sh.", hours=interval_hours)
+                status_msg = tr("Mise à jour auto. activée. Intervalle : %(hours)sh.", hours=interval_hours)
                 logger.info(tr('[Auto-Update Samba] %(value_0)s', value_0=status_msg))
                 samba_status_manager.update_status(message=status_msg)
             
             try:
                 with app.app_context():
-                    samba_status_manager.update_status(message=_("Lancement de l'import..."))
+                    samba_status_manager.update_status(message=tr("Lancement de l'import..."))
                 print("[Auto-Update Samba] Lancement de l'import et de la préparation...")
                 
                 import_success = False
                 for update in import_samba_photos(config):
                     if update.get("type") == "error":
                         logger.info(tr("[Auto-Update Samba] Erreur lors de l'import : %(value_0)s", value_0=update.get('message')))
-                        samba_status_manager.update_status(message=f"Erreur import: {update.get('message')}")
+                        samba_status_manager.update_status(message=tr("Erreur import : %(value_0)s", value_0=update.get('message')))
                     samba_status_manager.update_status(message=update.get('message', '')) # Update status with import message
                     if update.get("type") == "done":
                         import_success = True
 
                 if import_success:
                     with app.app_context():
-                        samba_status_manager.update_status(message=_("Préparation des photos..."))
+                        samba_status_manager.update_status(message=tr("Préparation des photos..."))
                     # Charger les légendes manuelles pour Samba
                     manual_captions = load_text_states()
                     final_description_map = {}
@@ -2297,34 +2299,34 @@ def samba_update_worker():
                     for update in prepare_all_photos_with_progress(screen_width, screen_height, "samba", description_map=final_description_map):
                         samba_status_manager.update_status(message=update.get('message', '')) # Update status with preparation message
                         if update.get("type") == "error":
-                            samba_status_manager.update_status(message=f"Erreur préparation: {update.get('message')}")
+                            samba_status_manager.update_status(message=tr("Erreur préparation : %(value_0)s", value_0=update.get('message')))
                             break
                         if update.get("type") == "done":
                             prep_successful = True
                     
                     if prep_successful:
                         with app.app_context():
-                            samba_status_manager.update_status(message=_("Mise à jour terminée. Redémarrage du diaporama..."))
+                            samba_status_manager.update_status(message=tr("Mise à jour terminée. Redémarrage du diaporama..."))
                         print("[Auto-Update Samba] Mise à jour terminée. Redémarrage du diaporama.")
                         if is_slideshow_running():
                             restart_slideshow_for_update()
                         with app.app_context():
-                            samba_status_manager.update_status(last_run=datetime.now(), message=_("Dernière mise à jour réussie."))
+                            samba_status_manager.update_status(last_run=datetime.now(), message=tr("Dernière mise à jour réussie."))
                     else:
                         with app.app_context():
-                            samba_status_manager.update_status(message=_("Mise à jour terminée avec avertissements/erreurs."))
+                            samba_status_manager.update_status(message=tr("Mise à jour terminée avec avertissements/erreurs."))
             except Exception as e:
                 logger.error(tr('[Auto-Update Samba] Erreur critique dans le worker : %(value_0)s', value_0=e), exc_info=True)
-                samba_status_manager.update_status(message=f"Erreur critique : {e}")
+                samba_status_manager.update_status(message=tr("Erreur critique : %(value_0)s", value_0=e))
         else:
             with app.app_context():
-                samba_status_manager.update_status(message=_("Mise à jour automatique Samba désactivée."))
+                samba_status_manager.update_status(message=tr("Mise à jour automatique Samba désactivée."))
         
         sleep_seconds = (interval_hours * 3600) if is_enabled else (15 * 60)
         next_run_time = datetime.now() + timedelta(seconds=sleep_seconds)
         samba_status_manager.update_status(next_run=next_run_time) # Update next_run regardless of enabled state
         if is_enabled: # Only set message to "En attente..." if it's enabled
-            samba_status_manager.update_status(message="En attente...")
+            samba_status_manager.update_status(message=tr("En attente..."))
         time.sleep(sleep_seconds)
 
 def telegram_bot_worker():
@@ -2667,6 +2669,9 @@ def restart_standard_slideshow():
         # S'assurer que le fichier de playlist personnalisée est supprimé
         if os.path.exists(CUSTOM_PLAYLIST_FILE):
             os.remove(CUSTOM_PLAYLIST_FILE)
+        # Returning to standard playback should bypass the configured startup
+        # sequence for this restart only.
+        SKIP_STARTUP_PLAYLIST_FILE.touch()
         
         # Redémarrer le diaporama en mode standard sans éteindre l'écran
         restart_slideshow_for_update()
@@ -2704,6 +2709,56 @@ def get_playlists():
     """Retourne la liste de toutes les playlists."""
     playlists = load_playlists()
     return jsonify(playlists)
+
+@app.route('/api/startup-playlists', methods=['POST'])
+@login_required
+def save_startup_playlists():
+    """Save the ordered playlist sequence played when the slideshow starts."""
+    data = request.get_json(silent=True) or {}
+    playlist_ids = data.get("playlist_ids", [])
+    if not isinstance(playlist_ids, list) or any(not isinstance(playlist_id, str) for playlist_id in playlist_ids):
+        return jsonify({"success": False, "message": tr("La séquence de playlists est invalide.")}), 400
+
+    playlists = load_playlists()
+    playlist_by_id = {
+        playlist.get("id"): playlist
+        for playlist in playlists
+        if isinstance(playlist, dict) and isinstance(playlist.get("id"), str)
+    }
+    ordered_ids = list(dict.fromkeys(playlist_ids))
+    missing_ids = [playlist_id for playlist_id in ordered_ids if playlist_id not in playlist_by_id]
+    if missing_ids:
+        return jsonify({"success": False, "message": tr("Une playlist sélectionnée n'existe plus.")}), 400
+    empty_ids = [
+        playlist_id for playlist_id in ordered_ids
+        if not isinstance(playlist_by_id[playlist_id].get("photos"), list)
+        or not playlist_by_id[playlist_id].get("photos")
+    ]
+    if empty_ids:
+        return jsonify({"success": False, "message": tr("Les playlists vides ne peuvent pas être lues au démarrage.")}), 400
+
+    config = load_config()
+    config["startup_playlist_ids"] = ordered_ids
+    save_config(config)
+
+    # A manually started playlist takes precedence via this temporary file. Clear
+    # it so saving the startup sequence applies the newly selected order now.
+    if os.path.exists(CUSTOM_PLAYLIST_FILE):
+        os.remove(CUSTOM_PLAYLIST_FILE)
+    SKIP_STARTUP_PLAYLIST_FILE.unlink(missing_ok=True)
+    slideshow_running = is_slideshow_running()
+    if slideshow_running:
+        restart_slideshow_for_update()
+
+    if ordered_ids and slideshow_running:
+        message = tr("Séquence enregistrée. Le diaporama va la lire maintenant.")
+    elif ordered_ids:
+        message = tr("Séquence enregistrée pour le prochain démarrage du diaporama.")
+    elif slideshow_running:
+        message = tr("Séquence effacée. Le diaporama habituel va reprendre.")
+    else:
+        message = tr("Séquence effacée. Le diaporama habituel reprendra au prochain démarrage.")
+    return jsonify({"success": True, "message": message})
 
 @app.route('/api/playlists', methods=['POST'])
 @login_required

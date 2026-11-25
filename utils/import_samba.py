@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 import smbclient
 from smbprotocol.exceptions import SMBException
+from .localization import tr
 
 TARGET_DIR = Path("static/photos/samba")
 ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.heic', '.heif'}
@@ -22,7 +23,7 @@ def import_samba_photos(config):
     password = config.get("smb_password")
 
     if not all([server, share]):
-        yield {"type": "error", "message": "Configuration Samba incomplète : serveur ou nom de partage manquant."}
+        yield {"type": "error", "message": tr("Configuration Samba incomplète : serveur ou nom de partage manquant.")}
         return
 
     # Construction robuste du chemin UNC pour éviter les problèmes de slashs finaux.
@@ -31,17 +32,17 @@ def import_samba_photos(config):
         full_samba_path = f"//{server}/{share}/{path_in_share}"
     else:
         full_samba_path = f"//{server}/{share}"
-    yield {"type": "progress", "stage": "CONNECTING", "percent": 5, "message": f"Connexion à {full_samba_path}..."}
+    yield {"type": "progress", "stage": "CONNECTING", "percent": 5, "message": tr("Connexion à %(value_0)s...", value_0=full_samba_path)}
 
     try:
         # On ne gère plus les sessions manuellement pour être compatible avec d'anciennes versions de smbclient.
         # Les identifiants sont passés directement aux fonctions.
         if not smbclient.path.exists(full_samba_path, username=user, password=password, connection_timeout=15):
-            yield {"type": "error", "message": f"Le chemin Samba est introuvable : {full_samba_path}"}
+            yield {"type": "error", "message": tr("Le chemin Samba est introuvable : %(value_0)s", value_0=full_samba_path)}
             return
 
         # --- Phase 1: Lister les fichiers distants et locaux ---
-        yield {"type": "progress", "stage": "SCANNING", "percent": 10, "message": "Analyse des fichiers distants et locaux..."}
+        yield {"type": "progress", "stage": "SCANNING", "percent": 10, "message": tr("Analyse des fichiers distants et locaux...")}
         
         # Vider les dossiers de destination (source et préparé) avant l'import pour éviter les mélanges.
         prepared_samba_dir = Path("static/prepared/samba")
@@ -62,7 +63,7 @@ def import_samba_photos(config):
                         stat_info = smbclient.stat(remote_file_path, username=user, password=password)
                         remote_files[filename] = stat_info.st_mtime
                 except Exception as e:
-                    yield {"type": "warning", "message": f"Impossible d'accéder aux informations de {filename}: {e}"}
+                    yield {"type": "warning", "message": tr("Impossible d'accéder aux informations de %(value_0)s : %(value_1)s", value_0=filename, value_1=e)}
 
         # Récupérer les fichiers locaux avec leur date de modification
         TARGET_DIR.mkdir(parents=True, exist_ok=True)
@@ -74,21 +75,21 @@ def import_samba_photos(config):
 
         # --- Phase 3: Supprimer les fichiers locaux obsolètes ---
         if files_to_delete:
-            yield {"type": "progress", "stage": "CLEANING", "percent": 15, "message": f"Suppression de {len(files_to_delete)} photos obsolètes..."}
+            yield {"type": "progress", "stage": "CLEANING", "percent": 15, "message": tr("Suppression de %(value_0)s photos obsolètes...", value_0=len(files_to_delete))}
             for filename in files_to_delete:
                 try:
                     (TARGET_DIR / filename).unlink()
                 except OSError as e:
-                    yield {"type": "warning", "message": f"Impossible de supprimer {filename}: {e}"}
+                    yield {"type": "warning", "message": tr("Impossible de supprimer %(value_0)s : %(value_1)s", value_0=filename, value_1=e)}
 
         # --- Phase 4: Copier les fichiers nouveaux ou modifiés ---
         total_to_copy = len(files_to_copy)
         if total_to_copy == 0:
-            yield {"type": "info", "message": "Aucune nouvelle photo à importer. Le dossier est à jour."}
-            yield {"type": "done", "stage": "IMPORT_COMPLETE", "percent": 100, "message": "Synchronisation terminée. Aucune nouvelle photo."}
+            yield {"type": "info", "message": tr("Aucune nouvelle photo à importer. Le dossier est à jour.")}
+            yield {"type": "done", "stage": "IMPORT_COMPLETE", "percent": 100, "message": tr("Synchronisation terminée. Aucune nouvelle photo.")}
             return
 
-        yield {"type": "stats", "stage": "COPYING", "percent": 20, "message": f"Début de la copie de {total_to_copy} photos...", "total": total_to_copy}
+        yield {"type": "stats", "stage": "COPYING", "percent": 20, "message": tr("Début de la copie de %(value_0)s photos...", value_0=total_to_copy), "total": total_to_copy}
 
         for i, filename in enumerate(sorted(list(files_to_copy)), 1):
             source_file = os.path.join(full_samba_path, filename)
@@ -105,15 +106,15 @@ def import_samba_photos(config):
                 percent = 20 + int((i / total_to_copy) * 60) # La copie représente 60% de la barre (de 20% à 80%)
                 yield {
                     "type": "progress", "stage": "COPYING", "percent": percent,
-                    "message": f"Copie en cours... ({i}/{total_to_copy})",
+                    "message": tr("Copie en cours... (%(value_0)s/%(value_1)s)", value_0=i, value_1=total_to_copy),
                     "current": i, "total": total_to_copy
                 }
             except Exception as e:
-                yield {"type": "warning", "message": f"Impossible de copier {filename}: {str(e)}"}
+                yield {"type": "warning", "message": tr("Impossible de copier %(value_0)s : %(value_1)s", value_0=filename, value_1=e)}
 
-        yield {"type": "done", "stage": "IMPORT_COMPLETE", "percent": 80, "message": f"{total_to_copy} photos synchronisées.", "total_imported": total_to_copy}
+        yield {"type": "done", "stage": "IMPORT_COMPLETE", "percent": 80, "message": tr("%(value_0)s photos synchronisées.", value_0=total_to_copy), "total_imported": total_to_copy}
 
     except SMBException as e:
-        yield {"type": "error", "message": f"Erreur Samba : {str(e)}"}
+        yield {"type": "error", "message": tr("Erreur Samba : %(value_0)s", value_0=e)}
     except Exception as e:
-        yield {"type": "error", "message": f"Erreur inattendue : {str(e)}"}
+        yield {"type": "error", "message": tr("Erreur inattendue : %(value_0)s", value_0=e)}

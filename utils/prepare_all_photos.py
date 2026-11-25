@@ -115,6 +115,7 @@ def yield_and_log(msg_type: str, message: str, stage=None, percent=None, extra=N
     Returns:
         Dict prêt pour yield contenant tous les champs nécessaires
     """
+    message = tr(message)
     result = {"type": msg_type, "message": message}
     
     if stage is not None:
@@ -387,7 +388,7 @@ def prepare_all_photos_with_progress(screen_width=None, screen_height=None, sour
     PREPARED_SOURCE_DIR = Path("static") / "prepared" / source_type
     
     if not SOURCE_DIR_FOR_PREP.is_dir():
-        yield yield_and_log("error", f"Le dossier source '{SOURCE_DIR_FOR_PREP}' n'existe pas.")
+        yield yield_and_log("error", tr("Le dossier source '%(value_0)s' n'existe pas.", value_0=SOURCE_DIR_FOR_PREP))
         return
     
     PREPARED_SOURCE_DIR.mkdir(parents=True, exist_ok=True)
@@ -430,7 +431,7 @@ def prepare_all_photos_with_progress(screen_width=None, screen_height=None, sour
     if basenames_to_delete:
         yield yield_and_log(
             "progress",
-            f"Suppression de {len(basenames_to_delete)} médias obsolètes...",
+            tr("Suppression de %(value_0)s médias obsolètes...", value_0=len(basenames_to_delete)),
             stage="CLEANING",
             percent=25
         )
@@ -441,7 +442,7 @@ def prepare_all_photos_with_progress(screen_width=None, screen_height=None, sour
                     if file_to_delete.is_file():
                         file_to_delete.unlink()
                 except OSError as e:
-                    yield yield_and_log("warning", f"Impossible de supprimer {file_to_delete.name} : {e}")
+                    yield yield_and_log("warning", tr("Impossible de supprimer %(value_0)s : %(value_1)s", value_0=file_to_delete.name, value_1=e))
             
             backup_dir = PREPARED_SOURCE_DIR.parent.parent / '.backups' / source_type
             if backup_dir.exists():
@@ -458,7 +459,7 @@ def prepare_all_photos_with_progress(screen_width=None, screen_height=None, sour
         yield yield_and_log("info", "Aucune nouvelle photo à préparer. Le dossier est à jour.")
         yield yield_and_log(
             "done",
-            "Aucune nouvelle photo à préparer.",
+            tr("Aucune nouvelle photo à préparer."),
             stage="PREPARING_COMPLETE",
             percent=100
         )
@@ -466,7 +467,7 @@ def prepare_all_photos_with_progress(screen_width=None, screen_height=None, sour
     
     yield yield_and_log(
         "stats",
-        f"Début de la préparation de {total} nouvelles photos...",
+        tr("Début de la préparation de %(value_0)s nouvelles photos...", value_0=total),
         stage="PREPARING_START",
         percent=22,
         extra={"total": total}
@@ -475,7 +476,7 @@ def prepare_all_photos_with_progress(screen_width=None, screen_height=None, sour
     for i, filename in enumerate(files_to_prepare, start=1):
         # Check for cancellation
         if CANCEL_FLAG.exists():
-            yield yield_and_log("warning", "Préparation annulée par l'utilisateur.")
+            yield yield_and_log("warning", tr("Préparation annulée par l'utilisateur."))
             return
         
         src_path = os.path.join(SOURCE_DIR_FOR_PREP, filename)
@@ -489,7 +490,7 @@ def prepare_all_photos_with_progress(screen_width=None, screen_height=None, sour
                 dest_filename = f"{base_name}.mp4"
                 dest_path = PREPARED_SOURCE_DIR / dest_filename
                 prepare_video(src_path, str(dest_path), actual_output_width, actual_output_height)
-                message_type = "vidéo"
+                message_type = tr("vidéo")
                 current_preview = f"{base_name}_thumbnail.jpg"
             else:
                 # Image processing
@@ -521,18 +522,18 @@ def prepare_all_photos_with_progress(screen_width=None, screen_height=None, sour
             
             yield yield_and_log(
                 "progress",
-                f"Nouveau média préparé ({message_type}) : {filename} ({i}/{total})",
+                tr("Nouveau média préparé (%(value_0)s) : %(value_1)s (%(value_2)s/%(value_3)s)", value_0=message_type, value_1=filename, value_2=i, value_3=total),
                 stage="PREPARING_PHOTO",
                 percent=percent,
                 extra={"current": i, "total": total, "current_photo_path": current_preview}
             )
         
         except Exception as e:
-            yield yield_and_log("warning", f"Erreur lors de la préparation de {filename}: {e}")
+            yield yield_and_log("warning", tr("Erreur lors de la préparation de %(value_0)s : %(value_1)s", value_0=filename, value_1=e))
     
     yield yield_and_log(
         "done",
-        "Préparation des nouvelles photos terminée.",
+        tr("Préparation des nouvelles photos terminée."),
         stage="PREPARING_COMPLETE",
         percent=100
     )

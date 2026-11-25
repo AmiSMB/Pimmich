@@ -100,6 +100,7 @@ def yield_and_log(
     Construit un dict pour yield + écrit dans les logs.
     - msg_type : "progress" | "info" | "warning" | "error" | "done" ...
     """
+    message = tr(message)
     data = {"type": msg_type, "message": message}
     if stage is not None:
         data["stage"] = stage
@@ -183,7 +184,7 @@ def download_and_extract_album(config):
     if not all([server_url, api_key]):
         yield yield_and_log(
             msg_type="error",
-            message="Configuration incomplète : url du serveur ou clé API manquant.",
+            message=tr("Configuration incomplète : url du serveur ou clé API manquant."),
         )
         return
 
@@ -191,7 +192,7 @@ def download_and_extract_album(config):
         msg_type="progress",
         stage="CONNECTING",
         percent=2,
-        message="Connexion à Immich...",
+        message=tr("Connexion à Immich..."),
     )
     time.sleep(0.5)
 
@@ -204,7 +205,7 @@ def download_and_extract_album(config):
             msg_type="progress",
             stage="SEARCHING",
             percent=4,
-            message=f"Recherche de l'album '{album_name}'...",
+            message=tr("Recherche de l'album '%(value_0)s'...", value_0=album_name),
         )
 
         album_list_url = f"{server_url}/api/albums"
@@ -215,7 +216,7 @@ def download_and_extract_album(config):
         except requests.exceptions.RequestException as e:
             yield yield_and_log(
                 msg_type="error",
-                message=f"Impossible de se connecter au serveur Immich : {str(e)}",
+                message=tr("Impossible de se connecter au serveur Immich : %(value_0)s", value_0=e),
             )
             return
 
@@ -228,10 +229,7 @@ def download_and_extract_album(config):
             available_albums = [album["albumName"] for album in albums[:5]]  # Limiter à 5 pour l'affichage
             yield yield_and_log(
                 msg_type="error",
-                message=(
-                    f"Album '{album_name}' introuvable. "
-                    f"Albums disponibles : {', '.join(available_albums)}"
-                ),
+                message=tr("Album '%(value_0)s' introuvable. Albums disponibles : %(value_1)s", value_0=album_name, value_1=', '.join(available_albums)),
             )
             return
 
@@ -276,7 +274,7 @@ def download_and_extract_album(config):
             except requests.exceptions.RequestException as e:
                 yield yield_and_log(
                     msg_type="error",
-                    message=f"Impossible de récupérer les photos de l'album : {str(e)}",
+                    message=tr("Impossible de récupérer les photos de l'album : %(value_0)s", value_0=e),
                 )
                 return
 
@@ -285,10 +283,7 @@ def download_and_extract_album(config):
         if max_photos_to_download is not None and total_assets > max_photos_to_download:
             yield yield_and_log(
                 msg_type="info",
-                message=(
-                    f"L'album contient {total_assets} photos. "
-                    f"Limitation à {max_photos_to_download} photos."
-                ),
+                message=tr("L'album contient %(value_0)s photos. Limitation à %(value_1)s photos.", value_0=total_assets, value_1=max_photos_to_download),
             )
             if random_content_in_album:
                 assets = random.choices(assets, k=max_photos_to_download)
@@ -303,7 +298,7 @@ def download_and_extract_album(config):
             msg_type="progress",
             stage="FETCHING_RANDOM",
             percent=4,
-            message=f"Récupération de {size} photos aléatoires...",
+            message=tr("Récupération de %(value_0)s photos aléatoires...", value_0=size),
         )
 
         random_url = f"{server_url}/api/search/random"
@@ -340,7 +335,7 @@ def download_and_extract_album(config):
         except requests.exceptions.RequestException as e:
             yield yield_and_log(
                 msg_type="error",
-                message=f"Impossible de récupérer les photos aléatoires : {str(e)}",
+                message=tr("Impossible de récupérer les photos aléatoires : %(value_0)s", value_0=e),
             )
             return
 
@@ -375,16 +370,13 @@ def download_and_extract_album(config):
             msg_type="progress",
             stage="FETCHING_ASSETS",
             percent=12,
-            message=(
-                f"Metadonnées sauvées pour {photos_with_metadata} "
-                f"photos sur {total_assets}"
-            ),
+            message=tr("Métadonnées sauvegardées pour %(value_0)s photos sur %(value_1)s", value_0=photos_with_metadata, value_1=total_assets),
         )
 
     except Exception as e:
         yield yield_and_log(
             msg_type="warning",
-            message=f"Erreur sauvegarde Metadonnées : {e}",
+            message=tr("Erreur de sauvegarde des métadonnées : %(value_0)s", value_0=e),
         )
     # Fin Modification Sigalou 26/01/2026
 
@@ -392,7 +384,7 @@ def download_and_extract_album(config):
     if not asset_ids:
         yield yield_and_log(
             msg_type="error",
-            message="Aucune photo accessible.",
+            message=tr("Aucune photo accessible."),
         )
         return
 
@@ -401,7 +393,7 @@ def download_and_extract_album(config):
         msg_type="progress",
         stage="DOWNLOADING",
         percent=16,
-        message=f"Téléchargement de l'archive ({nb_photos} photos)...",
+        message=tr("Téléchargement de l'archive (%(value_0)s photos)...", value_0=nb_photos),
     )
 
     zip_path = "temp_album.zip"
@@ -411,14 +403,14 @@ def download_and_extract_album(config):
         if not success:
             yield yield_and_log(
                 msg_type="error",
-                message=f"Échec du téléchargement de l'archive : {error_msg}",
+                message=tr("Échec du téléchargement de l'archive : %(value_0)s", value_0=error_msg),
             )
             return
 
     except Exception as e:
         yield yield_and_log(
             msg_type="error",
-            message=f"Erreur critique lors du téléchargement : {str(e)}",
+            message=tr("Erreur critique lors du téléchargement : %(value_0)s", value_0=e),
         )
         return
 
@@ -465,7 +457,7 @@ def download_and_extract_album(config):
     except Exception as e:
         yield yield_and_log(
             msg_type="error",
-            message=f"Erreur lors de l'extraction : {str(e)}",
+            message=tr("Erreur lors de l'extraction : %(value_0)s", value_0=e),
         )
         return
 
@@ -473,6 +465,6 @@ def download_and_extract_album(config):
         msg_type="done",
         stage="DOWNLOAD_COMPLETE",
         percent=24,
-        message=f"{nb_photos} photos prêtes pour préparation.",
+        message=tr("%(value_0)s photos prêtes pour préparation.", value_0=nb_photos),
         extra={"total_downloaded": nb_photos},
     )

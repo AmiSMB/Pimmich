@@ -785,6 +785,21 @@ msgstr ""
 msgid "Mise à jour auto. activée. Intervalle : %(hours)sh."
 msgstr ""
 
+msgid "En attente..."
+msgstr ""
+
+msgid "Erreur téléchargement : %(value_0)s"
+msgstr ""
+
+msgid "Erreur préparation : %(value_0)s"
+msgstr ""
+
+msgid "Erreur import : %(value_0)s"
+msgstr ""
+
+msgid "Erreur critique : %(value_0)s"
+msgstr ""
+
 #: app.py:1791 app.py:1805
 #, python-format
 msgid "🖼️🔄  %(value_0)s"
@@ -4875,4 +4890,208 @@ msgstr ""
 
 #: templates/configure.html.jinja:2402
 msgid "Vous n'avez aucune\n                    photo en favori pour le moment."
+msgstr ""
+
+msgid "Configuration Samba incomplète : serveur ou nom de partage manquant."
+msgstr ""
+
+msgid "Connexion à %(value_0)s..."
+msgstr ""
+
+msgid "Le chemin Samba est introuvable : %(value_0)s"
+msgstr ""
+
+msgid "Analyse des fichiers distants et locaux..."
+msgstr ""
+
+msgid "Impossible d'accéder aux informations de %(value_0)s : %(value_1)s"
+msgstr ""
+
+msgid "Suppression de %(value_0)s photos obsolètes..."
+msgstr ""
+
+msgid "Impossible de supprimer %(value_0)s : %(value_1)s"
+msgstr ""
+
+msgid "Aucune nouvelle photo à importer. Le dossier est à jour."
+msgstr ""
+
+msgid "Synchronisation terminée. Aucune nouvelle photo."
+msgstr ""
+
+msgid "Début de la copie de %(value_0)s photos..."
+msgstr ""
+
+msgid "Copie en cours... (%(value_0)s/%(value_1)s)"
+msgstr ""
+
+msgid "Impossible de copier %(value_0)s : %(value_1)s"
+msgstr ""
+
+msgid "%(value_0)s photos synchronisées."
+msgstr ""
+
+msgid "Configuration incomplète : url du serveur ou clé API manquant."
+msgstr ""
+
+msgid "Connexion à Immich..."
+msgstr ""
+
+msgid "Recherche de l'album '%(value_0)s'..."
+msgstr ""
+
+msgid "Impossible de se connecter au serveur Immich : %(value_0)s"
+msgstr ""
+
+msgid "Album '%(value_0)s' introuvable. Albums disponibles : %(value_1)s"
+msgstr ""
+
+msgid "Impossible de récupérer les photos de l'album : %(value_0)s"
+msgstr ""
+
+msgid "L'album contient %(value_0)s photos. Limitation à %(value_1)s photos."
+msgstr ""
+
+msgid "Récupération de %(value_0)s photos aléatoires..."
+msgstr ""
+
+msgid "Impossible de récupérer les photos aléatoires : %(value_0)s"
+msgstr ""
+
+msgid "Métadonnées sauvegardées pour %(value_0)s photos sur %(value_1)s"
+msgstr ""
+
+msgid "Erreur de sauvegarde des métadonnées : %(value_0)s"
+msgstr ""
+
+msgid "Aucune photo accessible."
+msgstr ""
+
+msgid "Téléchargement de l'archive (%(value_0)s photos)..."
+msgstr ""
+
+msgid "Échec du téléchargement de l'archive : %(value_0)s"
+msgstr ""
+
+msgid "Erreur critique lors du téléchargement : %(value_0)s"
+msgstr ""
+
+msgid "Erreur lors de l'extraction : %(value_0)s"
+msgstr ""
+
+msgid "%(value_0)s photos prêtes pour préparation."
+msgstr ""
+
+msgid "Le dossier source '%(value_0)s' n'existe pas."
+msgstr ""
+
+msgid "Suppression de %(value_0)s médias obsolètes..."
+msgstr ""
+
+msgid "Aucune nouvelle photo à préparer."
+msgstr ""
+
+msgid "Début de la préparation de %(value_0)s nouvelles photos..."
+msgstr ""
+
+msgid "Préparation annulée par l'utilisateur."
+msgstr ""
+
+msgid "Nouveau média préparé (%(value_0)s) : %(value_1)s (%(value_2)s/%(value_3)s)"
+msgstr ""
+
+msgid "vidéo"
+msgstr ""
+
+msgid "Erreur lors de la préparation de %(value_0)s : %(value_1)s"
+msgstr ""
+
+msgid "Préparation des nouvelles photos terminée."
+msgstr ""
+
+msgid "Accélérer Pan/Zoom avec le GPU (expérimental)"
+msgstr ""
+
+msgid "Nécessite pygame-ce et un pilote SDL accéléré. Le rendu logiciel sera utilisé si l'accélération n'est pas disponible."
+msgstr ""
+
+msgid "Rendu GPU Pan/Zoom activé."
+msgstr ""
+
+msgid "Rendu GPU Pan/Zoom indisponible ; utilisation du rendu logiciel : %(value_0)s"
+msgstr ""
+
+msgid "Impossible de synchroniser l'image GPU : %(value_0)s"
+msgstr ""
+
+msgid "Playlists au démarrage"
+msgstr ""
+
+msgid "Choisissez et ordonnez les playlists à lire au démarrage. Elles seront lues une fois, puis le diaporama habituel reprendra. Laissez la liste vide pour démarrer directement avec toutes les sources."
+msgstr ""
+
+msgid "Chargement des playlists..."
+msgstr ""
+
+msgid "Ajouter à la séquence"
+msgstr ""
+
+msgid "Enregistrer la séquence de démarrage"
+msgstr ""
+
+msgid "Choisissez une playlist"
+msgstr ""
+
+msgid "Impossible de charger les playlists."
+msgstr ""
+
+msgid "Aucune playlist ajoutée à la séquence."
+msgstr ""
+
+msgid "Monter"
+msgstr ""
+
+msgid "Descendre"
+msgstr ""
+
+msgid "Retirer"
+msgstr ""
+
+msgid "Enregistrement..."
+msgstr ""
+
+msgid "Séquence de démarrage enregistrée. Le diaporama va la lire."
+msgstr ""
+
+msgid "Impossible d’enregistrer la séquence de démarrage."
+msgstr ""
+
+msgid "Séquence de démarrage : %(value_0)s"
+msgstr ""
+
+msgid "📸 Erreur chargement playlist personnalisée: %(value_0)s. Utilisation de la séquence de démarrage configurée."
+msgstr ""
+
+msgid "Erreur lors du chargement de la séquence de playlists de démarrage : %(value_0)s"
+msgstr ""
+
+msgid "Les playlists vides ne peuvent pas être lues au démarrage."
+msgstr ""
+
+msgid "Une playlist sélectionnée n'existe plus."
+msgstr ""
+
+msgid "La séquence de playlists est invalide."
+msgstr ""
+
+msgid "Séquence enregistrée. Le diaporama va la lire maintenant."
+msgstr ""
+
+msgid "Séquence enregistrée pour le prochain démarrage du diaporama."
+msgstr ""
+
+msgid "Séquence effacée. Le diaporama habituel va reprendre."
+msgstr ""
+
+msgid "Séquence effacée. Le diaporama habituel reprendra au prochain démarrage."
 msgstr ""

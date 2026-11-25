@@ -433,6 +433,12 @@
                             <input type="checkbox" name="pan_zoom_enabled" {% if config.get('pan_zoom_enabled', False) %}checked{% endif %}> <span class="ml-2">{{ _("Activer l'effet Pan/Zoom sur les photos") }}</span>
                         </label>
                     </div>
+                    <div style="margin-top: 8px;">
+                        <label>
+                            <input type="checkbox" name="pan_zoom_gpu_enabled" {% if config.get('pan_zoom_gpu_enabled', False) %}checked{% endif %}> <span class="ml-2">{{ _("Accélérer Pan/Zoom avec le GPU (expérimental)") }}</span>
+                        </label>
+                        <small class="block text-gray-600 ml-6">{{ _("Nécessite pygame-ce et un pilote SDL accéléré. Le rendu logiciel sera utilisé si l'accélération n'est pas disponible.") }}</small>
+                    </div>
                     <div style="display: flex; align-items: center; margin-top: 8px;">
                         <label for="pan_zoom_factor" style="min-width: 200px;">{{ _("Amplitude du zoom (ex: 1.15 pour 15%% de zoom) :") }}</label>
                         <input type="number" step="0.01" id="pan_zoom_factor" name="pan_zoom_factor"
@@ -2271,6 +2277,24 @@
                 <p class="text-sm text-gray-600 mb-3">{{ _("Créez des albums virtuels (playlists) en sélectionnant des
                     photos de n'importe quelle source. Vous pouvez ensuite lancer un diaporama contenant uniquement les
                     photos d'une playlist.") }}</p>
+
+                <div class="p-4 border rounded-lg bg-blue-50 mb-6">
+                    <h4 class="font-semibold text-gray-800 mb-2">{{ _("Playlists au démarrage") }}</h4>
+                    <p class="text-sm text-gray-600 mb-3">{{ _("Choisissez et ordonnez les playlists à lire au démarrage. Elles seront lues une fois, puis le diaporama habituel reprendra. Laissez la liste vide pour démarrer directement avec toutes les sources.") }}</p>
+                    <div class="flex flex-col sm:flex-row gap-2 mb-3">
+                        <select id="startup-playlist-picker" class="flex-grow rounded-md border-gray-300 shadow-sm">
+                            <option value="">{{ _("Chargement des playlists...") }}</option>
+                        </select>
+                        <button type="button" id="startup-playlist-add" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                            <i class="fas fa-plus mr-1"></i>{{ _("Ajouter à la séquence") }}
+                        </button>
+                    </div>
+                    <ol id="startup-playlist-order" class="space-y-2 mb-3" aria-live="polite"></ol>
+                    <button type="button" id="startup-playlist-save" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded">
+                        <i class="fas fa-save mr-1"></i>{{ _("Enregistrer la séquence de démarrage") }}
+                    </button>
+                    <span id="startup-playlist-status" class="ml-2 text-sm" aria-live="polite"></span>
+                </div>
 
                 <!-- Bloc de contrôle du diaporama pour les playlists -->
                 <div class="flex flex-col md:flex-row gap-6">
@@ -4609,13 +4633,13 @@
                 function formatDateTime(isoString) {
                     if (!isoString) return "N/A";
                     const date = new Date(isoString);
-                    // Options pour un format français lisible
+                    const locale = {{ get_locale()|tojson }};
                     const options = {
                         year: 'numeric', month: 'short', day: 'numeric',
                         hour: '2-digit', minute: '2-digit', second: '2-digit',
                         hour12: false // Format 24h
                     };
-                    return date.toLocaleString('fr-FR', options);
+                    return date.toLocaleString(locale, options);
                 }
 
                 // Fonction générique pour récupérer et afficher le statut d'un worker
@@ -5682,6 +5706,136 @@
                     } finally {
                         runDiagnosticsBtn.disabled = false; // Correction: le bouton doit être réactivé
                         runDiagnosticsBtn.innerHTML = `<i class="fas fa-play-circle mr-2"></i>${i18n.runDiagnostics}`;
+                    }
+                });
+            }
+
+            // --- Startup playlist sequence ---
+            const startupPlaylistPicker = document.getElementById('startup-playlist-picker');
+            const startupPlaylistList = document.getElementById('startup-playlist-order');
+            const startupPlaylistStatus = document.getElementById('startup-playlist-status');
+            const startupPlaylistAdd = document.getElementById('startup-playlist-add');
+            const startupPlaylistSave = document.getElementById('startup-playlist-save');
+            if (startupPlaylistPicker && startupPlaylistList && startupPlaylistStatus && startupPlaylistAdd && startupPlaylistSave) {
+                const startupPlaylistI18n = {
+                    choose: {{ _('Choisissez une playlist')|tojson }},
+                    loadError: {{ _('Impossible de charger les playlists.')|tojson }},
+                    none: {{ _('Aucune playlist ajoutée à la séquence.')|tojson }},
+                    moveUp: {{ _('Monter')|tojson }},
+                    moveDown: {{ _('Descendre')|tojson }},
+                    remove: {{ _('Retirer')|tojson }},
+                    saving: {{ _('Enregistrement...')|tojson }},
+                    saved: {{ _('Séquence de démarrage enregistrée. Le diaporama va la lire.')|tojson }},
+                    saveError: {{ _('Impossible d’enregistrer la séquence de démarrage.')|tojson }}
+                };
+                let startupPlaylists = [];
+                let startupPlaylistIds = {{ config.get('startup_playlist_ids', [])|tojson }};
+                if (!Array.isArray(startupPlaylistIds)) startupPlaylistIds = [];
+
+                const renderStartupPlaylistOrder = () => {
+                    startupPlaylistList.replaceChildren();
+                    if (startupPlaylistIds.length === 0) {
+                        const emptyItem = document.createElement('li');
+                        emptyItem.className = 'text-gray-500 italic text-sm';
+                        emptyItem.textContent = startupPlaylistI18n.none;
+                        startupPlaylistList.appendChild(emptyItem);
+                        return;
+                    }
+
+                    startupPlaylistIds.forEach((playlistId, index) => {
+                        const playlist = startupPlaylists.find(item => item.id === playlistId);
+                        if (!playlist) return;
+                        const item = document.createElement('li');
+                        item.className = 'flex items-center gap-2 bg-white border rounded p-2';
+                        const name = document.createElement('span');
+                        name.className = 'flex-grow font-medium';
+                        name.textContent = `${index + 1}. ${playlist.name}`;
+                        item.appendChild(name);
+
+                        const makeControl = (label, icon, action, disabled) => {
+                            const button = document.createElement('button');
+                            button.type = 'button';
+                            button.className = 'px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-40';
+                            button.setAttribute('aria-label', label);
+                            button.title = label;
+                            button.innerHTML = `<i class="fas ${icon}"></i>`;
+                            button.disabled = disabled;
+                            button.addEventListener('click', action);
+                            item.appendChild(button);
+                        };
+                        makeControl(startupPlaylistI18n.moveUp, 'fa-arrow-up', () => {
+                            [startupPlaylistIds[index - 1], startupPlaylistIds[index]] = [startupPlaylistIds[index], startupPlaylistIds[index - 1]];
+                            renderStartupPlaylistOrder();
+                        }, index === 0);
+                        makeControl(startupPlaylistI18n.moveDown, 'fa-arrow-down', () => {
+                            [startupPlaylistIds[index + 1], startupPlaylistIds[index]] = [startupPlaylistIds[index], startupPlaylistIds[index + 1]];
+                            renderStartupPlaylistOrder();
+                        }, index === startupPlaylistIds.length - 1);
+                        makeControl(startupPlaylistI18n.remove, 'fa-times', () => {
+                            startupPlaylistIds.splice(index, 1);
+                            renderStartupPlaylistOrder();
+                        }, false);
+                        startupPlaylistList.appendChild(item);
+                    });
+                };
+
+                fetch('/api/playlists')
+                    .then(response => response.ok ? response.json() : Promise.reject(new Error('Playlist request failed')))
+                    .then(playlists => {
+                        startupPlaylists = playlists;
+                        startupPlaylistPicker.replaceChildren();
+                        const placeholder = document.createElement('option');
+                        placeholder.value = '';
+                        placeholder.textContent = startupPlaylistI18n.choose;
+                        startupPlaylistPicker.appendChild(placeholder);
+                        playlists.forEach(playlist => {
+                            const option = document.createElement('option');
+                            option.value = playlist.id;
+                            option.textContent = playlist.name;
+                            option.disabled = !Array.isArray(playlist.photos) || playlist.photos.length === 0;
+                            startupPlaylistPicker.appendChild(option);
+                        });
+                        startupPlaylistIds = startupPlaylistIds.filter((id, index, ids) =>
+                            playlists.some(playlist => playlist.id === id && Array.isArray(playlist.photos) && playlist.photos.length > 0) && ids.indexOf(id) === index
+                        );
+                        renderStartupPlaylistOrder();
+                    })
+                    .catch(() => {
+                        startupPlaylistPicker.replaceChildren();
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = startupPlaylistI18n.loadError;
+                        startupPlaylistPicker.appendChild(option);
+                        renderStartupPlaylistOrder();
+                    });
+
+                startupPlaylistAdd.addEventListener('click', () => {
+                    const selectedId = startupPlaylistPicker.value;
+                    if (selectedId && !startupPlaylistIds.includes(selectedId)) {
+                        startupPlaylistIds.push(selectedId);
+                        renderStartupPlaylistOrder();
+                    }
+                });
+
+                startupPlaylistSave.addEventListener('click', async () => {
+                    startupPlaylistSave.disabled = true;
+                    startupPlaylistStatus.className = 'ml-2 text-sm text-gray-600';
+                    startupPlaylistStatus.textContent = startupPlaylistI18n.saving;
+                    try {
+                        const response = await fetch('/api/startup-playlists', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ playlist_ids: startupPlaylistIds })
+                        });
+                        const result = await response.json();
+                        if (!response.ok || !result.success) throw new Error(result.message || startupPlaylistI18n.saveError);
+                        startupPlaylistStatus.className = 'ml-2 text-sm text-green-700';
+                        startupPlaylistStatus.textContent = result.message || startupPlaylistI18n.saved;
+                    } catch (error) {
+                        startupPlaylistStatus.className = 'ml-2 text-sm text-red-700';
+                        startupPlaylistStatus.textContent = error.message || startupPlaylistI18n.saveError;
+                    } finally {
+                        startupPlaylistSave.disabled = false;
                     }
                 });
             }

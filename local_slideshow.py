@@ -24,6 +24,7 @@ from pathlib import Path
 from utils.text_drawer import draw_text_with_outline
 from utils.metadata_utils import get_photo_metadata, load_photo_metadata_cache # Import from new utility
 from utils.config_manager import load_config
+from utils.playlist_manager import load_playlists
 from utils.tide_format import format_tide_day, format_tide_type
 
 # Helper minimal pour l'extraction des traductions (Pybabel)
@@ -60,6 +61,7 @@ PREPARED_BASE_DIR = Path(BASE_DIR) / 'static' / 'prepared'
 STATUS_FILE = "/tmp/pimmich_slideshow_status.json"
 SOUNDS_DIR = Path(BASE_DIR) / 'static' / 'sounds'
 CUSTOM_PLAYLIST_FILE = "/tmp/pimmich_custom_playlist.json"
+SKIP_STARTUP_PLAYLIST_FILE = Path("/tmp/pimmich_skip_startup_playlist.flag")
 ICONS_DIR = Path(BASE_DIR) / 'static' / 'icons'
 NEW_POSTCARD_FLAG = Path(BASE_DIR) / 'cache' / 'new_postcard.flag'
 CURRENT_PHOTO_FILE = "/tmp/pimmich_current_photo.txt"
@@ -372,23 +374,30 @@ def perform_transition(screen, old_image_surface, new_image_path, duration, scre
     if new_pil_image.mode != 'RGB': # type: ignore
         new_pil_image = new_pil_image.convert('RGB')
 
-    # Scale new image to fit the screen (maintain aspect ratio, center)
-    # This is the base image for the transition, not the pan/zoom scaled one
-    new_pil_image_scaled = new_pil_image.copy()
-    new_pil_image_scaled.thumbnail((screen_width, screen_height), Image.Resampling.LANCZOS)
-    
-    # Optimisation majeure : convert() pour aligner le format de pixels sur celui de l'écran
-    # Major optimization: use convert() to match the screen's pixel format.
+    # End transitions on the exact centered crop where pan/zoom begins. This
+    # avoids showing a fit-sized frame and then jumping to a random zoom offset.
     new_surface_scaled = pygame.Surface((screen_width, screen_height)).convert()
-    new_surface_scaled.fill((0,0,0)) # Black background for new image
-    
-    img_x = (screen_width - new_pil_image_scaled.width) // 2
-    img_y = (screen_height - new_pil_image_scaled.height) // 2
-    
-    # Optimisation majeure : convert() pour aligner le format de pixels de l'image sur celui de l'écran
-    # Major optimization: use convert() to match the image pixel format to the screen.
-    temp_surf = pygame.image.fromstring(new_pil_image_scaled.tobytes(), new_pil_image_scaled.size, new_pil_image_scaled.mode).convert()
-    new_surface_scaled.blit(temp_surf, (img_x, img_y))
+    new_surface_scaled.fill((0, 0, 0))
+    if config.get("pan_zoom_enabled", False):
+        zoom_factor = max(1.0, float(config.get("pan_zoom_factor", 1.15)))
+        scaled_size = (max(screen_width, int(screen_width * zoom_factor)), max(screen_height, int(screen_height * zoom_factor)))
+        zoomed_image = new_pil_image.resize(scaled_size, Image.Resampling.LANCZOS)
+        zoomed_surface = pygame.image.fromstring(zoomed_image.tobytes(), zoomed_image.size, zoomed_image.mode).convert()
+        centered_crop = pygame.Rect(
+            (scaled_size[0] - screen_width) // 2,
+            (scaled_size[1] - screen_height) // 2,
+            screen_width,
+            screen_height,
+        )
+        new_surface_scaled.blit(zoomed_surface, (0, 0), centered_crop)
+    else:
+        # Scale to fit the screen while preserving the original aspect ratio.
+        new_pil_image_scaled = new_pil_image.copy()
+        new_pil_image_scaled.thumbnail((screen_width, screen_height), Image.Resampling.LANCZOS)
+        temp_surf = pygame.image.fromstring(new_pil_image_scaled.tobytes(), new_pil_image_scaled.size, new_pil_image_scaled.mode).convert()
+        img_x = (screen_width - new_pil_image_scaled.width) // 2
+        img_y = (screen_height - new_pil_image_scaled.height) // 2
+        new_surface_scaled.blit(temp_surf, (img_x, img_y))
 
     # Récupérer les métadonnées pour l'image en cours de transition
     # Get metadata for the image currently being transitioned to.
@@ -1614,9 +1623,6 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
     # Prepare the image and metadata up front to avoid undefined-name errors (NameError).
     if pil_image.mode != 'RGB':
         pil_image = pil_image.convert('RGB')
-    pygame_image_base = pygame.image.fromstring(pil_image.tobytes(), pil_image.size, pil_image.mode)
-
-
     # Boucle de pause : si le diaporama est en pause, on attend ici.
     # Pause loop: wait here while the slideshow is paused.
     while paused:
@@ -1644,13 +1650,13 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
         display_duration = config.get("display_duration", 10)
         logger.info(tr('⏳ Pause de %(value_0)s secondes.', value_0=display_duration)) # Debug print
         
-        # Always blit the base image first (this will be overwritten by animation if enabled)
+        # Prepare the base surface for static display and pause redraws.
         pygame_image_base = pygame.image.fromstring(pil_image.tobytes(), pil_image.size, pil_image.mode)
-        screen.blit(pygame_image_base, (0, 0))
         
         if not pan_zoom_enabled: # If pan/zoom is disabled, just show static image
             # Affichage statique : blit une fois et attendre la durée
             # Static display: blit once, then wait for the duration.
+            screen.blit(pygame_image_base, (0, 0))
             draw_overlay(screen, screen_width, screen_height, config, main_font, photo_metadata)
             pygame.display.flip()
             # Boucle d'attente pour rester réactif aux signaux
@@ -1738,7 +1744,9 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
 
             # Générer un point de départ et un point d'arrivée qui ne sont pas identiques
             # Generate distinct start and end points.
-            start_offset = get_random_edge_point(max_x_offset, max_y_offset)
+            # Begin at the centered crop. Transitions also end on this frame,
+            # so the image never jumps when animation takes over.
+            start_offset = (max_x_offset // 2, max_y_offset // 2)
             end_offset = get_random_edge_point(max_x_offset, max_y_offset)
             while end_offset == start_offset:
                 end_offset = get_random_edge_point(max_x_offset, max_y_offset)
@@ -1748,6 +1756,31 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
 
             clock = pygame.time.Clock()
             start_animation_time = time.time()
+            overlay_surface = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA).convert_alpha()
+            overlay_second = None
+            fps_setting = str(config.get("transition_fps", "auto"))
+            animation_fps = int(fps_setting) if fps_setting in ("30", "60") else 60
+            gpu_renderer = None
+            gpu_photo_texture = None
+            gpu_overlay_texture = None
+            if config.get("pan_zoom_gpu_enabled", False):
+                try:
+                    from pygame._sdl2.video import Renderer, Texture, Window
+                    gpu_window = Window.from_display_module()
+                    gpu_renderer = Renderer(gpu_window, accelerated=1, vsync=True)
+                    gpu_photo_texture = Texture.from_surface(gpu_renderer, scaled_pygame_image)
+                    logger.info(tr("Rendu GPU Pan/Zoom activé."))
+                except Exception as gpu_error:
+                    logger.warning(tr("Rendu GPU Pan/Zoom indisponible ; utilisation du rendu logiciel : %(value_0)s", value_0=gpu_error))
+                    gpu_renderer = None
+                    gpu_photo_texture = None
+
+            def sync_gpu_frame_to_surface():
+                if gpu_renderer:
+                    try:
+                        screen.blit(gpu_renderer.to_surface(), (0, 0))
+                    except Exception as sync_error:
+                        logger.warning(tr("Impossible de synchroniser l'image GPU : %(value_0)s", value_0=sync_error))
 
             while time.time() - start_animation_time < display_duration:
                 elapsed_animation_time = time.time() - start_animation_time
@@ -1755,11 +1788,15 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                 handle_slideshow_events(screen_width)
                 # Vérification en temps réel de l'arrivée d'une nouvelle carte postale
                 # Check in real time for an incoming postcard.
-                if not ignore_postcard_flag and NEW_POSTCARD_FLAG.exists(): return
+                if not ignore_postcard_flag and NEW_POSTCARD_FLAG.exists():
+                    sync_gpu_frame_to_surface()
+                    return
 
                 # Vérifier les signaux à chaque image de l'animation
                 # Check for signals on every animation frame.
-                if next_photo_requested or previous_photo_requested: return
+                if next_photo_requested or previous_photo_requested:
+                    sync_gpu_frame_to_surface()
+                    return
                 
                 # Appliquer une fonction d'accélération/décélération (ease-in-out) pour un mouvement plus doux
                 # Apply an ease-in-out function for smoother motion.
@@ -1770,11 +1807,18 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                 current_x = int(start_x + (end_x - start_x) * eased_progress)
                 current_y = int(start_y + (end_y - start_y) * eased_progress)
 
-                # Blit the portion of the scaled image onto the screen
-                screen.blit(scaled_pygame_image, (0, 0), (current_x, current_y, screen_width, screen_height))
-
-                # Draw overlay (clock/date/weather)
-                draw_overlay(screen, screen_width, screen_height, config, main_font, photo_metadata)
+                # Render text, date and weather once per second, then reuse it
+                # for animation frames instead of rebuilding fonts every frame.
+                current_second = int(time.time())
+                if current_second != overlay_second:
+                    overlay_surface.fill((0, 0, 0, 0))
+                    draw_overlay(overlay_surface, screen_width, screen_height, config, main_font, photo_metadata)
+                    if gpu_renderer:
+                        from pygame._sdl2.video import Texture
+                        gpu_overlay_texture = Texture.from_surface(gpu_renderer, overlay_surface)
+                    overlay_second = current_second
+                if not gpu_renderer:
+                    screen.blit(overlay_surface, (0, 0))
 
                 # Gestion de la pause et des notifications (Enveloppe / Pause)
                 # Handle pause and notifications (envelope / pause).
@@ -1786,6 +1830,9 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                     # Paused: alternate between the pause icon and the envelope.
                     config = load_config() # Recharger pendant la pause de l'animation
                     p_count = get_today_postcard_count() if config.get("display_telegram_notification_overlay", True) else 0
+                    screen.blit(scaled_pygame_image, (0, 0), (current_x, current_y, screen_width, screen_height))
+                    if gpu_renderer:
+                        screen.blit(overlay_surface, (0, 0))
                     if (ticks // 500) % 2 == 0:
                         draw_pause_icon(screen, screen_width, screen_height)
                     elif p_count > 0:
@@ -1798,12 +1845,27 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
 
                 # En lecture : Clignotement de l'enveloppe seule si p_count > 0
                 # Playing: blink only the envelope when p_count > 0.
-                if p_count > 0 and (ticks // 500) % 2 != 0:
-                    draw_postcard_notification_icon(screen, screen_width, screen_height, p_count, main_font)
+                if gpu_renderer and gpu_photo_texture and gpu_overlay_texture and not paused and not (p_count > 0 and (ticks // 500) % 2 != 0):
+                    gpu_renderer.clear()
+                    gpu_photo_texture.draw(
+                        srcrect=pygame.Rect(current_x, current_y, screen_width, screen_height),
+                        dstrect=pygame.Rect(0, 0, screen_width, screen_height),
+                    )
+                    gpu_overlay_texture.draw(dstrect=pygame.Rect(0, 0, screen_width, screen_height))
+                    gpu_renderer.present()
+                else:
+                    # Keep pause and notification icon frames on the existing
+                    # software path so their drawing behavior stays unchanged.
+                    screen.blit(scaled_pygame_image, (0, 0), (current_x, current_y, screen_width, screen_height))
+                    if gpu_renderer:
+                        screen.blit(overlay_surface, (0, 0))
+                    if p_count > 0 and (ticks // 500) % 2 != 0:
+                        draw_postcard_notification_icon(screen, screen_width, screen_height, p_count, main_font)
+                    pygame.display.flip()
+                clock.tick(animation_fps)
 
-                pygame.display.flip()
-                clock.tick(60) # Limit frame rate to 60 FPS for smoother animation
-                
+            sync_gpu_frame_to_surface()
+
     except Exception as e:
         logger.info(tr('Erreur affichage photo avec pan/zoom : %(value_0)s', value_0=e))
         traceback.print_exc()
@@ -2163,11 +2225,53 @@ def start_slideshow():
         custom_playlist = None
         playlist_name = None
         is_custom_run = False # Drapeau pour indiquer un cycle de playlist unique
+        playlist_data = None
+        skip_startup_playlist = SKIP_STARTUP_PLAYLIST_FILE.exists()
+        if skip_startup_playlist:
+            SKIP_STARTUP_PLAYLIST_FILE.unlink(missing_ok=True)
         if os.path.exists(CUSTOM_PLAYLIST_FILE):
             try:
                 with open(CUSTOM_PLAYLIST_FILE, 'r') as f:
                     playlist_data = json.load(f)
-                
+            except Exception as e:
+                logger.info(tr('📸 Erreur chargement playlist personnalisée: %(value_0)s. Utilisation de la séquence de démarrage configurée.', value_0=e))
+
+        if playlist_data is None and not skip_startup_playlist:
+            startup_playlist_ids = config.get("startup_playlist_ids", [])
+            if isinstance(startup_playlist_ids, list) and startup_playlist_ids:
+                try:
+                    playlists_by_id = {
+                        playlist.get("id"): playlist
+                        for playlist in load_playlists()
+                        if isinstance(playlist, dict) and isinstance(playlist.get("id"), str)
+                    }
+                    startup_playlists = [
+                        playlists_by_id[playlist_id]
+                        for playlist_id in startup_playlist_ids
+                        if isinstance(playlist_id, str) and playlist_id in playlists_by_id
+                    ]
+                    startup_photo_paths = []
+                    startup_playlist_names = []
+                    startup_music_file = None
+                    for startup_playlist in startup_playlists:
+                        photos = startup_playlist.get("photos", [])
+                        if not isinstance(photos, list) or not photos:
+                            continue
+                        startup_playlist_names.append(startup_playlist.get("name", "Playlist"))
+                        startup_photo_paths.extend(photo for photo in photos if isinstance(photo, str))
+                        if startup_music_file is None and startup_playlist.get("music_file"):
+                            startup_music_file = startup_playlist["music_file"]
+                    if startup_photo_paths:
+                        playlist_data = {
+                            "name": tr("Séquence de démarrage : %(value_0)s", value_0=" → ".join(startup_playlist_names)),
+                            "photos": startup_photo_paths,
+                            "music_file": startup_music_file,
+                        }
+                except Exception as e:
+                    logger.info(tr('Erreur lors du chargement de la séquence de playlists de démarrage : %(value_0)s', value_0=e))
+
+        if playlist_data is not None:
+            try:
                 if isinstance(playlist_data, dict) and 'name' in playlist_data and 'photos' in playlist_data:
                     playlist_name = playlist_data['name']
                     custom_playlist_paths = playlist_data['photos']
@@ -2182,14 +2286,15 @@ def start_slideshow():
                 
                 # Gestion de la musique
                 # Music handling.
-                _current_background_music = playlist_data.get('music_file')
+                _current_background_music = playlist_data.get('music_file') if isinstance(playlist_data, dict) else None
                 if _current_background_music:
                     play_background_music(_current_background_music)
 
                 logger.info(tr("📸 Playlist personnalisée '%(value_0)s' chargée avec %(value_1)s photos.", value_0=playlist_name or 'Sans nom', value_1=len(custom_playlist)))
                 is_custom_run = True # On active le drapeau pour le premier passage
                 update_status_file({"is_custom": True})
-                os.remove(CUSTOM_PLAYLIST_FILE) # Supprimer pour ne pas la réutiliser au prochain démarrage
+                if os.path.exists(CUSTOM_PLAYLIST_FILE):
+                    os.remove(CUSTOM_PLAYLIST_FILE) # Supprimer pour ne pas la réutiliser au prochain démarrage
             except Exception as e:
                 logger.info(tr('📸 Erreur chargement playlist personnalisée: %(value_0)s. Utilisation de la playlist par défaut.', value_0=e))
 
@@ -2532,11 +2637,12 @@ def start_slideshow():
                             # For the first image or no transition, just load and blit it directly
                             current_pil_image = Image.open(photo_path)
                             if current_pil_image.mode != 'RGB': current_pil_image = current_pil_image.convert('RGB')
-                            # For the first image, we need to blit it directly before pan/zoom takes over
-                            # This blit is only for the initial display, not part of pan/zoom animation
-                            screen.blit(pygame.image.fromstring(current_pil_image.tobytes(), current_pil_image.size, current_pil_image.mode), (0,0)) # type: ignore
-                            draw_overlay(screen, SCREEN_WIDTH, SCREEN_HEIGHT, config, main_font_loaded, None)
-                            pygame.display.flip()
+                            # Show a prepared still immediately when pan/zoom is
+                            # disabled. Pan/zoom draws its own first centered frame.
+                            if not config.get("pan_zoom_enabled", False):
+                                screen.blit(pygame.image.fromstring(current_pil_image.tobytes(), current_pil_image.size, current_pil_image.mode), (0,0)) # type: ignore
+                                draw_overlay(screen, SCREEN_WIDTH, SCREEN_HEIGHT, config, main_font_loaded, None)
+                                pygame.display.flip()
                     except Exception as e:
                         logger.info(tr('🖼️ Error loading or transitioning to photo %(value_0)s: %(value_1)s', value_0=photo_path, value_1=e))
                         traceback.print_exc()
