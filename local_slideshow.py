@@ -1710,7 +1710,7 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
         else:
             # Logique de l'effet Pan/Zoom
             # Pan/Zoom effect logic.
-            zoom_factor = float(config.get("pan_zoom_factor", 1.15)) # Récupérer le facteur de zoom de la config
+            zoom_factor = max(1.0, float(config.get("pan_zoom_factor", 1.15))) # Récupérer le facteur de zoom de la config
             
             # Calculate scaled image dimensions
             scaled_width = int(screen_width * zoom_factor)
@@ -1730,26 +1730,18 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
             max_x_offset = max(0, max_x_offset)
             max_y_offset = max(0, max_y_offset)
 
-            def get_random_edge_point(max_x, max_y):
-                """Génère un point aléatoire sur l'un des quatre bords du rectangle de rognage."""
-                edge = random.choice(['top', 'bottom', 'left', 'right'])
-                if edge == 'top':
-                    return (random.randint(0, max_x), 0)
-                elif edge == 'bottom':
-                    return (random.randint(0, max_x), max_y)
-                elif edge == 'left':
-                    return (0, random.randint(0, max_y))
-                else: # right
-                    return (max_x, random.randint(0, max_y))
-
             # Générer un point de départ et un point d'arrivée qui ne sont pas identiques
             # Generate distinct start and end points.
             # Begin at the centered crop. Transitions also end on this frame,
             # so the image never jumps when animation takes over.
             start_offset = (max_x_offset // 2, max_y_offset // 2)
-            end_offset = get_random_edge_point(max_x_offset, max_y_offset)
-            while end_offset == start_offset:
-                end_offset = get_random_edge_point(max_x_offset, max_y_offset)
+            possible_corners = list({
+                (0, 0),
+                (max_x_offset, 0),
+                (0, max_y_offset),
+                (max_x_offset, max_y_offset),
+            } - {start_offset})
+            end_offset = random.choice(possible_corners) if possible_corners else start_offset
 
             start_x, start_y = start_offset
             end_x, end_y = end_offset
@@ -1758,6 +1750,7 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
             start_animation_time = time.time()
             overlay_surface = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA).convert_alpha()
             overlay_second = None
+            overlay_bounds = pygame.Rect(0, 0, 0, 0)
             fps_setting = str(config.get("transition_fps", "auto"))
             animation_fps = int(fps_setting) if fps_setting in ("30", "60") else 60
 
@@ -1793,8 +1786,10 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                 if current_second != overlay_second:
                     overlay_surface.fill((0, 0, 0, 0))
                     draw_overlay(overlay_surface, screen_width, screen_height, config, main_font, photo_metadata)
+                    overlay_bounds = overlay_surface.get_bounding_rect(min_alpha=1)
                     overlay_second = current_second
-                screen.blit(overlay_surface, (0, 0))
+                if overlay_bounds.width and overlay_bounds.height:
+                    screen.blit(overlay_surface, overlay_bounds.topleft, overlay_bounds)
 
                 # Gestion de la pause et des notifications (Enveloppe / Pause)
                 # Handle pause and notifications (envelope / pause).
