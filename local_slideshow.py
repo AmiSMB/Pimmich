@@ -1879,7 +1879,8 @@ def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_hei
         # Keep the uploaded texture at screen resolution. pi3d scales and moves
         # its textured quad on the GPU for each frame.
         texture_image = pil_image.resize((screen_width, screen_height), Image.Resampling.LANCZOS)
-        photo_texture = pi3d.Texture(texture_image, mipmap=False, free_after_load=True)
+        photo_texture_array = np.asarray(texture_image.convert("RGB")).copy()
+        photo_texture = pi3d.Texture(photo_texture_array, mipmap=False, free_after_load=True)
         photo_sprite = pi3d.Sprite(camera=camera, w=screen_width, h=screen_height, z=5.0)
         photo_sprite.set_shader(image_shader)
         photo_sprite.set_draw_details(image_shader, [photo_texture])
@@ -1891,6 +1892,11 @@ def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_hei
         overlay_sprite = pi3d.Sprite(camera=camera, w=screen_width, h=screen_height, z=4.0)
         overlay_sprite.set_shader(overlay_shader)
         overlay_sprite.set_draw_details(overlay_shader, [overlay_texture])
+
+        # Let pi3d render sprites during its frame lifecycle. Calling draw()
+        # from the application loop bypasses pi3d's normal repaint/swap order
+        # and can leave the cleared framebuffer visible on some drivers.
+        display.add_sprites(photo_sprite, overlay_sprite)
 
         max_x_offset = scaled_size[0] - screen_width
         max_y_offset = scaled_size[1] - screen_height
@@ -1921,7 +1927,6 @@ def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_hei
             photo_sprite.set_2d_size(
                 w=scaled_size[0], h=scaled_size[1], x=-last_x, y=-last_y,
             )
-            photo_sprite.draw()
 
             ticks = pygame.time.get_ticks()
             postcard_count = get_today_postcard_count() if config.get("display_telegram_notification_overlay", True) else 0
@@ -1936,7 +1941,6 @@ def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_hei
                 overlay_image = Image.frombytes("RGBA", (screen_width, screen_height), pygame.image.tostring(overlay_surface, "RGBA"))
                 overlay_texture.update_ndarray(np.asarray(overlay_image).copy())
                 overlay_key = key
-            overlay_sprite.draw()
 
             if paused:
                 time.sleep(0.1)

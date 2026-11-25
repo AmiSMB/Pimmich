@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from .localization import tr
 import os
+import shutil
 import subprocess
 import time
 import json
@@ -227,22 +228,20 @@ def set_software_display_power(on=True):
     state = "on" if on else "off"
     
     try:
-        # Test wlr-randr
-        cmd = ["wlr-randr", "--output", output, f"--{state}"]
-        logger.info(tr('🖥️ Commande: %(value_0)s', value_0=' '.join(cmd)))
-        
-        result = subprocess.run(
-            cmd,
-            timeout=5,
-            capture_output=True,
-            text=True,
-            check=False
-        )
-        logger.debug(tr('🖥️ wlr DPMS: RC=%(value_0)s STDOUT=%(value_1)s ERR=%(value_2)s', value_0=result.returncode, value_1=result.stdout.strip(), value_2=result.stderr.strip()))
-        
-        if result.returncode == 0:
-            logger.info(tr('🖥️✅ Écran %(value_0)s -> %(value_1)s via wlr-randr.', value_0=output, value_1=state))
-            return True, "OK"
+        if shutil.which("wlr-randr"):
+            cmd = ["wlr-randr", "--output", output, f"--{state}"]
+            logger.info(tr('🖥️ Commande: %(value_0)s', value_0=' '.join(cmd)))
+            result = subprocess.run(
+                cmd,
+                timeout=5,
+                capture_output=True,
+                text=True,
+                check=False
+            )
+            logger.debug(tr('🖥️ wlr DPMS: RC=%(value_0)s STDOUT=%(value_1)s ERR=%(value_2)s', value_0=result.returncode, value_1=result.stdout.strip(), value_2=result.stderr.strip()))
+            if result.returncode == 0:
+                logger.info(tr('🖥️✅ Écran %(value_0)s -> %(value_1)s via wlr-randr.', value_0=output, value_1=state))
+                return True, "OK"
         
         # Fallback swaymsg
         logger.info(tr("🖥️Fallback swaymsg DPMS..."))
