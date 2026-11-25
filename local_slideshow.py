@@ -1782,6 +1782,11 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                 current_x = int(start_x + (end_x - start_x) * eased_progress)
                 current_y = int(start_y + (end_y - start_y) * eased_progress)
 
+                # Draw the current crop on every frame; this is the software
+                # rendering path used whenever the optional SDL acceleration
+                # is disabled or unavailable.
+                screen.blit(scaled_pygame_image, (0, 0), (current_x, current_y, screen_width, screen_height))
+
                 # Render text, date and weather once per second, then reuse it
                 # for animation frames instead of rebuilding fonts every frame.
                 current_second = int(time.time())
@@ -1801,7 +1806,6 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                     # Paused: alternate between the pause icon and the envelope.
                     config = load_config() # Recharger pendant la pause de l'animation
                     p_count = get_today_postcard_count() if config.get("display_telegram_notification_overlay", True) else 0
-                    screen.blit(scaled_pygame_image, (0, 0), (current_x, current_y, screen_width, screen_height))
                     if (ticks // 500) % 2 == 0:
                         draw_pause_icon(screen, screen_width, screen_height)
                     elif p_count > 0:
