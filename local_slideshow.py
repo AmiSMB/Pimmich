@@ -1848,7 +1848,12 @@ def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_hei
     last_x = max(0, int(screen_width * max(1.0, float(config.get("pan_zoom_factor", 1.15)))) - screen_width) // 2
     last_y = max(0, int(screen_height * max(1.0, float(config.get("pan_zoom_factor", 1.15)))) - screen_height) // 2
     zoom_factor = max(1.0, float(config.get("pan_zoom_factor", 1.15)))
-    scaled_size = (max(screen_width, int(screen_width * zoom_factor)), max(screen_height, int(screen_height * zoom_factor)))
+    cover_scale = max(screen_width / pil_image.width, screen_height / pil_image.height)
+    base_size = (
+        max(screen_width, int(pil_image.width * cover_scale)),
+        max(screen_height, int(pil_image.height * cover_scale)),
+    )
+    scaled_size = (int(base_size[0] * zoom_factor), int(base_size[1] * zoom_factor))
     overlay_surface = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
     restored_screen = screen
 
@@ -1874,19 +1879,21 @@ def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_hei
             use_sdl2=True,
         )
         camera = pi3d.Camera(is_3d=False)
-        image_shader = pi3d.Shader("2d_flat")
+        image_shader = pi3d.Shader("uv_flat")
         overlay_shader = pi3d.Shader("2d_flat")
 
-        # Keep the uploaded texture at screen resolution. pi3d scales and moves
-        # its textured quad on the GPU for each frame.
-        texture_image = pil_image.resize((screen_width, screen_height), Image.Resampling.LANCZOS)
+        # Use pi3d's standard textured sprite transform for photo motion. This
+        # preserves aspect ratio and avoids 2d_flat's pixel-coordinate mapping
+        # for a quad whose size changes during pan/zoom.
+        texture_image = pil_image.resize(base_size, Image.Resampling.LANCZOS)
         photo_texture_array = np.asarray(texture_image.convert("RGB")).copy()
         # Keep the CPU copy: pi3d may need it again when restoring/reloading
         # textures across frames or after a context transition.
         photo_texture = pi3d.Texture(photo_texture_array, mipmap=False)
-        photo_sprite = pi3d.Sprite(camera=camera, w=screen_width, h=screen_height, z=5.0)
+        photo_sprite = pi3d.Sprite(camera=camera, w=base_size[0], h=base_size[1], z=5.0)
         photo_sprite.set_shader(image_shader)
         photo_sprite.set_draw_details(image_shader, [photo_texture])
+        photo_sprite.scale(zoom_factor, zoom_factor, 1.0)
 
         overlay_surface.fill((0, 0, 0, 0))
         draw_overlay(overlay_surface, screen_width, screen_height, config, main_font, photo_metadata)
@@ -1927,8 +1934,10 @@ def display_photo_with_pi3d_pan_zoom(screen, pil_image, screen_width, screen_hei
             eased = 0.5 * (1 - math.cos(progress * math.pi))
             last_x = int(start_x + (end_x - start_x) * eased)
             last_y = int(start_y + (end_y - start_y) * eased)
-            photo_sprite.set_2d_size(
-                w=scaled_size[0], h=scaled_size[1], x=-last_x, y=-last_y,
+            photo_sprite.position(
+                (scaled_size[0] - screen_width) / 2 - last_x,
+                last_y - (scaled_size[1] - screen_height) / 2,
+                5.0,
             )
 
             ticks = pygame.time.get_ticks()
