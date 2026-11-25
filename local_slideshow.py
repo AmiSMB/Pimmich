@@ -1760,27 +1760,6 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
             overlay_second = None
             fps_setting = str(config.get("transition_fps", "auto"))
             animation_fps = int(fps_setting) if fps_setting in ("30", "60") else 60
-            gpu_renderer = None
-            gpu_photo_texture = None
-            gpu_overlay_texture = None
-            if config.get("pan_zoom_gpu_enabled", False):
-                try:
-                    from pygame._sdl2.video import Renderer, Texture, Window
-                    gpu_window = Window.from_display_module()
-                    gpu_renderer = Renderer(gpu_window, accelerated=1, vsync=True)
-                    gpu_photo_texture = Texture.from_surface(gpu_renderer, scaled_pygame_image)
-                    logger.info(tr("Rendu GPU Pan/Zoom activé."))
-                except Exception as gpu_error:
-                    logger.warning(tr("Rendu GPU Pan/Zoom indisponible ; utilisation du rendu logiciel : %(value_0)s", value_0=gpu_error))
-                    gpu_renderer = None
-                    gpu_photo_texture = None
-
-            def sync_gpu_frame_to_surface():
-                if gpu_renderer:
-                    try:
-                        screen.blit(gpu_renderer.to_surface(), (0, 0))
-                    except Exception as sync_error:
-                        logger.warning(tr("Impossible de synchroniser l'image GPU : %(value_0)s", value_0=sync_error))
 
             while time.time() - start_animation_time < display_duration:
                 elapsed_animation_time = time.time() - start_animation_time
@@ -1788,15 +1767,11 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                 handle_slideshow_events(screen_width)
                 # Vérification en temps réel de l'arrivée d'une nouvelle carte postale
                 # Check in real time for an incoming postcard.
-                if not ignore_postcard_flag and NEW_POSTCARD_FLAG.exists():
-                    sync_gpu_frame_to_surface()
-                    return
+                if not ignore_postcard_flag and NEW_POSTCARD_FLAG.exists(): return
 
                 # Vérifier les signaux à chaque image de l'animation
                 # Check for signals on every animation frame.
-                if next_photo_requested or previous_photo_requested:
-                    sync_gpu_frame_to_surface()
-                    return
+                if next_photo_requested or previous_photo_requested: return
                 
                 # Appliquer une fonction d'accélération/décélération (ease-in-out) pour un mouvement plus doux
                 # Apply an ease-in-out function for smoother motion.
@@ -1813,12 +1788,8 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                 if current_second != overlay_second:
                     overlay_surface.fill((0, 0, 0, 0))
                     draw_overlay(overlay_surface, screen_width, screen_height, config, main_font, photo_metadata)
-                    if gpu_renderer:
-                        from pygame._sdl2.video import Texture
-                        gpu_overlay_texture = Texture.from_surface(gpu_renderer, overlay_surface)
                     overlay_second = current_second
-                if not gpu_renderer:
-                    screen.blit(overlay_surface, (0, 0))
+                screen.blit(overlay_surface, (0, 0))
 
                 # Gestion de la pause et des notifications (Enveloppe / Pause)
                 # Handle pause and notifications (envelope / pause).
@@ -1831,8 +1802,6 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
                     config = load_config() # Recharger pendant la pause de l'animation
                     p_count = get_today_postcard_count() if config.get("display_telegram_notification_overlay", True) else 0
                     screen.blit(scaled_pygame_image, (0, 0), (current_x, current_y, screen_width, screen_height))
-                    if gpu_renderer:
-                        screen.blit(overlay_surface, (0, 0))
                     if (ticks // 500) % 2 == 0:
                         draw_pause_icon(screen, screen_width, screen_height)
                     elif p_count > 0:
@@ -1845,26 +1814,11 @@ def display_photo_with_pan_zoom(screen, pil_image, screen_width, screen_height, 
 
                 # En lecture : Clignotement de l'enveloppe seule si p_count > 0
                 # Playing: blink only the envelope when p_count > 0.
-                if gpu_renderer and gpu_photo_texture and gpu_overlay_texture and not paused and not (p_count > 0 and (ticks // 500) % 2 != 0):
-                    gpu_renderer.clear()
-                    gpu_photo_texture.draw(
-                        srcrect=pygame.Rect(current_x, current_y, screen_width, screen_height),
-                        dstrect=pygame.Rect(0, 0, screen_width, screen_height),
-                    )
-                    gpu_overlay_texture.draw(dstrect=pygame.Rect(0, 0, screen_width, screen_height))
-                    gpu_renderer.present()
-                else:
-                    # Keep pause and notification icon frames on the existing
-                    # software path so their drawing behavior stays unchanged.
-                    screen.blit(scaled_pygame_image, (0, 0), (current_x, current_y, screen_width, screen_height))
-                    if gpu_renderer:
-                        screen.blit(overlay_surface, (0, 0))
-                    if p_count > 0 and (ticks // 500) % 2 != 0:
-                        draw_postcard_notification_icon(screen, screen_width, screen_height, p_count, main_font)
-                    pygame.display.flip()
-                clock.tick(animation_fps)
+                if p_count > 0 and (ticks // 500) % 2 != 0:
+                    draw_postcard_notification_icon(screen, screen_width, screen_height, p_count, main_font)
 
-            sync_gpu_frame_to_surface()
+                pygame.display.flip()
+                clock.tick(animation_fps)
 
     except Exception as e:
         logger.info(tr('Erreur affichage photo avec pan/zoom : %(value_0)s', value_0=e))
@@ -2121,6 +2075,12 @@ def start_slideshow():
         logger.debug(tr('📸 Starting slideshow initialization.'))
         config = load_config()
         logger.debug(tr('📸 Config loaded. show_clock: %(value_0)s, show_weather: %(value_1)s', value_0=config.get('show_clock'), value_1=config.get('show_weather')))
+
+        if config.get("pan_zoom_gpu_enabled", False):
+            # SDL can accelerate its display framebuffer using a streaming
+            # texture, without attaching a second renderer to Pygame's window.
+            os.environ["SDL_FRAMEBUFFER_ACCELERATION"] = "1"
+            logger.info(tr("Accélération GPU de l'affichage demandée via SDL."))
         
       
         

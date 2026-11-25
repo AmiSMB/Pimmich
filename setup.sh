@@ -190,9 +190,6 @@ say "Mise à jour de pip..." "Updating pip..."
 run_as_real_user "$VENV_PYTHON" -m pip install --default-timeout=1000 --retries=10 --upgrade pip
 
 say "Installation des dépendances de requirements.txt..." "Installing dependencies from requirements.txt..."
-if ! run_as_real_user "$VENV_PYTHON" -m pip uninstall -y pygame; then
-    echo "Warning: unable to remove the legacy pygame package."
-fi
 if ! run_as_real_user "$VENV_PYTHON" -m pip install --default-timeout=1000 --retries=10 -r requirements.txt; then
     say "❌ Échec de l'installation des dépendances Python de base !" "❌ Failed to install the base Python dependencies!"
     exit 1
@@ -260,7 +257,7 @@ else
     fi
 
     say "Installation des bibliothèques pour le contrôle vocal..." "Installing voice-control libraries..."
-    if ! run_as_real_user "$VENV_PYTHON" -m pip install vosk sounddevice numpy thefuzz python-Levenshtein pygame-ce num2words; then
+    if ! run_as_real_user "$VENV_PYTHON" -m pip install vosk sounddevice numpy thefuzz python-Levenshtein pygame num2words; then
         say "❌ Échec de l'installation des bibliothèques de contrôle vocal !" "❌ Failed to install the voice-control libraries!"
         exit 1
     fi

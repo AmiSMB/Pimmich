@@ -5009,19 +5009,13 @@ msgstr ""
 msgid "Préparation des nouvelles photos terminée."
 msgstr ""
 
-msgid "Accélérer Pan/Zoom avec le GPU (expérimental)"
+msgid "Demander l'accélération GPU SDL pour Pan/Zoom (expérimental)"
 msgstr ""
 
-msgid "Nécessite pygame-ce et un pilote SDL accéléré. Le rendu logiciel sera utilisé si l'accélération n'est pas disponible."
+msgid "Demande à SDL d'accélérer l'affichage. La prise en charge dépend du pilote ; sinon SDL utilise le rendu habituel."
 msgstr ""
 
-msgid "Rendu GPU Pan/Zoom activé."
-msgstr ""
-
-msgid "Rendu GPU Pan/Zoom indisponible ; utilisation du rendu logiciel : %(value_0)s"
-msgstr ""
-
-msgid "Impossible de synchroniser l'image GPU : %(value_0)s"
+msgid "Accélération GPU de l'affichage demandée via SDL."
 msgstr ""
 
 msgid "Playlists au démarrage"

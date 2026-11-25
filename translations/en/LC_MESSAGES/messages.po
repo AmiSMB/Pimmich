@@ -5552,17 +5552,11 @@ msgstr "Error preparing %(value_0)s: %(value_1)s"
 msgid "Préparation des nouvelles photos terminée."
 msgstr "Preparation of new photos is complete."
 
-msgid "Accélérer Pan/Zoom avec le GPU (expérimental)"
-msgstr "Accelerate pan/zoom with the GPU (experimental)"
+msgid "Demander l'accélération GPU SDL pour Pan/Zoom (expérimental)"
+msgstr "Request SDL GPU acceleration for pan/zoom (experimental)"
 
-msgid "Nécessite pygame-ce et un pilote SDL accéléré. Le rendu logiciel sera utilisé si l'accélération n'est pas disponible."
-msgstr "Requires pygame-ce and an accelerated SDL driver. Software rendering will be used if acceleration is unavailable."
+msgid "Demande à SDL d'accélérer l'affichage. La prise en charge dépend du pilote ; sinon SDL utilise le rendu habituel."
+msgstr "Asks SDL to accelerate display output. Support depends on the driver; otherwise SDL uses its usual rendering path."
 
-msgid "Rendu GPU Pan/Zoom activé."
-msgstr "GPU pan/zoom rendering enabled."
-
-msgid "Rendu GPU Pan/Zoom indisponible ; utilisation du rendu logiciel : %(value_0)s"
-msgstr "GPU pan/zoom rendering unavailable; using software rendering: %(value_0)s"
-
-msgid "Impossible de synchroniser l'image GPU : %(value_0)s"
-msgstr "Unable to synchronize the GPU image: %(value_0)s"
+msgid "Accélération GPU de l'affichage demandée via SDL."
+msgstr "SDL GPU display acceleration requested."
